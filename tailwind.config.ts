@@ -18,15 +18,22 @@ const config = {
       },
     },
     extend: {
+      fontFamily: {
+        pretendard: ["var(--font-pretendard)"],
+      },
+      lineHeight: {
+        snug: "1.4",
+        normal: "1.5",
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
-        background: "hsl(var(--background))",
+        background: "var(--neutral-100)",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
+          DEFAULT: "var(--orange-500)",
+          foreground: "var(--white)",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
@@ -54,6 +61,8 @@ const config = {
         },
       },
       borderRadius: {
+        "2xl": "calc(var(--radius) + 4px)",
+        xl: "calc(var(--radius) + 2px)",
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
@@ -67,6 +76,9 @@ const config = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+      },
+      boxShadow: {
+        1: "0px 4px 12px 0px rgba(52, 52, 52, 0.2)",
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",

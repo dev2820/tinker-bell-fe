@@ -4,7 +4,7 @@ import "./globals.css";
 import { cx } from "@/utils/cx";
 
 const pretendard = localFont({
-  src: "../../public/assets/fonts/Pretendard-Regular.woff2",
+  src: "../../public/assets/fonts/PretendardVariable.woff2",
   display: "swap",
   weight: "45 920",
   variable: "--font-pretendard",
@@ -22,7 +22,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={pretendard.variable}>
-      <body className={cx("p-4", pretendard.className)}>{children}</body>
+      <body className={cx("p-4 bg-background", pretendard.className)}>
+        {children}
+      </body>
     </html>
   );
 }
