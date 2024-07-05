@@ -5,61 +5,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PromotionItem } from "./components/promotion-item";
 import { CTAButton } from "./components/cta-button";
 import { Header } from "./components/header";
-
-const mockData = [
-  {
-    id: "promo1",
-    title: "Summer Sale",
-    duration: {
-      start: new Date("2024-06-01"),
-      end: new Date("2024-06-30"),
-    },
-  },
-  {
-    id: "promo2",
-    title: "Back to School",
-    duration: {
-      start: new Date("2024-08-15"),
-      end: new Date("2024-09-15"),
-    },
-  },
-  {
-    id: "promo3",
-    title: "Black Friday",
-    duration: {
-      start: new Date("2024-11-25"),
-      end: new Date("2024-11-30"),
-    },
-  },
-  {
-    id: "promo4",
-    title: "Holiday Discounts",
-    duration: {
-      start: new Date("2024-12-15"),
-      end: new Date("2024-12-31"),
-    },
-  },
-  {
-    id: "promo5",
-    title: "New Year Sale",
-    duration: {
-      start: new Date("2025-01-01"),
-      end: new Date("2025-01-07"),
-    },
-  },
-  {
-    id: "promo6",
-    title: "Spring Clearance",
-    duration: {
-      start: new Date("2025-03-01"),
-      end: new Date("2025-03-31"),
-    },
-  },
-];
+import Link from "next/link";
+import promotionData from "@/__mocks__/promotion";
 
 export default function Home() {
-  const inProgressPromotions = mockData.slice(0, 3);
-  const readyPromotions = mockData.slice(3);
+  const inProgressPromotions = promotionData.slice(0, 3);
+  const readyPromotions = promotionData.slice(3);
 
   return (
     <main className="flex min-h-screen flex-col items-stretch">
@@ -86,7 +37,9 @@ export default function Home() {
           </CardHeader>
           <CardContent>
             {inProgressPromotions.map((p) => (
-              <PromotionItem promotion={p} inProgress key={p.id} />
+              <Link href={`/promotion/${p.id}`} key={p.id}>
+                <PromotionItem promotion={p} inProgress />
+              </Link>
             ))}
           </CardContent>
         </Card>
@@ -98,7 +51,9 @@ export default function Home() {
           </CardHeader>
           <CardContent>
             {readyPromotions.map((p) => (
-              <PromotionItem promotion={p} key={p.id} />
+              <Link href={`/promotion/${p.id}`} key={p.id}>
+                <PromotionItem promotion={p} key={p.id} />
+              </Link>
             ))}
           </CardContent>
         </Card>

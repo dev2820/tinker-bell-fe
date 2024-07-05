@@ -5,4 +5,8 @@ export type Promotion = {
     start: Date;
     end: Date;
   };
+  participants: {
+    current: number;
+    total: number;
+  };
 };
