@@ -17,17 +17,15 @@ export default function Home() {
       <Header
         leading={
           <>
-            <Image src={logo} alt="Tinkerbell Logo" width={24} height={24} />
-            <h1 className="ml-0.5 text-xl font-bold">Tinkerbell</h1>
+            <Image src={logo} alt="Tinkerbell Logo" height={24} />
           </>
         }
         trailing={
-          <button>
-            <SettingsIcon className="w-6 h-6" />
+          <button className="block">
+            <SettingsIcon size={24} />
           </button>
         }
       ></Header>
-
       <section className="my-8">
         <Card>
           <CardHeader>
