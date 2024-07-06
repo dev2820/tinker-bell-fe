@@ -10,6 +10,8 @@ import { formatDate } from "@/utils/date-time";
 import Link from "next/link";
 
 import promotionData from "@/__mocks__/promotion";
+import { WaitingItem } from "@/app/components/waiting-item";
+import { Waiting } from "@/types/waiting";
 
 async function fetchPromotion(id: string): Promise<Promotion> {
   // 여기에 데이터 패칭 로직을 추가합니다.
@@ -25,6 +27,10 @@ async function fetchPromotion(id: string): Promise<Promotion> {
       start: new Date(data.duration.start),
       end: new Date(data.duration.end),
     },
+    waitings: (data.waitings as Waiting[]).map((w) => ({
+      ...w,
+      time: new Date(w.time),
+    })),
   };
 }
 
@@ -76,7 +82,7 @@ export default async function BlogPostPage({
                 "yyyy.MM.dd"
               )} ~ ${formatDate(promotion.duration.end, "yyyy.MM.dd")}`}</b>
             </div>
-            <div className="flex flex-row justify-between">
+            <div className="flex flex-row justify-between mb-4">
               <span>참여 인원 수</span>
               <b>{`${promotion.participants.current} / ${promotion.participants.total}`}</b>
             </div>
@@ -94,7 +100,11 @@ export default async function BlogPostPage({
               날짜 및 시간 수정하기
             </Button>
           </CardHeader>
-          <CardContent></CardContent>
+          <CardContent className="flex flex-col gap-2">
+            {promotion.waitings.map((w) => (
+              <WaitingItem waiting={w} key={w.time.getTime()} />
+            ))}
+          </CardContent>
         </Card>
       </section>
       <CTAButton>웨이팅 등록 시작하기</CTAButton>

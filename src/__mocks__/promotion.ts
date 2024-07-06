@@ -1,3 +1,5 @@
+import waitings from "./waiting";
+
 const data = [
   {
     id: "promo1",
@@ -10,6 +12,7 @@ const data = [
       current: 300,
       total: 500,
     },
+    waitings,
   },
   {
     id: "promo2",
@@ -22,6 +25,7 @@ const data = [
       current: 300,
       total: 500,
     },
+    waitings: [],
   },
   {
     id: "promo3",
@@ -34,6 +38,7 @@ const data = [
       current: 300,
       total: 500,
     },
+    waitings,
   },
   {
     id: "promo4",
@@ -46,6 +51,7 @@ const data = [
       current: 300,
       total: 500,
     },
+    waitings,
   },
   {
     id: "promo5",
@@ -58,6 +64,7 @@ const data = [
       current: 300,
       total: 500,
     },
+    waitings,
   },
   {
     id: "promo6",
@@ -70,6 +77,7 @@ const data = [
       current: 300,
       total: 500,
     },
+    waitings,
   },
 ];
 

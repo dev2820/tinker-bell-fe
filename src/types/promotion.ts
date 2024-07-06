@@ -1,3 +1,5 @@
+import { Waiting } from "./waiting";
+
 export type Promotion = {
   id: string;
   title: string;
@@ -9,4 +11,5 @@ export type Promotion = {
     current: number;
     total: number;
   };
+  waitings: Waiting[];
 };
