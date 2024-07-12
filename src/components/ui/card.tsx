@@ -1,6 +1,6 @@
 import { forwardRef, type ComponentProps } from "react";
 
-import { cx } from "@/utils/cx";
+import { cx } from "@/utils/styles/cx";
 
 const Card = forwardRef<HTMLDivElement, ComponentProps<"div">>(
   ({ className, ...props }, ref) => (

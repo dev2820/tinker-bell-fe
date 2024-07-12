@@ -2,7 +2,7 @@ import { ComponentProps, ReactNode } from "react";
 
 import logo from "../../public/assets/images/logo.svg";
 import { Spacer } from "@/components/ui/spacer";
-import { cx } from "@/utils/cx";
+import { cx } from "@/utils/styles/cx";
 
 export type HeaderProps = ComponentProps<"header"> & {
   leading?: ReactNode;

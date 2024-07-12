@@ -1,7 +1,7 @@
 import { ComponentProps, forwardRef } from "react";
 import type { Waiting } from "@/types/waiting";
 
-import { cx } from "@/utils/cx";
+import { cx } from "@/utils/styles/cx";
 import { ChevronRightIcon } from "lucide-react";
 import { formatDate, ko } from "@/utils/date-time";
 import { Badge } from "@/components/ui/badge";

@@ -1,7 +1,7 @@
 import { ComponentProps, forwardRef } from "react";
 import type { Promotion } from "@/types/promotion";
 
-import { cx } from "@/utils/cx";
+import { cx } from "@/utils/styles/cx";
 import { ChevronRightIcon } from "lucide-react";
 import { formatDate } from "@/utils/date-time";
 

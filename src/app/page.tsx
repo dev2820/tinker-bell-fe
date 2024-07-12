@@ -21,9 +21,9 @@ export default function Home() {
           </>
         }
         trailing={
-          <button className="block">
+          <Link className="block" href="/settings">
             <SettingsIcon size={24} />
-          </button>
+          </Link>
         }
       ></Header>
       <section className="my-8">
