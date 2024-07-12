@@ -47,7 +47,7 @@ export default async function BlogPostPage({
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-stretch">
+    <main className="flex flex-col items-stretch">
       <Header
         leading={
           <Link href="/">

@@ -22,7 +22,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={pretendard.variable}>
-      <body className={cx("p-4 bg-background", pretendard.className)}>
+      <body
+        className={cx("p-4 min-h-screen bg-background", pretendard.className)}
+      >
         {children}
       </body>
     </html>

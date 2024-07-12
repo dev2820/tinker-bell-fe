@@ -6,7 +6,7 @@ import { SettingMenuItem } from "@/app/settings/components/setting-menu-item";
 
 export default function SettingsPage() {
   return (
-    <main className="flex min-h-screen flex-col items-stretch">
+    <main className="flex flex-col items-stretch">
       <Header
         leading={
           <Link href="/">
