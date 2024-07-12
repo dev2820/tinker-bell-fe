@@ -13,4 +13,16 @@ export const text = {
       weight: "medium",
     },
   }),
+  caption: cva("text-sm leading-normal", {
+    variants: {
+      weight: {
+        light: "font-thin",
+        medium: "font-normal",
+        bold: "font-bold",
+      },
+    },
+    defaultVariants: {
+      weight: "medium",
+    },
+  }),
 };

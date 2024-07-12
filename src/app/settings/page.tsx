@@ -2,9 +2,9 @@ import { Header } from "@/app/components/header";
 import { ArrowLeftIcon } from "lucide-react";
 import Link from "next/link";
 
-import { SettingMenuItem } from "./components/setting-menu-item";
+import { SettingMenuItem } from "@/app/settings/components/setting-menu-item";
 
-export default function SettingsPage({}: {}) {
+export default function SettingsPage() {
   return (
     <main className="flex min-h-screen flex-col items-stretch">
       <Header

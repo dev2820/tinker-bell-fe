@@ -18,7 +18,7 @@ export function Header({
   return (
     <header
       className={cx(
-        "h-12 w-full flex flex-row items-center text-neutral-300 relative",
+        "h-12 w-full block items-center text-neutral-300 relative text-center leading-[48px]",
         className
       )}
       {...props}
