@@ -1,3 +1,4 @@
+"use client";
 import Image from "next/image";
 import { SettingsIcon } from "lucide-react"; // 톱니바퀴 아이콘 추가
 import logo from "../../public/assets/images/logo.svg";
@@ -7,8 +8,22 @@ import { CTAButton } from "./components/cta-button";
 import { Header } from "./components/header";
 import Link from "next/link";
 import promotionData from "@/__mocks__/promotion";
+import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const accessToken = searchParams.get("accessToken");
+  const refreshToken = searchParams.get("refreshToken");
+
+  console.log(accessToken);
+  console.log(refreshToken);
+
+  if (accessToken && refreshToken) {
+    router.push("/");
+  }
+
   const inProgressPromotions = promotionData.slice(0, 3);
   const readyPromotions = promotionData.slice(3);
 
