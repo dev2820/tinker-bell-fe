@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { cx } from "@/utils/styles/cx";
+import { Suspense } from "react";
 
 const pretendard = localFont({
   src: "../../public/assets/fonts/PretendardVariable.woff2",
@@ -25,7 +26,7 @@ export default function RootLayout({
       <body
         className={cx("p-4 min-h-screen bg-background", pretendard.className)}
       >
-        {children}
+        <Suspense>{children}</Suspense>
       </body>
     </html>
   );
