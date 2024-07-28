@@ -71,7 +71,12 @@ export default function Home() {
           </CardContent>
         </Card>
       </section>
-      <CTAButton>새로운 행사 만들기</CTAButton>
+      {/**
+       * !!TODO: Button형태 링크를 사용할 수 있게 buttonVariants를 만들 것
+       */}
+      <Link href="/new-promotion/name">
+        <CTAButton>새로운 행사 만들기</CTAButton>
+      </Link>
     </main>
   );
 }
