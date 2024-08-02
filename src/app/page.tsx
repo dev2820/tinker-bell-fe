@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import { SettingsIcon } from "lucide-react"; // 톱니바퀴 아이콘 추가
+import { SettingsIcon } from "lucide-react";
 import logo from "../../public/assets/images/logo.svg";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PromotionItem } from "./components/promotion-item";

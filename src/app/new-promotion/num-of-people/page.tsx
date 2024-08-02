@@ -5,10 +5,11 @@ import { ArrowLeftIcon } from "lucide-react";
 import Link from "next/link";
 
 import { text } from "@/utils/styles/patterns";
+import { InfoText } from "@/components/ui/info-text";
 import { Input } from "@/components/ui/input";
 import { cx } from "@/utils/styles/cx";
 
-export default async function NewPromotion() {
+export default async function NewPromotionNumOfPeoplePage() {
   return (
     <main className="flex flex-col items-stretch">
       <Header
@@ -18,13 +19,16 @@ export default async function NewPromotion() {
           </Link>
         }
       ></Header>
-      <section className="my-8">
+      <section>
         <h2 className={cx(text.title1({ weight: "bold" }), "my-8")}>
           웨이팅할 인원 수를 입력해주세요
         </h2>
-        <Input type="number" placeholder="인원수" />
+        <Input type="number" placeholder="인원수" className="mb-2" />
+        <InfoText>최대 1000명까지 입력 가능해요</InfoText>
       </section>
-      <CTAButton>인원 수 입력 완료</CTAButton>
+      <Link href="/new-promotion/waiting">
+        <CTAButton>인원 수 입력 완료</CTAButton>
+      </Link>
     </main>
   );
 }

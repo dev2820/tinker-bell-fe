@@ -8,7 +8,7 @@ import { text } from "@/utils/styles/patterns";
 import { Input } from "@/components/ui/input";
 import { cx } from "@/utils/styles/cx";
 
-export default async function NewPromotion() {
+export default async function NewPromotionNamePage() {
   return (
     <main className="flex flex-col items-stretch">
       <Header
@@ -18,7 +18,7 @@ export default async function NewPromotion() {
           </Link>
         }
       ></Header>
-      <section className="my-8">
+      <section>
         <h2 className={cx(text.title1({ weight: "bold" }), "my-8")}>
           행사 제목을 입력해주세요
         </h2>
