@@ -1,4 +1,4 @@
-import { create, type StateCreator } from "zustand";
+import { type StateCreator } from "zustand";
 
 export type CounterSlice = {
   count: number;
