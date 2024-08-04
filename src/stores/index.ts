@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
-import createCounterSlice, { CounterSlice } from "./counter";
+import createPromotionFormSlice, {
+  type PromotionFormSlice,
+} from "./promotion-form";
 import { create } from "zustand";
 
 const useStore = <T, F>(
@@ -16,8 +18,9 @@ const useStore = <T, F>(
   return data;
 };
 
-const useBoundStore = create<CounterSlice>()((...a) => ({
-  ...createCounterSlice(...a),
+type BoundStoreSlice = PromotionFormSlice;
+const useBoundStore = create<BoundStoreSlice>()((...a) => ({
+  ...createPromotionFormSlice(...a),
 }));
 
 export { useBoundStore, useStore };
