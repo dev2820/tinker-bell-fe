@@ -3,7 +3,6 @@
 import { CTAButton } from "@/app/components/cta-button";
 import { Header } from "@/app/components/header";
 import { ArrowLeftIcon, PlusIcon } from "lucide-react";
-import Link from "next/link";
 
 import { text } from "@/utils/styles/patterns";
 import { cx } from "@/utils/styles/cx";
@@ -11,22 +10,46 @@ import { Card } from "@/components/ui/card";
 import { EditWaitingItem } from "@/app/components/edit-waiting-item";
 import type { Waiting } from "@/types/waiting";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useBoundStore, useStore } from "@/stores";
+import { useShallow } from "zustand/react/shallow";
+import { pick } from "@/utils/object";
+import { isNil } from "@/utils/type-guard";
 
-export default function NewPromotionWaitingPage() {
+export default function NewPromotionWaitingsPage() {
+  const router = useRouter();
+  const store = useStore(
+    useBoundStore,
+    useShallow((state) => pick(state, ["promotion", "addEmptyWaiting"]))
+  );
+
   const [waitingList] = useState<Waiting[]>([]);
+
   const handleAddWaiting = () => {
     /**
      * TODO: waiting 추가
      */
+    if (isNil(store)) {
+      return;
+    }
+
+    store.addEmptyWaiting();
+
+    const totalWaitings = store.promotion.waitings.length;
+    router.push(`/new-promotion/waitings/${totalWaitings}`);
+  };
+
+  const handleGoBack = () => {
+    router.replace("/new-promotion/num-of-people");
   };
 
   return (
     <main className="flex flex-col items-stretch">
       <Header
         leading={
-          <Link href="/new-promotion/num-of-people">
+          <button onClick={handleGoBack}>
             <ArrowLeftIcon size={24} />
-          </Link>
+          </button>
         }
       ></Header>
       <section>
@@ -51,7 +74,7 @@ export default function NewPromotionWaitingPage() {
           ))}
         </Card>
       </section>
-      <CTAButton>인원 수 입력 완료</CTAButton>
+      <CTAButton>웨이팅 정보 입력 완료</CTAButton>
     </main>
   );
 }

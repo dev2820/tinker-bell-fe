@@ -24,8 +24,3 @@ const useBoundStore = create<BoundStoreSlice>()((...a) => ({
 }));
 
 export { useBoundStore, useStore };
-
-// import useStore from './useStore'
-// import { useBoundStore } from './stores/useBoundStore'
-
-// const count = useStore(useBoundStore, (state) => state.count)

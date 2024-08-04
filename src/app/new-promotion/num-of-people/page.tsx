@@ -47,7 +47,7 @@ export default function NewPromotionNumOfPeoplePage() {
     }
 
     store?.setTotal(newNumOfPeople);
-    router.push("/new-promotion/waiting");
+    router.push("/new-promotion/waitings");
   };
 
   useEffect(() => {
