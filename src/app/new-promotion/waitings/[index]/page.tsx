@@ -2,43 +2,40 @@
 
 import { CTAButton } from "@/app/components/cta-button";
 import { Header } from "@/app/components/header";
-import { ArrowLeftIcon, PlusIcon } from "lucide-react";
+import { ArrowLeftIcon } from "lucide-react";
 
-import { text } from "@/utils/styles/patterns";
-import { cx } from "@/utils/styles/cx";
-import { Card } from "@/components/ui/card";
-import { EditWaitingItem } from "@/app/components/edit-waiting-item";
-import type { Waiting } from "@/types/waiting";
-import { useState } from "react";
+import { ChangeEventHandler, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useBoundStore, useStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
 import { pick } from "@/utils/object";
-import { isNil } from "@/utils/type-guard";
 import { Button } from "@/components/ui/button";
+import { text } from "@/utils/styles/patterns";
+import { cx } from "@/utils/styles/cx";
+import { Input } from "@/components/ui/input";
+import { formatDate } from "@/utils/date-time";
 
-export default function NewPromotionWaitingPage() {
+export default function NewPromotionWaitingChangePage({
+  params,
+}: {
+  params: {
+    index: string;
+  };
+}) {
+  const index = parseInt(params.index, 10);
   const router = useRouter();
   const store = useStore(
     useBoundStore,
-    useShallow((state) => pick(state, ["promotion", "addEmptyWaiting"]))
+    useShallow((state) =>
+      pick(state, ["promotion", "setWaiting", "deleteWaiting"])
+    )
   );
-
-  const [waitingList] = useState<Waiting[]>([]);
-
-  const handleAddWaiting = () => {
-    /**
-     * TODO: waiting 추가
-     */
-    if (isNil(store)) {
-      return;
-    }
-
-    store.addEmptyWaiting();
-
-    const totalWaitings = store.promotion.waitings.length;
-    router.push(`/new-promotion/waitings/${totalWaitings}`);
-  };
+  const [numOfPeopleStr, setNumOfPeopleStr] = useState<string>("0");
+  const [startDateStr, setStartDateStr] = useState<string>(
+    formatDate(new Date(), "yyyy-MM-dd")
+  );
+  const [startTimeStr, setStartTimeStr] =
+    useState<`${number}${number}:${number}${number}`>("00:00");
 
   const handleGoBack = () => {
     router.replace("/new-promotion/num-of-people");
@@ -48,8 +45,45 @@ export default function NewPromotionWaitingPage() {
     /**
      * TODO: 웨이팅 삭제 안내
      */
+    store?.deleteWaiting(index);
+    router.push("/new-promotion/waitings");
   };
 
+  const handleChangeStartDateStr: ChangeEventHandler<HTMLInputElement> = (
+    e
+  ) => {
+    const value = e.currentTarget.value;
+
+    setStartDateStr(value);
+  };
+
+  const handleChangeStartTimeStr: ChangeEventHandler<HTMLInputElement> = (
+    e
+  ) => {
+    const value = e.currentTarget.value;
+
+    setStartTimeStr(value as `${number}${number}:${number}${number}`);
+  };
+
+  const handleChangeNumOfPeople: ChangeEventHandler<HTMLInputElement> = (e) => {
+    const value = e.currentTarget.value;
+
+    setNumOfPeopleStr(value);
+  };
+
+  const handleClickSubmit = () => {
+    console.log(index, startDateStr, startTimeStr, numOfPeopleStr);
+    store?.setWaiting(index, {
+      time: new Date(startDateStr + " " + startTimeStr),
+      participants: {
+        current: 0,
+        total: parseInt(numOfPeopleStr, 10) ?? 0,
+      },
+      status: "planned",
+    });
+    console.log(store);
+    router.push("/new-promotion/waitings");
+  };
   return (
     <main className="flex flex-col items-stretch">
       <Header
@@ -64,8 +98,39 @@ export default function NewPromotionWaitingPage() {
           </Button>
         }
       ></Header>
-      <section className="flex flex-col"></section>
-      <CTAButton>웨이팅 수정하기</CTAButton>
+      <form className="flex flex-col gap-4 mt-8">
+        <div className="">
+          <label className={cx(text.title2({ weight: "bold" }), "block mb-2")}>
+            날짜
+          </label>
+          <Input
+            type="date"
+            value={startDateStr}
+            onChange={handleChangeStartDateStr}
+          />
+        </div>
+        <div className="">
+          <label className={cx(text.title2({ weight: "bold" }), "block mb-2")}>
+            시작 시간
+          </label>
+          <Input
+            type="time"
+            value={startTimeStr}
+            onChange={handleChangeStartTimeStr}
+          />
+        </div>
+        <div className="">
+          <label className={cx(text.title2({ weight: "bold" }), "block mb-2")}>
+            인원 수
+          </label>
+          <Input
+            type="number"
+            value={numOfPeopleStr}
+            onChange={handleChangeNumOfPeople}
+          />
+        </div>
+      </form>
+      <CTAButton onClick={handleClickSubmit}>웨이팅 수정하기</CTAButton>
     </main>
   );
 }

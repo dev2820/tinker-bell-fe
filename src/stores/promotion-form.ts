@@ -9,6 +9,7 @@ export type PromotionFormSlice = {
   setTotal: (title: Promotion["participants"]["total"]) => void;
   addEmptyWaiting: () => void;
   setWaiting: (index: number, newWaiting: Waiting) => void;
+  deleteWaiting: (index: number) => void;
 };
 
 const createPromotionFormSlice: StateCreator<PromotionFormSlice> = (set) => ({
@@ -37,6 +38,13 @@ const createPromotionFormSlice: StateCreator<PromotionFormSlice> = (set) => ({
         waitings: state.promotion.waitings.map((w, i) =>
           i === index ? waiting : w
         ),
+      },
+    })),
+  deleteWaiting: (index: number) =>
+    set((state) => ({
+      promotion: {
+        ...state.promotion,
+        waitings: state.promotion.waitings.filter((_, i) => i !== index),
       },
     })),
 });

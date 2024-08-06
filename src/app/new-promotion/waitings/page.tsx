@@ -9,7 +9,7 @@ import { cx } from "@/utils/styles/cx";
 import { Card } from "@/components/ui/card";
 import { EditWaitingItem } from "@/app/components/edit-waiting-item";
 import type { Waiting } from "@/types/waiting";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useBoundStore, useStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
@@ -22,8 +22,9 @@ export default function NewPromotionWaitingsPage() {
     useBoundStore,
     useShallow((state) => pick(state, ["promotion", "addEmptyWaiting"]))
   );
-
-  const [waitingList] = useState<Waiting[]>([]);
+  const waitings = useMemo(() => {
+    return store?.promotion.waitings ?? [];
+  }, [store?.promotion]);
 
   const handleAddWaiting = () => {
     /**
@@ -33,15 +34,15 @@ export default function NewPromotionWaitingsPage() {
       return;
     }
 
-    store.addEmptyWaiting();
-
     const totalWaitings = store.promotion.waitings.length;
     router.push(`/new-promotion/waitings/${totalWaitings}`);
+    store.addEmptyWaiting();
   };
 
   const handleGoBack = () => {
     router.replace("/new-promotion/num-of-people");
   };
+  console.log(store?.promotion.waitings);
 
   return (
     <main className="flex flex-col items-stretch">
@@ -69,7 +70,7 @@ export default function NewPromotionWaitingsPage() {
             <PlusIcon size={16} />
             <span>새로운 행사 추가하기</span>
           </button>
-          {waitingList.map((w) => (
+          {waitings.map((w) => (
             <EditWaitingItem waiting={w} key={w.time.toString()} />
           ))}
         </Card>

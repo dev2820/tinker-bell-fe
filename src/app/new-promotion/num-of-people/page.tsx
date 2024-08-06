@@ -15,7 +15,7 @@ import { useBoundStore, useStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
 import { pick } from "@/utils/object";
 import { ChangeEventHandler, useEffect, useState } from "react";
-import { isZero } from "@/utils/type-guard";
+import { isEmptyStr, isNil, isZero } from "@/utils/type-guard";
 
 export default function NewPromotionNumOfPeoplePage() {
   const router = useRouter();
@@ -24,13 +24,17 @@ export default function NewPromotionNumOfPeoplePage() {
     useShallow((state) => pick(state, ["promotion", "setTotal"]))
   );
 
-  const [newNumOfPeople, setNewNumOfPeople] = useState<number>(
-    store?.promotion.participants.total ?? 0
+  const [newNumOfPeople, setNewNumOfPeople] = useState<string>(
+    String(store?.promotion.participants.total ?? 0)
   );
 
   const handleChangeNumOfPeople: ChangeEventHandler<HTMLInputElement> = (e) => {
     const value = e.currentTarget.value;
-    setNewNumOfPeople(Number(value));
+    if (isEmptyStr(value)) {
+      setNewNumOfPeople("");
+      return;
+    }
+    setNewNumOfPeople(value);
   };
 
   const handleClickNextStep = () => {
@@ -39,20 +43,20 @@ export default function NewPromotionNumOfPeoplePage() {
      * 입력된 이름이 없다면 넘기지 않는다. (에러 처리가 필요할 듯 함)
      * set을 완료했다면 다음 페이지로 넘겨준다.
      */
-    if (isZero(newNumOfPeople)) {
+    if (isEmptyStr(newNumOfPeople)) {
       /**
        * TODO: Empty Input Handling
        */
       return;
     }
 
-    store?.setTotal(newNumOfPeople);
+    store?.setTotal(parseInt(newNumOfPeople, 10));
     router.push("/new-promotion/waitings");
   };
 
   useEffect(() => {
     if (store) {
-      setNewNumOfPeople(store.promotion.participants.total);
+      setNewNumOfPeople(String(store.promotion.participants.total));
     }
   }, [store]);
 

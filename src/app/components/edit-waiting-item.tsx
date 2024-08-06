@@ -6,6 +6,7 @@ import { ChevronRightIcon } from "lucide-react";
 import { formatDate, ko } from "@/utils/date-time";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { text } from "@/utils/styles/patterns";
 
 export type WaitingItemProp = ComponentProps<"div"> & {
   waiting: Waiting;
@@ -37,10 +38,14 @@ const EditWaitingItem = forwardRef<HTMLDivElement, WaitingItemProp>(function (
         </p>
       </div>
       {waiting.status === "done" && (
-        <Button variant="default">이미 완료된 행사</Button>
+        <Button variant="default" className={text.body({ weight: "medium" })}>
+          이미 완료된 행사
+        </Button>
       )}
       {waiting.status === "planned" && (
-        <Button variant="outline">행사 수정하기</Button>
+        <Button variant="default" className={text.body({ weight: "medium" })}>
+          행사 수정하기
+        </Button>
       )}
     </div>
   );
