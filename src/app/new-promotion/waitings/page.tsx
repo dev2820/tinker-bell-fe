@@ -44,6 +44,10 @@ export default function NewPromotionWaitingsPage() {
     router.push(`/new-promotion/waitings/${idx}`);
   };
 
+  const handleClickCTAButton = () => {
+    router.push(`/new-promotion/confirm-before-purchase`);
+  };
+
   return (
     <main className="flex flex-col items-stretch">
       <Header
@@ -73,13 +77,15 @@ export default function NewPromotionWaitingsPage() {
           {waitings.map((w, i) => (
             <EditWaitingItem
               waiting={w}
-              key={w.time.toString()}
+              key={i}
               onClickUpdate={() => handleClickUpdate(i)}
             />
           ))}
         </Card>
       </section>
-      <CTAButton>웨이팅 정보 입력 완료</CTAButton>
+      <CTAButton onClick={handleClickCTAButton}>
+        웨이팅 정보 입력 완료
+      </CTAButton>
     </main>
   );
 }
