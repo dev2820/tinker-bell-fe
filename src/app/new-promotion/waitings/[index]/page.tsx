@@ -72,7 +72,6 @@ export default function NewPromotionWaitingChangePage({
   };
 
   const handleClickSubmit = () => {
-    console.log(index, startDateStr, startTimeStr, numOfPeopleStr);
     store?.setWaiting(index, {
       time: new Date(startDateStr + " " + startTimeStr),
       participants: {
@@ -81,7 +80,6 @@ export default function NewPromotionWaitingChangePage({
       },
       status: "planned",
     });
-    console.log(store);
     router.push("/new-promotion/waitings");
   };
   return (

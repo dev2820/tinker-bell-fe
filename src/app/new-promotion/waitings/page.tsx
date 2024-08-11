@@ -42,7 +42,6 @@ export default function NewPromotionWaitingsPage() {
   const handleGoBack = () => {
     router.replace("/new-promotion/num-of-people");
   };
-  console.log(store?.promotion.waitings);
 
   return (
     <main className="flex flex-col items-stretch">
