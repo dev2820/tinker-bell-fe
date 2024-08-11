@@ -27,9 +27,6 @@ export default function NewPromotionWaitingsPage() {
   }, [store?.promotion]);
 
   const handleAddWaiting = () => {
-    /**
-     * TODO: waiting 추가
-     */
     if (isNil(store)) {
       return;
     }
