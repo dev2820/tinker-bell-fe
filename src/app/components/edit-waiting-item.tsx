@@ -10,10 +10,11 @@ import { text } from "@/utils/styles/patterns";
 
 export type WaitingItemProp = ComponentProps<"div"> & {
   waiting: Waiting;
+  onClickUpdate?: () => void;
 };
 
 const EditWaitingItem = forwardRef<HTMLDivElement, WaitingItemProp>(function (
-  { waiting, className, ...props },
+  { waiting, onClickUpdate, className, ...props },
   ref
 ) {
   const title = formatDate(waiting.time, "yyyy.MM.dd (E)", { locale: ko });
@@ -43,7 +44,11 @@ const EditWaitingItem = forwardRef<HTMLDivElement, WaitingItemProp>(function (
         </Button>
       )}
       {waiting.status === "planned" && (
-        <Button variant="default" className={text.body({ weight: "medium" })}>
+        <Button
+          variant="default"
+          className={text.body({ weight: "medium" })}
+          onClick={onClickUpdate}
+        >
           행사 수정하기
         </Button>
       )}

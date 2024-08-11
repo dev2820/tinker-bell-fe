@@ -4,7 +4,7 @@ import { CTAButton } from "@/app/components/cta-button";
 import { Header } from "@/app/components/header";
 import { ArrowLeftIcon } from "lucide-react";
 
-import { ChangeEventHandler, useState } from "react";
+import { ChangeEventHandler, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useBoundStore, useStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
@@ -30,15 +30,26 @@ export default function NewPromotionWaitingChangePage({
       pick(state, ["promotion", "setWaiting", "deleteWaiting"])
     )
   );
+
   const [numOfPeopleStr, setNumOfPeopleStr] = useState<string>("0");
   const [startDateStr, setStartDateStr] = useState<string>(
     formatDate(new Date(), "yyyy-MM-dd")
   );
-  const [startTimeStr, setStartTimeStr] =
-    useState<`${number}${number}:${number}${number}`>("00:00");
+  const [startTimeStr, setStartTimeStr] = useState<string>(
+    formatDate(new Date(), "HH:mm")
+  );
+
+  useEffect(() => {
+    if (store && store.promotion.waitings[index]) {
+      const waiting = store.promotion.waitings[index];
+      setNumOfPeopleStr(String(waiting.participants.total));
+      setStartDateStr(formatDate(waiting.time, "yyyy-MM-dd"));
+      setStartTimeStr(formatDate(waiting.time, "HH:mm"));
+    }
+  }, [index, store]);
 
   const handleGoBack = () => {
-    router.replace("/new-promotion/num-of-people");
+    router.replace("/new-promotion/waitings");
   };
 
   const handleClickDeleteWaiting = () => {
@@ -82,6 +93,7 @@ export default function NewPromotionWaitingChangePage({
     });
     router.push("/new-promotion/waitings");
   };
+
   return (
     <main className="flex flex-col items-stretch">
       <Header

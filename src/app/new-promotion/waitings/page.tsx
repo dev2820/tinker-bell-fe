@@ -43,6 +43,10 @@ export default function NewPromotionWaitingsPage() {
     router.replace("/new-promotion/num-of-people");
   };
 
+  const handleClickUpdate = (idx: number) => {
+    router.push(`/new-promotion/waitings/${idx}`);
+  };
+
   return (
     <main className="flex flex-col items-stretch">
       <Header
@@ -69,8 +73,12 @@ export default function NewPromotionWaitingsPage() {
             <PlusIcon size={16} />
             <span>새로운 행사 추가하기</span>
           </button>
-          {waitings.map((w) => (
-            <EditWaitingItem waiting={w} key={w.time.toString()} />
+          {waitings.map((w, i) => (
+            <EditWaitingItem
+              waiting={w}
+              key={w.time.toString()}
+              onClickUpdate={() => handleClickUpdate(i)}
+            />
           ))}
         </Card>
       </section>

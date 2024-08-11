@@ -66,7 +66,7 @@ const createDefaultPromotion = (): Promotion => ({
 });
 
 const createDefaultWaiting = (): Waiting => ({
-  time: new Date(0),
+  time: new Date(),
   participants: {
     current: 0,
     total: 0,
