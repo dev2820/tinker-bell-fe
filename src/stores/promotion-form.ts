@@ -35,9 +35,9 @@ const createPromotionFormSlice: StateCreator<PromotionFormSlice> = (set) => ({
     set((state) => ({
       promotion: {
         ...state.promotion,
-        waitings: state.promotion.waitings.map((w, i) =>
-          i === index ? waiting : w
-        ),
+        waitings: state.promotion.waitings
+          .map((w, i) => (i === index ? waiting : w))
+          .toSorted((a, b) => (a.time.getTime() > b.time.getTime() ? 1 : -1)),
       },
     })),
   deleteWaiting: (index: number) =>
