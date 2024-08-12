@@ -59,7 +59,7 @@ export default function NewPromotionNamePage() {
   }, [store]);
 
   const handleGoBack = () => {
-    router.back();
+    router.replace("/");
   };
 
   return (
