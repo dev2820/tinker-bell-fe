@@ -53,9 +53,6 @@ export default function NewPromotionWaitingChangePage({
   };
 
   const handleClickDeleteWaiting = () => {
-    /**
-     * TODO: 웨이팅 삭제 안내
-     */
     store?.deleteWaiting(index);
     router.push("/new-promotion/waitings");
   };
