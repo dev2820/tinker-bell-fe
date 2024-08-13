@@ -8,8 +8,7 @@ import { text } from "@/utils/styles/patterns";
 import { cx } from "@/utils/styles/cx";
 import { Card } from "@/components/ui/card";
 import { EditWaitingItem } from "@/app/components/edit-waiting-item";
-import type { Waiting } from "@/types/waiting";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useBoundStore, useStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
@@ -20,7 +19,7 @@ export default function NewPromotionWaitingsPage() {
   const router = useRouter();
   const store = useStore(
     useBoundStore,
-    useShallow((state) => pick(state, ["promotion", "addEmptyWaiting"]))
+    useShallow((state) => pick(state, ["promotion"]))
   );
   const waitings = useMemo(() => {
     return store?.promotion.waitings ?? [];
@@ -31,9 +30,7 @@ export default function NewPromotionWaitingsPage() {
       return;
     }
 
-    const totalWaitings = store.promotion.waitings.length;
-    router.push(`/new-promotion/waitings/${totalWaitings}`);
-    store.addEmptyWaiting();
+    router.push(`/new-promotion/waitings/create`);
   };
 
   const handleGoBack = () => {

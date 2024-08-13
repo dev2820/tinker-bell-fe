@@ -7,7 +7,7 @@ export type PromotionFormSlice = {
   resetForm: () => void;
   setTitle: (title: Promotion["title"]) => void;
   setTotal: (title: Promotion["participants"]["total"]) => void;
-  addEmptyWaiting: () => void;
+  addWaiting: (waiting: Partial<Waiting>) => void;
   setWaiting: (index: number, newWaiting: Waiting) => void;
   deleteWaiting: (index: number) => void;
 };
@@ -24,11 +24,14 @@ const createPromotionFormSlice: StateCreator<PromotionFormSlice> = (set) => ({
         participants: { ...state.promotion.participants, total: total },
       },
     })),
-  addEmptyWaiting: () =>
+  addWaiting: (waiting) =>
     set((state) => ({
       promotion: {
         ...state.promotion,
-        waitings: [...state.promotion.waitings, createDefaultWaiting()],
+        waitings: [
+          ...state.promotion.waitings,
+          { ...createDefaultWaiting(), ...waiting },
+        ].toSorted((a, b) => (a.time.getTime() > b.time.getTime() ? 1 : -1)),
       },
     })),
   setWaiting: (index: number, waiting: Waiting) =>
