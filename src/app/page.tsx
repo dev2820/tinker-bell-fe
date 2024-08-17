@@ -1,4 +1,5 @@
 "use client";
+
 import Image from "next/image";
 import { SettingsIcon } from "lucide-react";
 import logo from "../../public/assets/images/logo.svg";
@@ -10,19 +11,37 @@ import Link from "next/link";
 import promotionData from "@/__mocks__/promotion";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { api } from "@/utils/api";
 
-export default function Home() {
+/**
+ * login되어 있지 않다면 로그인 페이지로 튕겨야한다.
+ * accessToken과 refreshToken은 cookie에서 가져온다.
+ */
+
+export default function HomePage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const accessToken = searchParams.get("accessToken");
   const refreshToken = searchParams.get("refreshToken");
 
-  console.log(accessToken);
-  console.log(refreshToken);
-
-  if (accessToken && refreshToken) {
-    router.push("/");
+  if (!accessToken) {
+    router.push("/login");
   }
+
+  useEffect(() => {
+    (async () => {
+      const events = await api
+        .get("/events", {
+          headers: {
+            Authorization: `bearer ${accessToken}`,
+          },
+        })
+        .json();
+
+      console.log(events);
+    })();
+  }, []);
 
   const inProgressPromotions = promotionData.slice(0, 3);
   const readyPromotions = promotionData.slice(3);

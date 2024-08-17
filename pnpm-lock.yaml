@@ -17,6 +17,9 @@ dependencies:
   date-fns:
     specifier: ^3.6.0
     version: 3.6.0
+  ky:
+    specifier: ^1.6.0
+    version: 1.6.0
   lucide-react:
     specifier: ^0.400.0
     version: 0.400.0(react@18.3.1)
@@ -1858,6 +1861,11 @@ packages:
     dependencies:
       json-buffer: 3.0.1
     dev: true
+
+  /ky@1.6.0:
+    resolution: {integrity: sha512-MG7hlH26oShC4Lysk5TYzXshHLfEY52IJ0ofOeCsifquqTymbXCSTx+g4rXO30XYxoM6Y1ed5pNnpULe9Rx19A==}
+    engines: {node: '>=18'}
+    dev: false
 
   /language-subtag-registry@0.3.23:
     resolution: {integrity: sha512-0K65Lea881pHotoGEa5gDlMxt3pctLi2RplBb7Ezh4rRdLEOtgi7n4EwK9lamnUCkKBqaeKRVebTq6BAxSkpXQ==}
