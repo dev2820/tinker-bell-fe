@@ -32,7 +32,7 @@ export default function HomePage() {
   useEffect(() => {
     (async () => {
       const events = await api
-        .get("/events", {
+        .get("events", {
           headers: {
             Authorization: `bearer ${accessToken}`,
           },
