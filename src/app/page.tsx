@@ -22,26 +22,26 @@ import { api } from "@/utils/api";
 export default function HomePage() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const accessToken = searchParams.get("accessToken");
-  const refreshToken = searchParams.get("refreshToken");
-
-  if (!accessToken) {
-    router.push("/login");
-  }
-
-  useEffect(() => {
-    (async () => {
-      const events = await api
-        .get("events", {
-          headers: {
-            Authorization: `bearer ${accessToken}`,
-          },
-        })
-        .json();
-
-      console.log(events);
-    })();
-  }, []);
+  // const accessToken = searchParams.get("accessToken");
+  // const refreshToken = searchParams.get("refreshToken");
+  //
+  // if (!accessToken) {
+  //   router.push("/login");
+  // }
+  //
+  // useEffect(() => {
+  //   (async () => {
+  //     const events = await api
+  //       .get("events", {
+  //         headers: {
+  //           Authorization: `bearer ${accessToken}`,
+  //         },
+  //       })
+  //       .json();
+  //
+  //     console.log(events);
+  //   })();
+  // }, []);
 
   const inProgressPromotions = promotionData.slice(0, 3);
   const readyPromotions = promotionData.slice(3);
