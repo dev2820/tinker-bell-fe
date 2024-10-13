@@ -1,10 +1,32 @@
 import type { MetaFunction } from "@remix-run/node";
+import { LoaderFunction, redirect } from "@remix-run/node";
 
 export const meta: MetaFunction = () => {
   return [
     { title: "New Remix App" },
     { name: "description", content: "Welcome to Remix!" },
   ];
+};
+
+export const loader: LoaderFunction = async ({ request }) => {
+  const rawCookie = request.headers.get("Cookie") ?? "";
+  const cookie = new Map<string, string>(
+    rawCookie
+      .split("; ")
+      .map(
+        (cookieStr): Readonly<[string, string]> =>
+          [...cookieStr.split("=", 2), ""].slice(0, 2) as [string, string]
+      )
+  );
+
+  // 쿠키에 인증 정보가 없으면 로그인 페이지로 리다이렉트
+  const isLogined = cookie.has("accessToken");
+  if (!isLogined) {
+    return redirect("/login");
+  }
+
+  // 인증된 사용자는 해당 페이지로 계속 이동
+  return null;
 };
 
 export default function Index() {
