@@ -1,7 +1,5 @@
 import { Todo } from "@/types/todo";
 import { useMemo, useState } from "react";
-import * as todoAPI from "@/utils/api/todo";
-import { isFailed } from "@/utils/is";
 
 export const useTodo = (defaultTodos: Todo[] = []) => {
   const [todos, setTodos] = useState<Todo[]>(defaultTodos);
