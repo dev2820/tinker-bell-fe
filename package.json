@@ -1,5 +1,5 @@
 {
-  "name": "",
+  "name": "tinker-bell-fe",
   "private": true,
   "sideEffects": false,
   "type": "module",
@@ -11,15 +11,29 @@
     "typecheck": "tsc"
   },
   "dependencies": {
+    "@ark-ui/react": "^4.1.1",
+    "@radix-ui/react-dialog": "^1.1.2",
+    "@radix-ui/react-slot": "^1.1.0",
     "@remix-run/node": "^2.13.1",
     "@remix-run/react": "^2.13.1",
     "@remix-run/serve": "^2.13.1",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.1",
     "isbot": "^4.1.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "js-cookie": "^3.0.5",
+    "ky": "^1.7.2",
+    "lucide-react": "^0.452.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "remix-utils": "^7.7.0",
+    "tailwind-merge": "^2.5.3",
+    "tailwind-variants": "^0.2.1",
+    "tailwindcss-animate": "^1.0.7",
+    "terra-design-system": "1.0.36"
   },
   "devDependencies": {
     "@remix-run/dev": "^2.13.1",
+    "@types/js-cookie": "^3.0.6",
     "@types/react": "^18.2.20",
     "@types/react-dom": "^18.2.7",
     "@typescript-eslint/eslint-plugin": "^6.7.4",
