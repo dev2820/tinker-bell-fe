@@ -93,7 +93,7 @@ export default function Index() {
     toggleTodoCompleteById(todoId);
     todoAPI.updateTodoComplete({
       id: todoId,
-      isCompleted: !isCompleted,
+      isCompleted: isCompleted,
     });
     // update server too
   };
@@ -108,7 +108,7 @@ export default function Index() {
     toggleTodoCompleteById(currentTodoId);
     todoAPI.updateTodoComplete({
       id: currentTodoId,
-      isCompleted: !isCompleted,
+      isCompleted: isCompleted,
     });
   };
   const handleClickTodoItem = (e: MouseEvent<HTMLButtonElement>) => {
