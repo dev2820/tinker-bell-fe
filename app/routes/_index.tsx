@@ -242,8 +242,8 @@ export default function Index() {
         >
           <Drawer.Header>
             {currentTodo && (
-              <Drawer.Title>
-                <div className="flex flex-row gap-2 place-items-center">
+              <Drawer.Title className="w-full">
+                <div className="flex flex-row place-items-center h-8">
                   <TodoCheckbox
                     onChange={handleToggleCurrentTodoComplete}
                     data-todo-id={currentTodo.id}
@@ -254,13 +254,14 @@ export default function Index() {
                   <TodoTitleInput
                     value={currentTodo.title}
                     onChange={handleUpdateTitle}
-                    className="flex-1"
+                    className="w-full h-8 min-w-0"
                     placeholder="할 일을 입력해주세요"
                   />
                   <IconButton
                     size="md"
                     variant="ghost"
                     onClick={handleClickDeleteCurrentTodo}
+                    className="flex-none "
                   >
                     <Trash2Icon size={24} />
                   </IconButton>
