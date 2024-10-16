@@ -161,7 +161,7 @@ export default function Index() {
   return (
     <main className="flex flex-col w-full h-screen items-stretch">
       <h2>Todo</h2>
-      <ul className="flex-1 overflow-y-scroll p-4">
+      <ul className="overflow-y-scroll p-4">
         {incompletedTodos.map((todo) => (
           <li key={todo.id} className="mb-4">
             <div className="gap-2 flex flex-row h-12 shadow-md bg-white rounded-md px-4">
@@ -174,6 +174,26 @@ export default function Index() {
               />
               <button
                 className="flex-1 h-full text-left"
+                data-todo-id={todo.id}
+                onClick={handleClickTodoItem}
+              >
+                {todo.title}
+              </button>
+            </div>
+          </li>
+        ))}
+        {completedTodos.map((todo) => (
+          <li key={todo.id} className="mb-4">
+            <div className="gap-2 flex flex-row h-12 shadow-md bg-white rounded-md px-4">
+              <TodoCheckbox
+                data-todo-id={todo.id}
+                checked={todo.isCompleted}
+                onChange={handleChangeTodoComplete}
+                className="flex-none"
+                size="md"
+              />
+              <button
+                className="flex-1 h-full text-left line-through text-gray-400"
                 data-todo-id={todo.id}
                 onClick={handleClickTodoItem}
               >
@@ -206,28 +226,6 @@ export default function Index() {
             </Drawer.Content>
           </Drawer.Root>
         </li>
-      </ul>
-      <ul className="flex-1 overflow-y-scroll p-4">
-        {completedTodos.map((todo) => (
-          <li key={todo.id} className="mb-4">
-            <div className="gap-2 flex flex-row h-12 shadow-md bg-white rounded-md px-4">
-              <TodoCheckbox
-                data-todo-id={todo.id}
-                checked={todo.isCompleted}
-                onChange={handleChangeTodoComplete}
-                className="flex-none"
-                size="md"
-              />
-              <button
-                className="flex-1 h-full text-left"
-                data-todo-id={todo.id}
-                onClick={handleClickTodoItem}
-              >
-                {todo.title}
-              </button>
-            </div>
-          </li>
-        ))}
       </ul>
       <Drawer.Root
         variant="bottom"
