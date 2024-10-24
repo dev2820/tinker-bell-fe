@@ -145,6 +145,7 @@ export default function Index() {
     }
 
     setTodos([...req.value]);
+    setTitle("");
   };
 
   const handleExitDrawer = () => {
