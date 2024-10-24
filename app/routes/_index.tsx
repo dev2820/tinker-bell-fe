@@ -161,7 +161,6 @@ export default function Index() {
   };
   return (
     <main className="flex flex-col w-full h-screen items-stretch">
-      <h2>Todo</h2>
       <ul className="overflow-y-scroll p-4">
         {incompletedTodos.map((todo) => (
           <li key={todo.id} className="mb-4">
