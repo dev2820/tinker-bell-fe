@@ -9,7 +9,7 @@ export function TodoTitleInput(props: TodoTitleInputProps) {
   return (
     <input
       type="text"
-      className={cx("focus:outline-none", className)}
+      className={cx("focus:outline-none bg-white text-black", className)}
       {...rest}
     />
   );
