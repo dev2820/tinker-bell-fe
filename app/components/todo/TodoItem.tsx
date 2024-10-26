@@ -15,7 +15,7 @@ export function TodoItem(props: TodoItemProps) {
   return (
     <div
       className={cx(
-        "gap-2 flex flex-row h-12 shadow-md bg-white rounded-md px-4 place-items-center",
+        "gap-2 flex flex-row h-12 border border-gray-200 bg-white rounded-md px-4 place-items-center",
         className
       )}
       {...rest}
@@ -37,7 +37,7 @@ export function TodoItem(props: TodoItemProps) {
       </label>
       <button
         className={cx(
-          "flex-1 h-full text-left",
+          "flex-1 h-full text-left text-ellipsis overflow-hidden",
           todo.isCompleted ? "line-through text-disabled" : ""
         )}
         data-todo-id={todo.id}

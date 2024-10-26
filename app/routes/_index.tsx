@@ -9,13 +9,11 @@ import { json, useLoaderData } from "@remix-run/react";
 import { Trash2Icon } from "lucide-react";
 import { useState, MouseEvent, useMemo, ChangeEvent, useCallback } from "react";
 import * as todoAPI from "@/utils/api/todo";
-import { DndProvider } from "react-dnd";
-import { TouchBackend } from "react-dnd-touch-backend";
-import { Motion, spring } from "react-motion";
 import { TodoDraggableItem } from "@/components/todo/TodoDraggableItem";
 import { Drawer, Button, IconButton } from "terra-design-system/react";
 import { isFailed } from "@/utils/is";
 import { TodoItem } from "@/components/todo/TodoItem";
+import { Reorder } from "framer-motion";
 
 export const meta: MetaFunction = () => {
   return [
@@ -83,6 +81,7 @@ export default function Index() {
     toggleTodoCompleteById,
     addIncompletedTodo,
     deleteTodoById,
+    setIncompletedTodos,
     moveIncompletedTodo,
   } = useTodo(defaultTodos);
   const [currentTodoId, setCurrentTodoId] = useState<number>(-1);
@@ -174,34 +173,26 @@ export default function Index() {
 
   return (
     <main className="flex flex-col w-full h-screen items-stretch">
-      <DndProvider backend={TouchBackend} options={{ enableMouseEvents: true }}>
-        <div className="relative overflow-y-scroll p-4 flex-1">
-          {incompletedTodos.map((todo, index) => (
-            <Motion
-              key={todo.id}
-              style={{
-                y: spring(index * 60, { stiffness: 130, damping: 18 }),
-                opacity: spring(todo.isCompleted ? 0 : 1),
-              }}
-            >
-              {({ y, opacity }) => (
-                <TodoDraggableItem
-                  todo={todo}
-                  index={index}
-                  className="absolute w-[calc(100%_-_2rem)]"
-                  onChangeComplete={handleChangeTodoComplete}
-                  onClickTodo={handleClickTodoItem}
-                  onMoveItem={handleMoveIncompletedTodoItem}
-                  style={{
-                    transform: `translate3d(0, ${y}px, 0)`,
-                    opacity: opacity,
-                  }}
-                />
-              )}
-            </Motion>
-          ))}
-        </div>
-      </DndProvider>
+      <Reorder.Group
+        axis="y"
+        as="ul"
+        values={incompletedTodos}
+        onReorder={setIncompletedTodos}
+        layoutScroll
+        className="p-4 flex-1 overflow-y-scroll overflow-x-visible"
+      >
+        {incompletedTodos.map((todo, index) => (
+          <TodoDraggableItem
+            key={todo.id}
+            todo={todo}
+            index={index}
+            onChangeComplete={handleChangeTodoComplete}
+            onClickTodo={handleClickTodoItem}
+            onMoveItem={handleMoveIncompletedTodoItem}
+          />
+        ))}
+      </Reorder.Group>
+      <hr className="my-2 border-0" />
       <Drawer.Root variant="bottom">
         <div className="px-4 mb-4 flex-none">
           <Drawer.Trigger asChild>

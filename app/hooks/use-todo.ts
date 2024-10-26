@@ -126,5 +126,6 @@ export const useTodo = (defaultTodos: Todo[] = []) => {
     moveIncompletedTodo,
     moveCompletedTodo,
     addIncompletedTodo,
+    setIncompletedTodos,
   };
 };
