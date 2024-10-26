@@ -6,6 +6,7 @@ import Cookies from "js-cookie";
 type RawTodo = {
   id: number;
   title: string;
+  date: string;
   isCompleted: boolean;
 };
 
@@ -162,5 +163,6 @@ export async function updateTodoComplete(payload: UpdateTodoCompletePayload) {
 const toTodo = (rawTodo: RawTodo): Todo => {
   return {
     ...rawTodo,
+    date: new Date(rawTodo.date),
   };
 };
