@@ -46,6 +46,15 @@ export const useTodo = (defaultTodos: Todo[] = []) => {
     }
   };
 
+  const moveTodo = (fromIndex: number, toIndex: number) => {
+    setTodos((todos) => {
+      const target = todos[fromIndex];
+      return todos
+        .filter((todo) => todo.id !== target.id)
+        .toSpliced(toIndex, 0, target);
+    });
+  };
+
   // add todo, remove todo, update todo ...
   return {
     allTodos: todos,
@@ -54,6 +63,7 @@ export const useTodo = (defaultTodos: Todo[] = []) => {
     updateTodoById,
     toggleTodoCompleteById,
     deleteTodoById,
+    moveTodo,
     setTodos,
   };
 };

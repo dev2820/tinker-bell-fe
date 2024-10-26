@@ -7,8 +7,10 @@ import type { MetaFunction } from "@remix-run/node";
 import { LoaderFunction, redirect } from "@remix-run/node";
 import { json, useLoaderData } from "@remix-run/react";
 import { Trash2Icon } from "lucide-react";
-import { useState, MouseEvent, useMemo, ChangeEvent } from "react";
+import { useState, MouseEvent, useMemo, ChangeEvent, useCallback } from "react";
 import * as todoAPI from "@/utils/api/todo";
+import { DndProvider } from "react-dnd";
+import { TouchBackend } from "react-dnd-touch-backend";
 
 export const meta: MetaFunction = () => {
   return [
@@ -78,6 +80,7 @@ export default function Index() {
     updateTodoById,
     toggleTodoCompleteById,
     deleteTodoById,
+    moveTodo,
     setTodos,
   } = useTodo(defaultTodos);
   const [currentTodoId, setCurrentTodoId] = useState<number>(-1);
@@ -150,6 +153,13 @@ export default function Index() {
     setTitle("");
   };
 
+  const handleMoveTodoItem = useCallback(
+    (dragIndex: number, hoverIndex: number) => {
+      moveTodo(dragIndex, hoverIndex);
+    },
+    [moveTodo]
+  );
+
   const handleExitDrawer = () => {
     // server update
     const currentTodo = allTodos.find((todo) => todo.id === currentTodoId);
@@ -161,52 +171,60 @@ export default function Index() {
       ...currentTodo,
     });
   };
+
   return (
     <main className="flex flex-col w-full h-screen items-stretch">
-      <ul className="overflow-y-scroll p-4">
-        {incompletedTodos.map((todo) => (
-          <li key={todo.id} className="mb-4">
+      <DndProvider backend={TouchBackend} options={{ enableMouseEvents: true }}>
+        <div className="overflow-y-scroll p-4 flex-1">
+          {incompletedTodos.map((todo, index) => (
             <TodoItem
               todo={todo}
+              index={index}
+              key={todo.id}
+              className="mb-4"
               onChangeComplete={handleChangeTodoComplete}
               onClickTodo={handleClickTodoItem}
+              onMoveItem={handleMoveTodoItem}
             />
-          </li>
-        ))}
-        {completedTodos.map((todo) => (
-          <li key={todo.id} className="mb-4">
+          ))}
+          <hr className="my-4" />
+          {completedTodos.map((todo, index) => (
             <TodoItem
               todo={todo}
+              index={index}
+              className="mb-4"
+              key={todo.id}
               onChangeComplete={handleChangeTodoComplete}
               onClickTodo={handleClickTodoItem}
+              onMoveItem={handleMoveTodoItem}
             />
-          </li>
-        ))}
-        <li>
-          <Drawer.Root variant="bottom">
-            <Drawer.Trigger asChild>
-              <Button className="w-full" theme="primary" size="lg">
-                + 할 일 추가하기
-              </Button>
-            </Drawer.Trigger>
-            <Drawer.Content className="h-full min-h-96">
-              <Drawer.Body>
-                <div className="flex flex-row">
-                  <TodoTitleInput
-                    value={title}
-                    onChange={handleChangeTitle}
-                    className="flex-1"
-                    placeholder="할 일을 입력해주세요"
-                  />
-                  <Drawer.CloseTrigger asChild>
-                    <Button onClick={handleClickCreateTodo}>확인</Button>
-                  </Drawer.CloseTrigger>
-                </div>
-              </Drawer.Body>
-            </Drawer.Content>
-          </Drawer.Root>
-        </li>
-      </ul>
+          ))}
+        </div>
+      </DndProvider>
+      <Drawer.Root variant="bottom">
+        <div className="p-4 flex-none">
+          <Drawer.Trigger asChild>
+            <Button className="w-full" theme="primary" size="lg">
+              + 할 일 추가하기
+            </Button>
+          </Drawer.Trigger>
+        </div>
+        <Drawer.Content className="h-full min-h-96">
+          <Drawer.Body>
+            <div className="flex flex-row">
+              <TodoTitleInput
+                value={title}
+                onChange={handleChangeTitle}
+                className="flex-1"
+                placeholder="할 일을 입력해주세요"
+              />
+              <Drawer.CloseTrigger asChild>
+                <Button onClick={handleClickCreateTodo}>확인</Button>
+              </Drawer.CloseTrigger>
+            </div>
+          </Drawer.Body>
+        </Drawer.Content>
+      </Drawer.Root>
       <Drawer.Root
         variant="bottom"
         open={showTodoDetails}
