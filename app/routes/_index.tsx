@@ -64,6 +64,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 import { Drawer, Button, IconButton } from "terra-design-system/react";
 import { isFailed } from "@/utils/is";
+import { TodoItem } from "@/components/todo/TodoItem";
 export default function Index() {
   const { todos: defaultTodos } = useLoaderData<typeof loader>() as {
     todos: Todo[];
@@ -165,42 +166,20 @@ export default function Index() {
       <ul className="overflow-y-scroll p-4">
         {incompletedTodos.map((todo) => (
           <li key={todo.id} className="mb-4">
-            <div className="gap-2 flex flex-row h-12 shadow-md bg-white rounded-md px-4">
-              <TodoCheckbox
-                data-todo-id={todo.id}
-                checked={todo.isCompleted}
-                onChange={handleChangeTodoComplete}
-                className="flex-none"
-                size="md"
-              />
-              <button
-                className="flex-1 h-full text-left"
-                data-todo-id={todo.id}
-                onClick={handleClickTodoItem}
-              >
-                {todo.title}
-              </button>
-            </div>
+            <TodoItem
+              todo={todo}
+              onChangeComplete={handleChangeTodoComplete}
+              onClickTodo={handleClickTodoItem}
+            />
           </li>
         ))}
         {completedTodos.map((todo) => (
           <li key={todo.id} className="mb-4">
-            <div className="gap-2 flex flex-row h-12 shadow-md bg-white rounded-md px-4">
-              <TodoCheckbox
-                data-todo-id={todo.id}
-                checked={todo.isCompleted}
-                onChange={handleChangeTodoComplete}
-                className="flex-none"
-                size="md"
-              />
-              <button
-                className="flex-1 h-full text-left line-through text-gray-400"
-                data-todo-id={todo.id}
-                onClick={handleClickTodoItem}
-              >
-                {todo.title}
-              </button>
-            </div>
+            <TodoItem
+              todo={todo}
+              onChangeComplete={handleChangeTodoComplete}
+              onClickTodo={handleClickTodoItem}
+            />
           </li>
         ))}
         <li>
