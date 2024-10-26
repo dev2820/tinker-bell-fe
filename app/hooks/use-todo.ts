@@ -2,25 +2,36 @@ import { Todo } from "@/types/todo";
 import { useMemo, useState } from "react";
 
 export const useTodo = (defaultTodos: Todo[] = []) => {
-  const [todos, setTodos] = useState<Todo[]>(defaultTodos);
-  const completedTodos = useMemo(
-    () => todos.filter((todo) => todo.isCompleted),
-    [todos]
-  );
-  const incompletedTodos = useMemo(
-    () => todos.filter((todo) => !todo.isCompleted),
-    [todos]
-  );
+  const _completedTodos = defaultTodos.filter((todo) => todo.isCompleted);
+  const _incompletedTodos = defaultTodos.filter((todo) => !todo.isCompleted);
+
+  const [incompletedTodos, setIncompletedTodos] =
+    useState<Todo[]>(_incompletedTodos);
+  const [completedTodos, setCompletedTodos] = useState<Todo[]>(_completedTodos);
 
   const updateTodoById = (
     id: Todo["id"],
     payload: Partial<Omit<Todo, "id">>
   ) => {
-    const targetIndex = todos.findIndex((todo) => todo.id === id);
-    if (targetIndex > -1) {
-      setTodos(
-        todos.toSpliced(targetIndex, 1, {
-          ...todos[targetIndex],
+    const incompletedTargetIndex = incompletedTodos.findIndex(
+      (todo) => todo.id === id
+    );
+    if (incompletedTargetIndex >= 0) {
+      setIncompletedTodos((todos) =>
+        todos.toSpliced(incompletedTargetIndex, 1, {
+          ...todos[incompletedTargetIndex],
+          ...payload,
+        })
+      );
+      return;
+    }
+    const completedTargetIndex = completedTodos.findIndex(
+      (todo) => todo.id === id
+    );
+    if (completedTargetIndex > -1) {
+      setCompletedTodos((todos) =>
+        todos.toSpliced(completedTargetIndex, 1, {
+          ...todos[completedTargetIndex],
           ...payload,
         })
       );
@@ -28,26 +39,61 @@ export const useTodo = (defaultTodos: Todo[] = []) => {
   };
 
   const toggleTodoCompleteById = (id: Todo["id"]) => {
-    const targetIndex = todos.findIndex((todo) => todo.id === id);
-    if (targetIndex > -1) {
-      setTodos(
-        todos.toSpliced(targetIndex, 1, {
-          ...todos[targetIndex],
-          isCompleted: !todos[targetIndex].isCompleted,
+    const incompletedTargetIndex = incompletedTodos.findIndex(
+      (todo) => todo.id === id
+    );
+    if (incompletedTargetIndex > -1) {
+      const target = incompletedTodos[incompletedTargetIndex];
+      setIncompletedTodos((todos) =>
+        todos.toSpliced(incompletedTargetIndex, 1)
+      );
+      setCompletedTodos((todos) =>
+        todos.toSpliced(0, 0, {
+          ...target,
+          isCompleted: !target.isCompleted,
+        })
+      );
+      return;
+    }
+    const completedTargetIndex = completedTodos.findIndex(
+      (todo) => todo.id === id
+    );
+    if (completedTargetIndex > -1) {
+      const target = completedTodos[completedTargetIndex];
+      setCompletedTodos((todos) => todos.toSpliced(completedTargetIndex, 1));
+      setIncompletedTodos((todos) =>
+        todos.toSpliced(todos.length, 0, {
+          ...target,
+          isCompleted: !target.isCompleted,
         })
       );
     }
   };
 
   const deleteTodoById = (id: Todo["id"]) => {
-    const targetIndex = todos.findIndex((todo) => todo.id === id);
-    if (targetIndex > -1) {
-      setTodos(todos.toSpliced(targetIndex, 1));
+    const incompletedTargetIndex = incompletedTodos.findIndex(
+      (todo) => todo.id === id
+    );
+    if (incompletedTargetIndex >= 0) {
+      setIncompletedTodos((todos) =>
+        todos.toSpliced(incompletedTargetIndex, 1)
+      );
+      return;
+    }
+    const completedTargetIndex = completedTodos.findIndex(
+      (todo) => todo.id === id
+    );
+    if (completedTargetIndex > -1) {
+      setCompletedTodos((todos) => todos.toSpliced(completedTargetIndex, 1));
     }
   };
 
-  const moveTodo = (fromIndex: number, toIndex: number) => {
-    setTodos((todos) => {
+  const addIncompletedTodo = (newTodo: Todo) => {
+    setIncompletedTodos((todos) => [...todos, newTodo]);
+  };
+
+  const moveIncompletedTodo = (fromIndex: number, toIndex: number) => {
+    setIncompletedTodos((todos) => {
       const target = todos[fromIndex];
       return todos
         .filter((todo) => todo.id !== target.id)
@@ -55,15 +101,30 @@ export const useTodo = (defaultTodos: Todo[] = []) => {
     });
   };
 
+  const moveCompletedTodo = (fromIndex: number, toIndex: number) => {
+    setCompletedTodos((todos) => {
+      const target = todos[fromIndex];
+      return todos
+        .filter((todo) => todo.id !== target.id)
+        .toSpliced(toIndex, 0, target);
+    });
+  };
+
+  const allTodos = useMemo(
+    () => [...incompletedTodos, ...completedTodos],
+    [completedTodos, incompletedTodos]
+  );
+
   // add todo, remove todo, update todo ...
   return {
-    allTodos: todos,
+    allTodos,
     completedTodos,
     incompletedTodos,
     updateTodoById,
     toggleTodoCompleteById,
     deleteTodoById,
-    moveTodo,
-    setTodos,
+    moveIncompletedTodo,
+    moveCompletedTodo,
+    addIncompletedTodo,
   };
 };

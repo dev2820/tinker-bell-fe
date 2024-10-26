@@ -85,18 +85,20 @@ export async function deleteTodo(payload: DeleteTodoPayload) {
 type CreateTodoPayload = Omit<Todo, "id" | "isCompleted">;
 export async function createTodo(payload: CreateTodoPayload) {
   try {
-    await authAPI.post(`todos`, {
-      body: JSON.stringify(payload),
-      headers: {
-        Authorization: `Bearer ${Cookies.get("accessToken")}`,
-      },
-    });
+    const result = await authAPI
+      .post(`todos`, {
+        body: JSON.stringify(payload),
+        headers: {
+          Authorization: `Bearer ${Cookies.get("accessToken")}`,
+        },
+      })
+      .json<RawTodo>();
 
     return {
       isFailed: false,
-      value: true,
+      value: toTodo(result),
       error: null,
-    } as Success<boolean>;
+    } as Success<Todo>;
   } catch (err) {
     return {
       isFailed: true,

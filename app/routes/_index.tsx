@@ -11,6 +11,11 @@ import { useState, MouseEvent, useMemo, ChangeEvent, useCallback } from "react";
 import * as todoAPI from "@/utils/api/todo";
 import { DndProvider } from "react-dnd";
 import { TouchBackend } from "react-dnd-touch-backend";
+import { Motion, spring } from "react-motion";
+import { TodoDraggableItem } from "@/components/todo/TodoDraggableItem";
+import { Drawer, Button, IconButton } from "terra-design-system/react";
+import { isFailed } from "@/utils/is";
+import { TodoItem } from "@/components/todo/TodoItem";
 
 export const meta: MetaFunction = () => {
   return [
@@ -64,9 +69,6 @@ export const loader: LoaderFunction = async ({ request }) => {
   }
 };
 
-import { Drawer, Button, IconButton } from "terra-design-system/react";
-import { isFailed } from "@/utils/is";
-import { TodoItem } from "@/components/todo/TodoItem";
 export default function Index() {
   const { todos: defaultTodos } = useLoaderData<typeof loader>() as {
     todos: Todo[];
@@ -79,9 +81,9 @@ export default function Index() {
     incompletedTodos,
     updateTodoById,
     toggleTodoCompleteById,
+    addIncompletedTodo,
     deleteTodoById,
-    moveTodo,
-    setTodos,
+    moveIncompletedTodo,
   } = useTodo(defaultTodos);
   const [currentTodoId, setCurrentTodoId] = useState<number>(-1);
   const currentTodo = useMemo<Todo | undefined>(() => {
@@ -99,7 +101,6 @@ export default function Index() {
       id: todoId,
       isCompleted: isCompleted,
     });
-    // update server too
   };
   const handleToggleCurrentTodoComplete = (
     e: ChangeEvent<HTMLInputElement>
@@ -140,24 +141,23 @@ export default function Index() {
   };
 
   const handleClickCreateTodo = async () => {
-    await todoAPI.createTodo({
+    const req = await todoAPI.createTodo({
       title: title,
       date: new Date(),
     });
-    const req = await todoAPI.fetchTodos();
     if (isFailed(req)) {
       return;
     }
 
-    setTodos([...req.value]);
+    addIncompletedTodo(req.value);
     setTitle("");
   };
 
-  const handleMoveTodoItem = useCallback(
+  const handleMoveIncompletedTodoItem = useCallback(
     (dragIndex: number, hoverIndex: number) => {
-      moveTodo(dragIndex, hoverIndex);
+      moveIncompletedTodo(dragIndex, hoverIndex);
     },
-    [moveTodo]
+    [moveIncompletedTodo]
   );
 
   const handleExitDrawer = () => {
@@ -175,34 +175,35 @@ export default function Index() {
   return (
     <main className="flex flex-col w-full h-screen items-stretch">
       <DndProvider backend={TouchBackend} options={{ enableMouseEvents: true }}>
-        <div className="overflow-y-scroll p-4 flex-1">
+        <div className="relative overflow-y-scroll p-4 flex-1">
           {incompletedTodos.map((todo, index) => (
-            <TodoItem
-              todo={todo}
-              index={index}
+            <Motion
               key={todo.id}
-              className="mb-4"
-              onChangeComplete={handleChangeTodoComplete}
-              onClickTodo={handleClickTodoItem}
-              onMoveItem={handleMoveTodoItem}
-            />
-          ))}
-          <hr className="my-4" />
-          {completedTodos.map((todo, index) => (
-            <TodoItem
-              todo={todo}
-              index={index}
-              className="mb-4"
-              key={todo.id}
-              onChangeComplete={handleChangeTodoComplete}
-              onClickTodo={handleClickTodoItem}
-              onMoveItem={handleMoveTodoItem}
-            />
+              style={{
+                y: spring(index * 60, { stiffness: 130, damping: 18 }),
+                opacity: spring(todo.isCompleted ? 0 : 1),
+              }}
+            >
+              {({ y, opacity }) => (
+                <TodoDraggableItem
+                  todo={todo}
+                  index={index}
+                  className="absolute w-[calc(100%_-_2rem)]"
+                  onChangeComplete={handleChangeTodoComplete}
+                  onClickTodo={handleClickTodoItem}
+                  onMoveItem={handleMoveIncompletedTodoItem}
+                  style={{
+                    transform: `translate3d(0, ${y}px, 0)`,
+                    opacity: opacity,
+                  }}
+                />
+              )}
+            </Motion>
           ))}
         </div>
       </DndProvider>
       <Drawer.Root variant="bottom">
-        <div className="p-4 flex-none">
+        <div className="px-4 mb-4 flex-none">
           <Drawer.Trigger asChild>
             <Button className="w-full" theme="primary" size="lg">
               + 할 일 추가하기
@@ -222,6 +223,34 @@ export default function Index() {
                 <Button onClick={handleClickCreateTodo}>확인</Button>
               </Drawer.CloseTrigger>
             </div>
+          </Drawer.Body>
+        </Drawer.Content>
+      </Drawer.Root>
+      <Drawer.Root variant="bottom">
+        <div className="px-4 mb-4 flex-none">
+          <Drawer.Trigger asChild>
+            <Button className="w-full" theme="neutral" size="lg">
+              완료된 작업 보기
+            </Button>
+          </Drawer.Trigger>
+        </div>
+        <Drawer.Content className="h-full min-h-96">
+          <Drawer.Body>
+            <div className="flex flex-row-reverse mb-2">
+              <Drawer.CloseTrigger asChild>
+                <Button>닫기</Button>
+              </Drawer.CloseTrigger>
+            </div>
+            <ul className="overflow-y-auto">
+              {completedTodos.map((todo) => (
+                <li className="mb-2" key={todo.id}>
+                  <TodoItem
+                    todo={todo}
+                    onChangeComplete={handleChangeTodoComplete}
+                  />
+                </li>
+              ))}
+            </ul>
           </Drawer.Body>
         </Drawer.Content>
       </Drawer.Root>
