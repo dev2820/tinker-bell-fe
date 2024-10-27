@@ -7,12 +7,11 @@ import type { MetaFunction } from "@remix-run/node";
 import { LoaderFunction, redirect } from "@remix-run/node";
 import { json, useLoaderData } from "@remix-run/react";
 import { Trash2Icon } from "lucide-react";
-import { useState, MouseEvent, useMemo, ChangeEvent, useCallback } from "react";
+import { useState, MouseEvent, useMemo, ChangeEvent } from "react";
 import * as todoAPI from "@/utils/api/todo";
 import { TodoDraggableItem } from "@/components/todo/TodoDraggableItem";
 import { Drawer, Button, IconButton } from "terra-design-system/react";
 import { isFailed } from "@/utils/is";
-import { TodoItem } from "@/components/todo/TodoItem";
 import { Reorder } from "framer-motion";
 
 export const meta: MetaFunction = () => {
@@ -82,7 +81,7 @@ export default function Index() {
     addIncompletedTodo,
     deleteTodoById,
     setIncompletedTodos,
-    moveIncompletedTodo,
+    setCompletedTodos,
   } = useTodo(defaultTodos);
   const [currentTodoId, setCurrentTodoId] = useState<number>(-1);
   const currentTodo = useMemo<Todo | undefined>(() => {
@@ -152,13 +151,6 @@ export default function Index() {
     setTitle("");
   };
 
-  const handleMoveIncompletedTodoItem = useCallback(
-    (dragIndex: number, hoverIndex: number) => {
-      moveIncompletedTodo(dragIndex, hoverIndex);
-    },
-    [moveIncompletedTodo]
-  );
-
   const handleExitDrawer = () => {
     // server update
     const currentTodo = allTodos.find((todo) => todo.id === currentTodoId);
@@ -181,14 +173,12 @@ export default function Index() {
         layoutScroll
         className="p-4 flex-1 overflow-y-scroll overflow-x-visible"
       >
-        {incompletedTodos.map((todo, index) => (
+        {incompletedTodos.map((todo) => (
           <TodoDraggableItem
             key={todo.id}
             todo={todo}
-            index={index}
             onChangeComplete={handleChangeTodoComplete}
             onClickTodo={handleClickTodoItem}
-            onMoveItem={handleMoveIncompletedTodoItem}
           />
         ))}
       </Reorder.Group>
@@ -225,23 +215,29 @@ export default function Index() {
             </Button>
           </Drawer.Trigger>
         </div>
-        <Drawer.Content className="h-full min-h-96">
+        <Drawer.Content className="min-h-96 max-h-96">
           <Drawer.Body>
             <div className="flex flex-row-reverse mb-2">
               <Drawer.CloseTrigger asChild>
                 <Button>닫기</Button>
               </Drawer.CloseTrigger>
             </div>
-            <ul className="overflow-y-auto">
+            <Reorder.Group
+              axis="y"
+              as="ul"
+              values={completedTodos}
+              onReorder={setCompletedTodos}
+              layoutScroll
+              className="p-4 overflow-y-scroll overflow-x-visible"
+            >
               {completedTodos.map((todo) => (
-                <li className="mb-2" key={todo.id}>
-                  <TodoItem
-                    todo={todo}
-                    onChangeComplete={handleChangeTodoComplete}
-                  />
-                </li>
+                <TodoDraggableItem
+                  key={todo.id}
+                  todo={todo}
+                  onChangeComplete={handleChangeTodoComplete}
+                />
               ))}
-            </ul>
+            </Reorder.Group>
           </Drawer.Body>
         </Drawer.Content>
       </Drawer.Root>

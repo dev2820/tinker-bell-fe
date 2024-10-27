@@ -7,10 +7,8 @@ import { Reorder, useDragControls } from "framer-motion";
 
 export type TodoItemProps = {
   todo: Todo;
-  index: number;
   onChangeComplete?: ChangeEventHandler<HTMLDivElement>;
   onClickTodo?: MouseEventHandler<HTMLButtonElement>;
-  onMoveItem?: (dragIndex: number, hoverIndex: number) => void;
 };
 export function TodoDraggableItem(props: TodoItemProps) {
   const { todo, onChangeComplete, onClickTodo } = props;
