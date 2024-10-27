@@ -5,11 +5,11 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
-import type { LinksFunction } from "@remix-run/node";
+// import type { LinksFunction } from "@remix-run/node";
 import "terra-design-system/react/style";
-import styles from "@/global.css?url";
+import "@/global.css";
 
-export const links: LinksFunction = () => [{ rel: "stylesheet", href: styles }];
+// export const links: LinksFunction = () => [{ rel: "stylesheet", href: styles }];
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (

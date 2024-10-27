@@ -263,7 +263,7 @@ export default function Index() {
             </Button>
           </Drawer.Trigger>
         </div>
-        <Drawer.Content className="min-h-96 max-h-96">
+        <Drawer.Content className="h-96">
           <Drawer.Body>
             <div className="flex flex-row-reverse mb-2">
               <Drawer.CloseTrigger asChild>
