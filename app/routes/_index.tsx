@@ -6,13 +6,15 @@ import { authAPI, isHTTPError } from "@/utils/api";
 import type { MetaFunction } from "@remix-run/node";
 import { LoaderFunction, redirect } from "@remix-run/node";
 import { json, useLoaderData } from "@remix-run/react";
-import { Trash2Icon } from "lucide-react";
+import { ChevronLeftIcon, ChevronRightIcon, Trash2Icon } from "lucide-react";
 import { useState, MouseEvent, useMemo, ChangeEvent } from "react";
 import * as todoAPI from "@/utils/api/todo";
 import { TodoDraggableItem } from "@/components/todo/TodoDraggableItem";
 import { Drawer, Button, IconButton } from "terra-design-system/react";
 import { isFailed } from "@/utils/is";
 import { Reorder } from "framer-motion";
+import { formatDate, formatKoreanDate } from "@/utils/date-time";
+import { addDays, subDays } from "date-fns";
 
 export const meta: MetaFunction = () => {
   return [
@@ -72,6 +74,7 @@ export default function Index() {
     loadFailed: boolean;
   };
 
+  const [today, setToday] = useState<Date>(new Date());
   const {
     allTodos,
     completedTodos,
@@ -82,7 +85,7 @@ export default function Index() {
     deleteTodoById,
     setIncompletedTodos,
     setCompletedTodos,
-  } = useTodo(defaultTodos);
+  } = useTodo(defaultTodos, today);
   const [currentTodoId, setCurrentTodoId] = useState<number>(-1);
   const currentTodo = useMemo<Todo | undefined>(() => {
     return allTodos.find((todo) => todo.id === currentTodoId);
@@ -163,8 +166,33 @@ export default function Index() {
     });
   };
 
+  const handleGotoPrevDate = () => {
+    setToday(subDays(today, 1));
+  };
+
+  const handleGotoNextDate = () => {
+    setToday(addDays(today, 1));
+  };
+
   return (
     <main className="flex flex-col w-full h-screen items-stretch">
+      <h2 className="text-center mt-4">
+        <small className="block">{today.getFullYear()}년</small>
+        <div className="flex flex-row place-items-center justify-center gap-3">
+          <button onClick={handleGotoPrevDate}>
+            <ChevronLeftIcon size={28} strokeWidth={1} />
+          </button>
+          <time
+            dateTime={formatDate(today, "yyyy-MM-dd")}
+            className="font-bold w-36"
+          >
+            {formatKoreanDate(today, "MM월 dd일 (EEEE)")}
+          </time>
+          <button onClick={handleGotoNextDate}>
+            <ChevronRightIcon size={28} strokeWidth={1} />
+          </button>
+        </div>
+      </h2>
       <Reorder.Group
         axis="y"
         as="ul"

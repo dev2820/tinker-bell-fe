@@ -1,14 +1,29 @@
 import { Todo } from "@/types/todo";
-import { useMemo, useState } from "react";
+import { isSameDay } from "date-fns";
+import { useEffect, useMemo, useState } from "react";
 
-export const useTodo = (defaultTodos: Todo[] = []) => {
-  const _completedTodos = defaultTodos.filter((todo) => todo.isCompleted);
-  const _incompletedTodos = defaultTodos.filter((todo) => !todo.isCompleted);
-
+export const useTodo = (defaultTodos: Todo[] = [], date: Date) => {
+  const _completedTodos = defaultTodos
+    .filter((todo) => todo.isCompleted)
+    .filter((todo) => isSameDay(todo.date, date));
+  const _incompletedTodos = defaultTodos
+    .filter((todo) => !todo.isCompleted)
+    .filter((todo) => isSameDay(todo.date, date));
   const [incompletedTodos, setIncompletedTodos] =
     useState<Todo[]>(_incompletedTodos);
   const [completedTodos, setCompletedTodos] = useState<Todo[]>(_completedTodos);
 
+  useEffect(() => {
+    const _completedTodos = defaultTodos
+      .filter((todo) => todo.isCompleted)
+      .filter((todo) => isSameDay(todo.date, date));
+    const _incompletedTodos = defaultTodos
+      .filter((todo) => !todo.isCompleted)
+      .filter((todo) => isSameDay(todo.date, date));
+
+    setIncompletedTodos(_incompletedTodos);
+    setCompletedTodos(_completedTodos);
+  }, [defaultTodos, date]);
   const updateTodoById = (
     id: Todo["id"],
     payload: Partial<Omit<Todo, "id">>
