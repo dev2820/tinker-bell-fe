@@ -1,29 +1,20 @@
 import { Todo } from "@/types/todo";
-import { isSameDay } from "date-fns";
 import { useEffect, useMemo, useState } from "react";
 
-export const useTodo = (defaultTodos: Todo[] = [], date: Date) => {
-  const _completedTodos = defaultTodos
-    .filter((todo) => todo.isCompleted)
-    .filter((todo) => isSameDay(todo.date, date));
-  const _incompletedTodos = defaultTodos
-    .filter((todo) => !todo.isCompleted)
-    .filter((todo) => isSameDay(todo.date, date));
+export const useTodo = (defaultTodos: Todo[] = []) => {
+  const _incompletedTodos = defaultTodos.filter((todo) => !todo.isCompleted);
+  const _completedTodos = defaultTodos.filter((todo) => todo.isCompleted);
   const [incompletedTodos, setIncompletedTodos] =
     useState<Todo[]>(_incompletedTodos);
   const [completedTodos, setCompletedTodos] = useState<Todo[]>(_completedTodos);
 
   useEffect(() => {
-    const _completedTodos = defaultTodos
-      .filter((todo) => todo.isCompleted)
-      .filter((todo) => isSameDay(todo.date, date));
-    const _incompletedTodos = defaultTodos
-      .filter((todo) => !todo.isCompleted)
-      .filter((todo) => isSameDay(todo.date, date));
+    const _incompletedTodos = defaultTodos.filter((todo) => !todo.isCompleted);
+    const _completedTodos = defaultTodos.filter((todo) => todo.isCompleted);
 
     setIncompletedTodos(_incompletedTodos);
     setCompletedTodos(_completedTodos);
-  }, [defaultTodos, date]);
+  }, [defaultTodos]);
   const updateTodoById = (
     id: Todo["id"],
     payload: Partial<Omit<Todo, "id">>
@@ -62,6 +53,7 @@ export const useTodo = (defaultTodos: Todo[] = [], date: Date) => {
       setIncompletedTodos((todos) =>
         todos.toSpliced(incompletedTargetIndex, 1)
       );
+
       setCompletedTodos((todos) =>
         todos.toSpliced(0, 0, {
           ...target,
@@ -75,6 +67,7 @@ export const useTodo = (defaultTodos: Todo[] = [], date: Date) => {
     );
     if (completedTargetIndex > -1) {
       const target = completedTodos[completedTargetIndex];
+
       setCompletedTodos((todos) => todos.toSpliced(completedTargetIndex, 1));
       setIncompletedTodos((todos) =>
         todos.toSpliced(todos.length, 0, {

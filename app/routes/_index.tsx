@@ -7,14 +7,14 @@ import type { MetaFunction } from "@remix-run/node";
 import { LoaderFunction, redirect } from "@remix-run/node";
 import { json, useLoaderData } from "@remix-run/react";
 import { ChevronLeftIcon, ChevronRightIcon, Trash2Icon } from "lucide-react";
-import { useState, MouseEvent, useMemo, ChangeEvent } from "react";
+import { useState, MouseEvent, useMemo, ChangeEvent, useEffect } from "react";
 import * as todoAPI from "@/utils/api/todo";
 import { TodoDraggableItem } from "@/components/todo/TodoDraggableItem";
 import { Drawer, Button, IconButton } from "terra-design-system/react";
 import { isFailed } from "@/utils/is";
 import { Reorder } from "framer-motion";
 import { formatDate, formatKoreanDate } from "@/utils/date-time";
-import { addDays, subDays } from "date-fns";
+import { addDays, isSameDay, subDays } from "date-fns";
 
 export const meta: MetaFunction = () => {
   return [
@@ -69,12 +69,16 @@ export const loader: LoaderFunction = async ({ request }) => {
 };
 
 export default function Index() {
+  // TODO: 해당 날짜의 todo만 받을 수 있게 개선 필요
   const { todos: defaultTodos } = useLoaderData<typeof loader>() as {
     todos: Todo[];
     loadFailed: boolean;
   };
 
   const [today, setToday] = useState<Date>(new Date());
+  const [todos, setTodos] = useState<Todo[]>(
+    defaultTodos.filter((todo) => isSameDay(todo.date, today))
+  );
   const {
     allTodos,
     completedTodos,
@@ -85,7 +89,23 @@ export default function Index() {
     deleteTodoById,
     setIncompletedTodos,
     setCompletedTodos,
-  } = useTodo(defaultTodos, today);
+  } = useTodo(todos);
+
+  useEffect(() => {
+    const updateTodos = async () => {
+      // TODO: fetch today's todos
+      const result = await todoAPI.fetchTodos();
+      if (isFailed(result)) {
+        // TODO: handle fetch failed
+        return;
+      }
+      const newTodos = result.value.filter((todo) =>
+        isSameDay(todo.date, today)
+      );
+      setTodos(newTodos);
+    };
+    updateTodos();
+  }, [today]);
   const [currentTodoId, setCurrentTodoId] = useState<number>(-1);
   const currentTodo = useMemo<Todo | undefined>(() => {
     return allTodos.find((todo) => todo.id === currentTodoId);
