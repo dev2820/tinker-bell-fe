@@ -164,7 +164,7 @@ export default function Index() {
   const handleClickCreateTodo = async () => {
     const req = await todoAPI.createTodo({
       title: title,
-      date: new Date(),
+      date: today,
     });
     if (isFailed(req)) {
       return;
