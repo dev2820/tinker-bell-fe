@@ -37,8 +37,8 @@
     --card-foreground: 0 0% 3.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 3.9%;
-    --primary: 0 0% 9%;
-    --primary-foreground: 0 0% 98%;
+    --primary: var(--orange-500);
+    --primary-foreground: var(--neutral-50);
     --secondary: 0 0% 96.1%;
     --secondary-foreground: 0 0% 9%;
     --muted: 0 0% 96.1%;
@@ -56,6 +56,12 @@
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
+
+    /*
+     * trds color system 
+     */
+    --my-colors-primary: var(--primary);
+    --my-colors-primary-foreground: var(--primary-foreground);
   }
   .dark {
     --background: 0 0% 3.9%;
@@ -101,4 +107,26 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.todo:has(input.out-complete) {
+  animation: fade-out 100ms both;
+  animation-delay: 200ms;
 }

@@ -117,11 +117,16 @@ export default function Index() {
     const $target = e.currentTarget;
     const isCompleted = e.currentTarget.checked;
     const todoId = Number($target.dataset["todoId"]);
-    toggleTodoCompleteById(todoId);
     todoAPI.updateTodoComplete({
       id: todoId,
       isCompleted: isCompleted,
     });
+
+    $target.classList.toggle("out-complete");
+    setTimeout(() => {
+      toggleTodoCompleteById(todoId);
+      $target.classList.toggle("out-complete");
+    }, 200);
   };
   const handleToggleCurrentTodoComplete = (
     e: ChangeEvent<HTMLInputElement>

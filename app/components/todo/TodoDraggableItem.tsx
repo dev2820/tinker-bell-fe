@@ -26,6 +26,7 @@ export function TodoDraggableItem(props: TodoItemProps) {
     >
       <div
         className={cx(
+          "todo",
           "gap-2 flex flex-row h-12 border border-gray-200 bg-white rounded-md px-4 my-2 place-items-center",
           isDragging ? "shadow-md" : ""
         )}
@@ -35,7 +36,7 @@ export function TodoDraggableItem(props: TodoItemProps) {
             type="checkbox"
             className={cx("peer hidden")}
             data-todo-id={todo.id}
-            checked={todo.isCompleted}
+            defaultChecked={todo.isCompleted}
             onChange={onChangeComplete}
           />
           <div className={cx(todoCheckboxStyle({ size: "md" }))}>
@@ -73,7 +74,8 @@ const todoCheckboxStyle = cva(
     "rounded-full",
     "border border-gray-400 peer-checked:border-primary",
     "text-transparent peer-checked:text-primary-foreground",
-    "peer-checked:bg-primary",
+    "bg-transparent peer-checked:bg-primary",
+    "transition-colors duration-200",
   ],
   {
     variants: {
