@@ -47,7 +47,7 @@ export function TodoDraggableItem(props: TodoItemProps) {
         </label>
         <button
           className={cx(
-            "flex-1 h-full text-left text-ellipsis overflow-hidden",
+            "flex-1 h-full text-left text-ellipsis overflow-hidden whitespace-nowrap",
             todo.isCompleted ? "line-through text-disabled" : ""
           )}
           data-todo-id={todo.id}
