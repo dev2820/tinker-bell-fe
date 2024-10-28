@@ -123,6 +123,9 @@ export default function Index() {
     });
 
     $target.classList.toggle("out-complete");
+    if (navigator.vibrate) {
+      navigator.vibrate(200); // 200ms 동안 진동
+    }
     setTimeout(() => {
       toggleTodoCompleteById(todoId);
       $target.classList.toggle("out-complete");
