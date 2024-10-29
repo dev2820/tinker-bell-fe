@@ -6,18 +6,22 @@ import { authAPI, isHTTPError } from "@/utils/api";
 import type { MetaFunction } from "@remix-run/node";
 import { LoaderFunction, redirect } from "@remix-run/node";
 import { json, useLoaderData } from "@remix-run/react";
-import { ChevronLeftIcon, ChevronRightIcon, Trash2Icon } from "lucide-react";
+import {
+  CalendarIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  Trash2Icon,
+} from "lucide-react";
 import {
   useState,
   MouseEvent,
-  useMemo,
   ChangeEvent,
   KeyboardEvent,
   useEffect,
 } from "react";
 import * as todoAPI from "@/utils/api/todo";
 import { TodoDraggableItem } from "@/components/todo/TodoDraggableItem";
-import { Drawer, Button, IconButton } from "terra-design-system/react";
+import { Drawer, Button, IconButton, Input } from "terra-design-system/react";
 import { isFailed } from "@/utils/is";
 import { Reorder } from "framer-motion";
 import { formatDate, formatKoreanDate } from "@/utils/date-time";
@@ -113,10 +117,7 @@ export default function Index() {
     };
     updateTodos();
   }, [today]);
-  const [currentTodoId, setCurrentTodoId] = useState<number>(-1);
-  const currentTodo = useMemo<Todo | undefined>(() => {
-    return allTodos.find((todo) => todo.id === currentTodoId);
-  }, [currentTodoId, allTodos]);
+  const [currentTodo, setCurrentTodo] = useState<Todo | undefined>(undefined);
 
   const [title, setTitle] = useState<string>("");
   const [showTodoDetails, setShowTodoDetails] = useState<boolean>(false);
@@ -141,14 +142,14 @@ export default function Index() {
   const handleToggleCurrentTodoComplete = (
     e: ChangeEvent<HTMLInputElement>
   ) => {
-    if (!currentTodoId) {
+    if (!currentTodo) {
       return;
     }
 
     const isCompleted = e.currentTarget.checked;
-    toggleTodoCompleteById(currentTodoId);
+    toggleTodoCompleteById(currentTodo.id);
     todoAPI.updateTodoComplete({
-      id: currentTodoId,
+      id: currentTodo.id,
       isCompleted: isCompleted,
     });
   };
@@ -156,15 +157,18 @@ export default function Index() {
     // show todo details
     const $target = e.currentTarget;
     const todoId = Number($target.dataset["todoId"]);
-    setCurrentTodoId(todoId);
+    const todo = allTodos.find((todo) => todo.id === todoId);
+    if (todo) {
+      setCurrentTodo({ ...todo });
+    }
     setShowTodoDetails(true);
   };
   const handleClickDeleteCurrentTodo = () => {
     // show todo details
-    if (currentTodoId) {
-      deleteTodoById(currentTodoId);
+    if (currentTodo) {
+      deleteTodoById(currentTodo.id);
       setShowTodoDetails(false);
-      todoAPI.deleteTodo({ id: currentTodoId });
+      todoAPI.deleteTodo({ id: currentTodo.id });
     }
   };
 
@@ -187,7 +191,12 @@ export default function Index() {
   };
   const handleUpdateTitle = (e: ChangeEvent<HTMLInputElement>) => {
     const newTitle = e.currentTarget.value;
-    updateTodoById(currentTodoId, { title: newTitle });
+    if (currentTodo) {
+      setCurrentTodo({
+        ...currentTodo,
+        title: newTitle,
+      });
+    }
   };
 
   const handleClickCreateTodo = async () => {
@@ -203,13 +212,16 @@ export default function Index() {
     setTitle("");
   };
 
-  const handleExitDrawer = () => {
+  const handleClickUpdateConfirm = () => {
     // server update
-    const currentTodo = allTodos.find((todo) => todo.id === currentTodoId);
+    setShowTodoDetails(false);
     if (!currentTodo) {
       return;
     }
 
+    updateTodoById(currentTodo.id, {
+      ...currentTodo,
+    });
     todoAPI.updateTodo({
       ...currentTodo,
     });
@@ -331,7 +343,6 @@ export default function Index() {
       <Drawer.Root
         variant="bottom"
         open={showTodoDetails}
-        onExitComplete={handleExitDrawer}
         onInteractOutside={() => {
           setShowTodoDetails(false);
         }}
@@ -371,12 +382,20 @@ export default function Index() {
             )}
           </Drawer.Header>
           <Drawer.Description>
-            {currentTodo?.date && (
-              <time>
-                {formatDate(new Date(currentTodo.date), "yyyy-MM-dd hh:mm:ss")}
-              </time>
+            {currentTodo && (
+              <section className="flex flex-row place-items-center gap-3 px-4">
+                <CalendarIcon size={24} />
+                <Input
+                  type="date"
+                  value={formatDate(currentTodo.date, "yyyy-MM-dd")}
+                  // onChange={}
+                />
+              </section>
             )}
           </Drawer.Description>
+          <Drawer.Footer>
+            <Button onClick={handleClickUpdateConfirm}>확인</Button>
+          </Drawer.Footer>
         </Drawer.Content>
       </Drawer.Root>
     </main>
