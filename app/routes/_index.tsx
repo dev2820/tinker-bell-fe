@@ -7,7 +7,14 @@ import type { MetaFunction } from "@remix-run/node";
 import { LoaderFunction, redirect } from "@remix-run/node";
 import { json, useLoaderData } from "@remix-run/react";
 import { ChevronLeftIcon, ChevronRightIcon, Trash2Icon } from "lucide-react";
-import { useState, MouseEvent, useMemo, ChangeEvent, useEffect } from "react";
+import {
+  useState,
+  MouseEvent,
+  useMemo,
+  ChangeEvent,
+  KeyboardEvent,
+  useEffect,
+} from "react";
 import * as todoAPI from "@/utils/api/todo";
 import { TodoDraggableItem } from "@/components/todo/TodoDraggableItem";
 import { Drawer, Button, IconButton } from "terra-design-system/react";
@@ -164,6 +171,20 @@ export default function Index() {
   const handleChangeTitle = (e: ChangeEvent<HTMLInputElement>) => {
     setTitle(e.currentTarget.value);
   };
+  const handleKeydownTitle = async (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      const req = await todoAPI.createTodo({
+        title: title,
+        date: today,
+      });
+      if (isFailed(req)) {
+        return;
+      }
+
+      addIncompletedTodo(req.value);
+      setTitle("");
+    }
+  };
   const handleUpdateTitle = (e: ChangeEvent<HTMLInputElement>) => {
     const newTitle = e.currentTarget.value;
     updateTodoById(currentTodoId, { title: newTitle });
@@ -239,6 +260,9 @@ export default function Index() {
         ))}
       </Reorder.Group>
       <hr className="my-2 border-0" />
+      {/**
+       * todo 생성
+       */}
       <Drawer.Root variant="bottom">
         <div className="px-4 mb-4 flex-none">
           <Drawer.Trigger asChild>
@@ -253,6 +277,7 @@ export default function Index() {
               <TodoTitleInput
                 value={title}
                 onChange={handleChangeTitle}
+                onKeyDown={handleKeydownTitle}
                 className="flex-1"
                 placeholder="할 일을 입력해주세요"
               />
@@ -263,6 +288,9 @@ export default function Index() {
           </Drawer.Body>
         </Drawer.Content>
       </Drawer.Root>
+      {/**
+       * 완료된 todo 보기
+       */}
       <Drawer.Root variant="bottom">
         <div className="px-4 mb-4 flex-none">
           <Drawer.Trigger asChild>
@@ -297,6 +325,9 @@ export default function Index() {
           </Drawer.Body>
         </Drawer.Content>
       </Drawer.Root>
+      {/**
+       * todo 자세히 보기
+       */}
       <Drawer.Root
         variant="bottom"
         open={showTodoDetails}
