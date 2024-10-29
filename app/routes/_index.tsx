@@ -370,6 +370,13 @@ export default function Index() {
               </Drawer.Title>
             )}
           </Drawer.Header>
+          <Drawer.Description>
+            {currentTodo?.date && (
+              <time>
+                {formatDate(new Date(currentTodo.date), "yyyy-MM-dd hh:mm:ss")}
+              </time>
+            )}
+          </Drawer.Description>
         </Drawer.Content>
       </Drawer.Root>
     </main>
