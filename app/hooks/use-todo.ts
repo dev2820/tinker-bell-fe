@@ -1,7 +1,8 @@
 import { Todo } from "@/types/todo";
+import { isSameDay } from "date-fns";
 import { useEffect, useMemo, useState } from "react";
 
-export const useTodo = (defaultTodos: Todo[] = []) => {
+export const useTodo = (defaultTodos: Todo[] = [], currentDate: Date) => {
   const _incompletedTodos = defaultTodos.filter((todo) => !todo.isCompleted);
   const _completedTodos = defaultTodos.filter((todo) => todo.isCompleted);
   const [incompletedTodos, setIncompletedTodos] =
@@ -15,6 +16,7 @@ export const useTodo = (defaultTodos: Todo[] = []) => {
     setIncompletedTodos(_incompletedTodos);
     setCompletedTodos(_completedTodos);
   }, [defaultTodos]);
+
   const updateTodoById = (
     id: Todo["id"],
     payload: Partial<Omit<Todo, "id">>
@@ -24,10 +26,12 @@ export const useTodo = (defaultTodos: Todo[] = []) => {
     );
     if (incompletedTargetIndex >= 0) {
       setIncompletedTodos((todos) =>
-        todos.toSpliced(incompletedTargetIndex, 1, {
-          ...todos[incompletedTargetIndex],
-          ...payload,
-        })
+        todos
+          .toSpliced(incompletedTargetIndex, 1, {
+            ...todos[incompletedTargetIndex],
+            ...payload,
+          })
+          .filter((todo) => isSameDay(todo.date, currentDate))
       );
       return;
     }
@@ -36,10 +40,12 @@ export const useTodo = (defaultTodos: Todo[] = []) => {
     );
     if (completedTargetIndex > -1) {
       setCompletedTodos((todos) =>
-        todos.toSpliced(completedTargetIndex, 1, {
-          ...todos[completedTargetIndex],
-          ...payload,
-        })
+        todos
+          .toSpliced(completedTargetIndex, 1, {
+            ...todos[completedTargetIndex],
+            ...payload,
+          })
+          .filter((todo) => isSameDay(todo.date, currentDate))
       );
     }
   };

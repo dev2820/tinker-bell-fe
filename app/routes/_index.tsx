@@ -100,7 +100,7 @@ export default function Index() {
     deleteTodoById,
     setIncompletedTodos,
     setCompletedTodos,
-  } = useTodo(todos);
+  } = useTodo(todos, today);
 
   useEffect(() => {
     const updateTodos = async () => {
@@ -195,6 +195,15 @@ export default function Index() {
       setCurrentTodo({
         ...currentTodo,
         title: newTitle,
+      });
+    }
+  };
+  const handleUpdateDate = (e: ChangeEvent<HTMLInputElement>) => {
+    const newDate = new Date(e.currentTarget.value);
+    if (currentTodo) {
+      setCurrentTodo({
+        ...currentTodo,
+        date: newDate,
       });
     }
   };
@@ -388,7 +397,7 @@ export default function Index() {
                 <Input
                   type="date"
                   value={formatDate(currentTodo.date, "yyyy-MM-dd")}
-                  // onChange={}
+                  onChange={handleUpdateDate}
                 />
               </section>
             )}
