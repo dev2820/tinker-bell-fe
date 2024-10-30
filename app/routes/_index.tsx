@@ -26,6 +26,7 @@ import { isFailed } from "@/utils/is";
 import { Reorder } from "framer-motion";
 import { formatDate, formatKoreanDate } from "@/utils/date-time";
 import { addDays, isSameDay, subDays } from "date-fns";
+import { vibrateShort } from "@/utils/device/vibrate";
 
 export const meta: MetaFunction = () => {
   return [
@@ -131,9 +132,7 @@ export default function Index() {
     });
 
     $target.classList.toggle("out-complete");
-    if (navigator.vibrate) {
-      navigator.vibrate(50);
-    }
+    vibrateShort();
     setTimeout(() => {
       toggleTodoCompleteById(todoId);
       $target.classList.toggle("out-complete");
