@@ -247,7 +247,7 @@ export default function Index() {
   return (
     <main className="flex flex-col w-full h-screen items-stretch">
       <h2 className="text-center mt-4">
-        <small className="block">{today.getFullYear()}년</small>
+        <small className="block">{formatKoreanDate(today, "MM월 dd일")}</small>
         <div className="flex flex-row place-items-center justify-center gap-3">
           <button onClick={handleGotoPrevDate}>
             <ChevronLeftIcon size={28} strokeWidth={1} />
@@ -256,7 +256,7 @@ export default function Index() {
             dateTime={formatDate(today, "yyyy-MM-dd")}
             className="font-bold w-36"
           >
-            {formatKoreanDate(today, "MM월 dd일 (EEEE)")}
+            {formatKoreanDate(today, "EEEE")}
           </time>
           <button onClick={handleGotoNextDate}>
             <ChevronRightIcon size={28} strokeWidth={1} />
