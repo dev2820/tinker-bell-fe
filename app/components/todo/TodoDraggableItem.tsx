@@ -4,6 +4,7 @@ import { cx } from "@/utils/cx";
 import { CheckIcon, EqualIcon } from "lucide-react";
 import { cva } from "class-variance-authority";
 import { Reorder, useDragControls } from "framer-motion";
+import { vibrateShort } from "@/utils/device/vibrate";
 
 export type TodoItemProps = {
   todo: Todo;
@@ -17,9 +18,11 @@ export function TodoDraggableItem(props: TodoItemProps) {
 
   const handleDragStart = () => {
     setIsDragging(true);
+    vibrateShort();
   };
   const handleDragEnd = () => {
     setIsDragging(false);
+    vibrateShort();
   };
   return (
     <Reorder.Item
