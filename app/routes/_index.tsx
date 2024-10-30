@@ -25,7 +25,7 @@ import { Drawer, Button, IconButton, Input } from "terra-design-system/react";
 import { isFailed } from "@/utils/is";
 import { Reorder } from "framer-motion";
 import { formatDate, formatKoreanDate } from "@/utils/date-time";
-import { addDays, isSameDay, subDays } from "date-fns";
+import { addDays, addWeeks, isSameDay, subDays } from "date-fns";
 import { vibrateShort } from "@/utils/device/vibrate";
 
 export const meta: MetaFunction = () => {
@@ -243,6 +243,28 @@ export default function Index() {
     setToday(addDays(today, 1));
   };
 
+  const handleClickDelayTomorrow = () => {
+    if (!currentTodo) {
+      return;
+    }
+
+    setCurrentTodo({
+      ...currentTodo,
+      date: addDays(currentTodo.date, 1),
+    });
+  };
+
+  const handleClickDelayWeek = () => {
+    if (!currentTodo) {
+      return;
+    }
+
+    setCurrentTodo({
+      ...currentTodo,
+      date: addWeeks(currentTodo.date, 1),
+    });
+  };
+
   return (
     <main className="flex flex-col w-full h-screen items-stretch">
       <h2 className="text-center mt-4 mb-4">
@@ -410,6 +432,12 @@ export default function Index() {
                   value={formatDate(currentTodo.date, "yyyy-MM-dd")}
                   onChange={handleUpdateDate}
                 />
+                <Button size="sm" onClick={handleClickDelayTomorrow}>
+                  내일로
+                </Button>
+                <Button size="sm" onClick={handleClickDelayWeek}>
+                  다음주로
+                </Button>
               </section>
             )}
           </Drawer.Description>
