@@ -293,7 +293,7 @@ export default function Index() {
           </Drawer.Trigger>
         </div>
         <Drawer.Content className="h-full min-h-96">
-          <Drawer.Body>
+          <Drawer.Header className="h-full">
             <div className="flex flex-row">
               <TodoTitleInput
                 value={title}
@@ -302,11 +302,21 @@ export default function Index() {
                 className="flex-1"
                 placeholder="할 일을 입력해주세요"
               />
-              <Drawer.CloseTrigger asChild>
-                <Button onClick={handleClickCreateTodo}>확인</Button>
-              </Drawer.CloseTrigger>
             </div>
-          </Drawer.Body>
+          </Drawer.Header>
+          <Drawer.Body></Drawer.Body>
+          <Drawer.Footer>
+            <Drawer.CloseTrigger asChild>
+              <Button variant="outline" className="mr-3">
+                닫기
+              </Button>
+            </Drawer.CloseTrigger>
+            <Drawer.CloseTrigger asChild>
+              <Button theme="primary" onClick={handleClickCreateTodo}>
+                확인
+              </Button>
+            </Drawer.CloseTrigger>
+          </Drawer.Footer>
         </Drawer.Content>
       </Drawer.Root>
 
