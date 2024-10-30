@@ -15,13 +15,19 @@ export function TodoDraggableItem(props: TodoItemProps) {
   const controls = useDragControls();
   const [isDragging, setIsDragging] = useState(false);
 
+  const handleDragStart = () => {
+    setIsDragging(true);
+  };
+  const handleDragEnd = () => {
+    setIsDragging(false);
+  };
   return (
     <Reorder.Item
       value={todo}
       dragListener={false}
       dragControls={controls}
-      onDragStart={() => setIsDragging(true)}
-      onDragEnd={() => setIsDragging(false)}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
       whileDrag={{ scale: 1.05 }}
     >
       <div
