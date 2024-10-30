@@ -245,7 +245,7 @@ export default function Index() {
 
   return (
     <main className="flex flex-col w-full h-screen items-stretch">
-      <h2 className="text-center mt-4">
+      <h2 className="text-center mt-4 mb-4">
         <small className="block">{formatKoreanDate(today, "MM월 dd일")}</small>
         <div className="flex flex-row place-items-center justify-center gap-3">
           <button onClick={handleGotoPrevDate}>
@@ -262,29 +262,30 @@ export default function Index() {
           </button>
         </div>
       </h2>
-      <Reorder.Group
-        axis="y"
-        as="ul"
-        values={incompletedTodos}
-        onReorder={setIncompletedTodos}
-        layoutScroll
-        className="p-4 flex-1 overflow-y-scroll overflow-x-visible"
-      >
-        {incompletedTodos.map((todo) => (
-          <TodoDraggableItem
-            key={todo.id}
-            todo={todo}
-            onChangeComplete={handleChangeTodoComplete}
-            onClickTodo={handleClickTodoItem}
-          />
-        ))}
-      </Reorder.Group>
-      <hr className="my-2 border-0" />
+      <div className="overflow-y-scroll">
+        <Reorder.Group
+          axis="y"
+          as="ul"
+          values={incompletedTodos}
+          onReorder={setIncompletedTodos}
+          layoutScroll
+          className="px-4 overflow-y-hidden overflow-x-visible"
+        >
+          {incompletedTodos.map((todo) => (
+            <TodoDraggableItem
+              key={todo.id}
+              todo={todo}
+              onChangeComplete={handleChangeTodoComplete}
+              onClickTodo={handleClickTodoItem}
+            />
+          ))}
+        </Reorder.Group>
+      </div>
       {/**
        * todo 생성
        */}
       <Drawer.Root variant="bottom">
-        <div className="px-4 mb-4 flex-none">
+        <div className="px-4 mb-2 flex-none">
           <Drawer.Trigger asChild>
             <Button className="w-full" theme="primary" size="lg">
               + 할 일 추가하기
@@ -308,6 +309,7 @@ export default function Index() {
           </Drawer.Body>
         </Drawer.Content>
       </Drawer.Root>
+
       {/**
        * 완료된 todo 보기
        */}

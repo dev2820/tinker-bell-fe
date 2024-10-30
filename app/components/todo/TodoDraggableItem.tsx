@@ -36,7 +36,7 @@ export function TodoDraggableItem(props: TodoItemProps) {
       <div
         className={cx(
           "todo",
-          "gap-2 flex flex-row h-12 border border-gray-200 bg-white rounded-md px-4 my-2 place-items-center",
+          "gap-2 flex flex-row h-12 border border-gray-200 bg-white rounded-lg px-4 my-2 place-items-center",
           isDragging ? "shadow-md" : ""
         )}
       >
