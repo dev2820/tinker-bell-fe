@@ -366,6 +366,7 @@ export default function Index() {
               layoutScroll
               className="p-4 overflow-y-scroll overflow-x-visible"
             >
+              <AnimatePresence>
               {completedTodos.map((todo) => (
                 <TodoDraggableItem
                   key={todo.id}
@@ -373,6 +374,7 @@ export default function Index() {
                   onChangeComplete={handleChangeTodoComplete}
                 />
               ))}
+              </AnimatePresence>
             </Reorder.Group>
           </Drawer.Body>
         </Drawer.Content>
