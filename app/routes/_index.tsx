@@ -24,8 +24,14 @@ import { TodoDraggableItem } from "@/components/todo/TodoDraggableItem";
 import { Drawer, Button, IconButton, Input } from "terra-design-system/react";
 import { isFailed } from "@/utils/is";
 import { AnimatePresence, Reorder } from "framer-motion";
-import { formatDate, formatKoreanDate } from "@/utils/date-time";
-import { addDays, addWeeks, isSameDay, subDays } from "date-fns";
+import {
+  formatDate,
+  formatKoreanDate,
+  addDays,
+  addWeeks,
+  isSameDay,
+  subDays,
+} from "@/utils/date-time";
 import { vibrateShort } from "@/utils/device/vibrate";
 
 export const meta: MetaFunction = () => {
@@ -371,13 +377,13 @@ export default function Index() {
               className="p-4 overflow-y-scroll overflow-x-visible"
             >
               <AnimatePresence>
-              {completedTodos.map((todo) => (
-                <TodoDraggableItem
-                  key={todo.id}
-                  todo={todo}
-                  onChangeComplete={handleChangeTodoComplete}
-                />
-              ))}
+                {completedTodos.map((todo) => (
+                  <TodoDraggableItem
+                    key={todo.id}
+                    todo={todo}
+                    onChangeComplete={handleChangeTodoComplete}
+                  />
+                ))}
               </AnimatePresence>
             </Reorder.Group>
           </Drawer.Body>
