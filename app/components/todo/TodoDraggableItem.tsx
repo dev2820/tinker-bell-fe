@@ -32,6 +32,10 @@ export function TodoDraggableItem(props: TodoItemProps) {
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
       whileDrag={{ scale: 1.05 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.15 }}
     >
       <div
         className={cx(

@@ -23,7 +23,7 @@ import * as todoAPI from "@/utils/api/todo";
 import { TodoDraggableItem } from "@/components/todo/TodoDraggableItem";
 import { Drawer, Button, IconButton, Input } from "terra-design-system/react";
 import { isFailed } from "@/utils/is";
-import { Reorder } from "framer-motion";
+import { AnimatePresence, Reorder } from "framer-motion";
 import { formatDate, formatKoreanDate } from "@/utils/date-time";
 import { addDays, addWeeks, isSameDay, subDays } from "date-fns";
 import { vibrateShort } from "@/utils/device/vibrate";
@@ -131,12 +131,8 @@ export default function Index() {
       isCompleted: isCompleted,
     });
 
-    $target.classList.toggle("out-complete");
     vibrateShort();
-    setTimeout(() => {
-      toggleTodoCompleteById(todoId);
-      $target.classList.toggle("out-complete");
-    }, 200);
+    toggleTodoCompleteById(todoId);
   };
   const handleToggleCurrentTodoComplete = (
     e: ChangeEvent<HTMLInputElement>
@@ -291,16 +287,18 @@ export default function Index() {
           values={incompletedTodos}
           onReorder={setIncompletedTodos}
           layoutScroll
-          className="px-4 overflow-y-hidden overflow-x-visible"
+          className="px-4 overflow-y-hidden overflow-x-hidden"
         >
-          {incompletedTodos.map((todo) => (
-            <TodoDraggableItem
-              key={todo.id}
-              todo={todo}
-              onChangeComplete={handleChangeTodoComplete}
-              onClickTodo={handleClickTodoItem}
-            />
-          ))}
+          <AnimatePresence>
+            {incompletedTodos.map((todo) => (
+              <TodoDraggableItem
+                key={todo.id}
+                todo={todo}
+                onChangeComplete={handleChangeTodoComplete}
+                onClickTodo={handleClickTodoItem}
+              />
+            ))}
+          </AnimatePresence>
         </Reorder.Group>
       </div>
       {/**
