@@ -143,6 +143,10 @@ export default function Index() {
 
     const isCompleted = e.currentTarget.checked;
     toggleTodoCompleteById(currentTodo.id);
+    setCurrentTodo({
+      ...currentTodo,
+      isCompleted: isCompleted,
+    });
     todoAPI.updateTodoComplete({
       id: currentTodo.id,
       isCompleted: isCompleted,
