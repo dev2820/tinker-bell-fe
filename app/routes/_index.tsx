@@ -20,6 +20,7 @@ import {
   useEffect,
 } from "react";
 import * as todoAPI from "@/utils/api/todo";
+import { toTodo, type RawTodo } from "@/utils/api/todo";
 import { TodoDraggableItem } from "@/components/todo/TodoDraggableItem";
 import { Drawer, Button, IconButton, Input } from "terra-design-system/react";
 import { isFailed } from "@/utils/is";
@@ -61,7 +62,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   const accessToken = cookie.get("accessToken");
   try {
     const req = await authAPI
-      .get<Todo[]>("todos", {
+      .get<RawTodo[]>("todos", {
         headers: {
           authorization: `Bearer ${accessToken}`,
         },
@@ -89,13 +90,13 @@ export const loader: LoaderFunction = async ({ request }) => {
 export default function Index() {
   // TODO: 해당 날짜의 todo만 받을 수 있게 개선 필요
   const { todos: defaultTodos } = useLoaderData<typeof loader>() as {
-    todos: Todo[];
+    todos: RawTodo[];
     loadFailed: boolean;
   };
 
   const [today, setToday] = useState<Date>(new Date());
   const [todos, setTodos] = useState<Todo[]>(
-    defaultTodos.filter((todo) => isSameDay(todo.date, today))
+    defaultTodos.map(toTodo).filter((todo) => isSameDay(todo.date, today))
   );
   const {
     allTodos,
@@ -124,7 +125,12 @@ export default function Index() {
     };
     updateTodos();
   }, [today]);
-  const [currentTodo, setCurrentTodo] = useState<Todo | undefined>(undefined);
+  const [currentTodo, setCurrentTodo] = useState<Todo>({
+    id: -1,
+    title: "",
+    date: new Date(),
+    isCompleted: false,
+  });
 
   const [title, setTitle] = useState<string>("");
   const [showTodoDetails, setShowTodoDetails] = useState<boolean>(false);
@@ -229,9 +235,6 @@ export default function Index() {
   const handleClickUpdateConfirm = () => {
     // server update
     setShowTodoDetails(false);
-    if (!currentTodo) {
-      return;
-    }
 
     updateTodoById(currentTodo.id, {
       ...currentTodo,
@@ -250,10 +253,6 @@ export default function Index() {
   };
 
   const handleClickDelayTomorrow = () => {
-    if (!currentTodo) {
-      return;
-    }
-
     setCurrentTodo({
       ...currentTodo,
       date: addDays(currentTodo.date, 1),
@@ -395,7 +394,10 @@ export default function Index() {
       <Drawer.Root
         variant="bottom"
         open={showTodoDetails}
-        onInteractOutside={() => {
+        // onInteractOutside={() => {
+        //   setShowTodoDetails(false);
+        // }}
+        onEscapeKeyDown={() => {
           setShowTodoDetails(false);
         }}
         trapFocus={false}
@@ -405,51 +407,47 @@ export default function Index() {
           onFocus={(e) => e.preventDefault()}
         >
           <Drawer.Header>
-            {currentTodo && (
-              <Drawer.Title className="w-full">
-                <div className="flex flex-row place-items-center h-8">
-                  <TodoCheckbox
-                    onChange={handleToggleCurrentTodoComplete}
-                    data-todo-id={currentTodo.id}
-                    checked={currentTodo.isCompleted}
-                    className="w-8 h-8 flex-none"
-                    size="lg"
-                  />
-                  <TodoTitleInput
-                    value={currentTodo.title}
-                    onChange={handleUpdateTitle}
-                    className="w-full h-8 min-w-0"
-                    placeholder="할 일을 입력해주세요"
-                  />
-                  <IconButton
-                    size="md"
-                    variant="ghost"
-                    onClick={handleClickDeleteCurrentTodo}
-                    className="flex-none "
-                  >
-                    <Trash2Icon size={24} />
-                  </IconButton>
-                </div>
-              </Drawer.Title>
-            )}
+            <Drawer.Title className="w-full">
+              <div className="flex flex-row place-items-center h-8">
+                <TodoCheckbox
+                  onChange={handleToggleCurrentTodoComplete}
+                  data-todo-id={currentTodo.id}
+                  checked={currentTodo.isCompleted}
+                  className="w-8 h-8 flex-none"
+                  size="lg"
+                />
+                <TodoTitleInput
+                  value={currentTodo.title}
+                  onChange={handleUpdateTitle}
+                  className="w-full h-8 min-w-0"
+                  placeholder="할 일을 입력해주세요"
+                />
+                <IconButton
+                  size="md"
+                  variant="ghost"
+                  onClick={handleClickDeleteCurrentTodo}
+                  className="flex-none "
+                >
+                  <Trash2Icon size={24} />
+                </IconButton>
+              </div>
+            </Drawer.Title>
           </Drawer.Header>
           <Drawer.Description>
-            {currentTodo && (
-              <section className="flex flex-row place-items-center gap-3 px-4">
-                <CalendarIcon size={24} />
-                <Input
-                  type="date"
-                  value={formatDate(currentTodo.date, "yyyy-MM-dd")}
-                  onChange={handleUpdateDate}
-                />
-                <Button size="sm" onClick={handleClickDelayTomorrow}>
-                  내일로
-                </Button>
-                <Button size="sm" onClick={handleClickDelayWeek}>
-                  다음주로
-                </Button>
-              </section>
-            )}
+            <section className="flex flex-row place-items-center gap-3 px-4">
+              <CalendarIcon size={24} />
+              <Input
+                type="date"
+                value={formatDate(currentTodo.date, "yyyy-MM-dd")}
+                onChange={handleUpdateDate}
+              />
+              <Button size="sm" onClick={handleClickDelayTomorrow}>
+                내일로
+              </Button>
+              <Button size="sm" onClick={handleClickDelayWeek}>
+                다음주로
+              </Button>
+            </section>
           </Drawer.Description>
           <Drawer.Footer>
             <Button onClick={handleClickUpdateConfirm}>확인</Button>
