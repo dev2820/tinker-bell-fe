@@ -1,19 +1,29 @@
-import { MouseEventHandler } from "react";
+import { cn } from "@/lib/utils";
+import { ComponentProps } from "react";
 
-interface CalendarCellProps {
+type CalendarCellProps = ComponentProps<"button"> & {
   day: number | null;
+  isToday: boolean;
   isCurrentMonth: boolean;
-  onClick: MouseEventHandler<HTMLDivElement>;
-}
+};
 
-export const CalendarCell = ({ day, isCurrentMonth }: CalendarCellProps) => {
+export const CalendarCell = ({
+  day,
+  isCurrentMonth,
+  isToday,
+  ...rest
+}: CalendarCellProps) => {
   return (
-    <div
-      className={`flex items-center justify-center h-10 w-10 rounded-full ${
-        isCurrentMonth ? "text-black" : "text-gray-400"
-      }`}
+    <button
+      className={cn(
+        "flex items-center justify-center h-10 w-10 rounded-full",
+        isCurrentMonth ? "text-black" : "text-gray-400",
+        isToday && isCurrentMonth && "bg-primary text-white",
+        isToday && !isCurrentMonth && "bg-primary text-white opacity-50"
+      )}
+      {...rest}
     >
       {day}
-    </div>
+    </button>
   );
 };

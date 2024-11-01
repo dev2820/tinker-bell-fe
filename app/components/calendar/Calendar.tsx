@@ -9,13 +9,15 @@ const Calendar = ({
   today: Date;
   onSelect?: (dateStr: string) => void;
 }) => {
-  const [currentDate, setCurrentDate] = useState(today);
+  const [currentDate, setCurrentDate] = useState(
+    new Date(today.getFullYear(), today.getMonth())
+  );
 
   const handleMonthChange = (delta: number) => {
     const newDate = new Date(
       currentDate.getFullYear(),
       currentDate.getMonth() + delta,
-      currentDate.getDate()
+      1
     );
     setCurrentDate(newDate);
   };
@@ -34,7 +36,7 @@ const Calendar = ({
       <CalendarGrid
         year={currentDate.getFullYear()}
         month={currentDate.getMonth()}
-        date={currentDate.getDate()}
+        today={today}
         onSelect={handleSelectDate}
       />
     </div>

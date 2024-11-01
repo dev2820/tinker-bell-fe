@@ -26,7 +26,6 @@ import {
   Drawer,
   Button,
   IconButton,
-  Input,
   Portal,
   Dialog,
 } from "terra-design-system/react";
@@ -106,6 +105,7 @@ export default function Index() {
   const [todos, setTodos] = useState<Todo[]>(
     defaultTodos.map(toTodo).filter((todo) => isSameDay(todo.date, today))
   );
+  const [calendarDate, setCalendarDate] = useState<Date>(today);
   const {
     allTodos,
     completedTodos,
@@ -217,16 +217,17 @@ export default function Index() {
       });
     }
   };
-  const handleUpdateDate = (dateStr: string) => {
-    // dateStr = yyyy-MM-dd
-    const newDate = new Date(dateStr);
-    if (currentTodo) {
-      setCurrentTodo({
-        ...currentTodo,
-        date: newDate,
-      });
-    }
-  };
+  // const handleUpdateDate = (dateStr: string) => {
+  //   // dateStr = yyyy-MM-dd
+  //   console.log(dateStr);
+  //   const newDate = new Date(dateStr);
+  //   if (currentTodo) {
+  //     setCurrentTodo({
+  //       ...currentTodo,
+  //       date: newDate,
+  //     });
+  //   }
+  // };
 
   const handleClickCreateTodo = async () => {
     const req = await todoAPI.createTodo({
@@ -291,6 +292,33 @@ export default function Index() {
       date: addWeeks(currentTodo.date, 1),
     });
     setShowTodoDetails(false);
+  };
+
+  const handleUpdateCalendarDate = (dateStr: string) => {
+    const newDate = new Date(dateStr);
+    setCalendarDate(newDate);
+  };
+
+  const handleClickUpdateDateConfirm = () => {
+    if (currentTodo) {
+      setCurrentTodo({
+        ...currentTodo,
+        date: calendarDate,
+      });
+      updateTodoById(currentTodo.id, {
+        ...currentTodo,
+        date: calendarDate,
+      });
+      todoAPI.updateTodo({
+        ...currentTodo,
+        date: calendarDate,
+      });
+      setShowTodoDetails(false);
+    }
+  };
+
+  const handleClickCalendarIcon = () => {
+    setCalendarDate(new Date(currentTodo.date.getTime()));
   };
 
   return (
@@ -476,7 +504,7 @@ export default function Index() {
                     {/* <Input type="date" onChange={handleUpdateDate} /> */}
                     {formatDate(currentTodo.date, "yyyy-MM-dd")}
                     <Dialog.Trigger asChild>
-                      <IconButton size="sm">
+                      <IconButton size="sm" onClick={handleClickCalendarIcon}>
                         <CalendarIcon size={24} />
                       </IconButton>
                     </Dialog.Trigger>
@@ -488,12 +516,19 @@ export default function Index() {
                         </Dialog.Title>
                         <Dialog.Description className="flex-1 px-6">
                           <Calendar
-                            today={currentTodo.date}
-                            onSelect={handleUpdateDate}
+                            today={calendarDate}
+                            onSelect={handleUpdateCalendarDate}
                           />
                         </Dialog.Description>
                         <div className="flex flex-row-reverse flex-none px-6 gap-3">
-                          <Button theme="primary">확인</Button>
+                          <Dialog.CloseTrigger asChild>
+                            <Button
+                              theme="primary"
+                              onClick={handleClickUpdateDateConfirm}
+                            >
+                              확인
+                            </Button>
+                          </Dialog.CloseTrigger>
                           <Dialog.CloseTrigger asChild>
                             <Button variant="outline" theme="neutral">
                               닫기
