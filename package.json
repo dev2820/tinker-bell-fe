@@ -32,7 +32,7 @@
     "tailwind-merge": "^2.5.3",
     "tailwind-variants": "^0.2.1",
     "tailwindcss-animate": "^1.0.7",
-    "terra-design-system": "1.0.36"
+    "terra-design-system": "1.0.37"
   },
   "devDependencies": {
     "@remix-run/dev": "^2.13.1",

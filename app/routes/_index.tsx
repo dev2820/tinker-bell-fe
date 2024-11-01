@@ -22,7 +22,14 @@ import {
 import * as todoAPI from "@/utils/api/todo";
 import { toTodo, type RawTodo } from "@/utils/api/todo";
 import { TodoDraggableItem } from "@/components/todo/TodoDraggableItem";
-import { Drawer, Button, IconButton, Input } from "terra-design-system/react";
+import {
+  Drawer,
+  Button,
+  IconButton,
+  Input,
+  Portal,
+  Dialog,
+} from "terra-design-system/react";
 import { isFailed } from "@/utils/is";
 import { AnimatePresence, Reorder } from "framer-motion";
 import {
@@ -335,32 +342,37 @@ export default function Index() {
             </Button>
           </Drawer.Trigger>
         </div>
-        <Drawer.Content className="h-full min-h-96">
-          <Drawer.Header className="h-full">
-            <div className="flex flex-row">
-              <TodoTitleInput
-                value={title}
-                onChange={handleChangeTitle}
-                onKeyDown={handleKeydownTitle}
-                className="flex-1"
-                placeholder="할 일을 입력해주세요"
-              />
-            </div>
-          </Drawer.Header>
-          <Drawer.Body></Drawer.Body>
-          <Drawer.Footer>
-            <Drawer.CloseTrigger asChild>
-              <Button variant="outline" className="mr-3">
-                닫기
-              </Button>
-            </Drawer.CloseTrigger>
-            <Drawer.CloseTrigger asChild>
-              <Button theme="primary" onClick={handleClickCreateTodo}>
-                확인
-              </Button>
-            </Drawer.CloseTrigger>
-          </Drawer.Footer>
-        </Drawer.Content>
+        <Portal>
+          <Drawer.Backdrop />
+          <Drawer.Positioner>
+            <Drawer.Content className="h-full min-h-96">
+              <Drawer.Header className="h-full">
+                <div className="flex flex-row">
+                  <TodoTitleInput
+                    value={title}
+                    onChange={handleChangeTitle}
+                    onKeyDown={handleKeydownTitle}
+                    className="flex-1"
+                    placeholder="할 일을 입력해주세요"
+                  />
+                </div>
+              </Drawer.Header>
+              <Drawer.Body></Drawer.Body>
+              <Drawer.Footer>
+                <Drawer.CloseTrigger asChild>
+                  <Button variant="outline" className="mr-3">
+                    닫기
+                  </Button>
+                </Drawer.CloseTrigger>
+                <Drawer.CloseTrigger asChild>
+                  <Button theme="primary" onClick={handleClickCreateTodo}>
+                    확인
+                  </Button>
+                </Drawer.CloseTrigger>
+              </Drawer.Footer>
+            </Drawer.Content>
+          </Drawer.Positioner>
+        </Portal>
       </Drawer.Root>
 
       {/**
@@ -374,33 +386,38 @@ export default function Index() {
             </Button>
           </Drawer.Trigger>
         </div>
-        <Drawer.Content className="h-96">
-          <Drawer.Body>
-            <div className="flex flex-row-reverse mb-2">
-              <Drawer.CloseTrigger asChild>
-                <Button>닫기</Button>
-              </Drawer.CloseTrigger>
-            </div>
-            <Reorder.Group
-              axis="y"
-              as="ul"
-              values={completedTodos}
-              onReorder={setCompletedTodos}
-              layoutScroll
-              className="p-4 overflow-y-scroll overflow-x-visible"
-            >
-              <AnimatePresence>
-                {completedTodos.map((todo) => (
-                  <TodoDraggableItem
-                    key={todo.id}
-                    todo={todo}
-                    onChangeComplete={handleChangeTodoComplete}
-                  />
-                ))}
-              </AnimatePresence>
-            </Reorder.Group>
-          </Drawer.Body>
-        </Drawer.Content>
+        <Portal>
+          <Drawer.Backdrop />
+          <Drawer.Positioner>
+            <Drawer.Content className="h-96">
+              <Drawer.Body>
+                <div className="flex flex-row-reverse mb-2">
+                  <Drawer.CloseTrigger asChild>
+                    <Button>닫기</Button>
+                  </Drawer.CloseTrigger>
+                </div>
+                <Reorder.Group
+                  axis="y"
+                  as="ul"
+                  values={completedTodos}
+                  onReorder={setCompletedTodos}
+                  layoutScroll
+                  className="p-4 overflow-y-scroll overflow-x-visible"
+                >
+                  <AnimatePresence>
+                    {completedTodos.map((todo) => (
+                      <TodoDraggableItem
+                        key={todo.id}
+                        todo={todo}
+                        onChangeComplete={handleChangeTodoComplete}
+                      />
+                    ))}
+                  </AnimatePresence>
+                </Reorder.Group>
+              </Drawer.Body>
+            </Drawer.Content>
+          </Drawer.Positioner>
+        </Portal>
       </Drawer.Root>
       {/**
        * todo 자세히 보기
@@ -408,66 +425,93 @@ export default function Index() {
       <Drawer.Root
         variant="bottom"
         open={showTodoDetails}
-        // onInteractOutside={() => {
-        //   setShowTodoDetails(false);
-        // }}
-        // TODO: 날짜 새로 만들기
+        onInteractOutside={() => {
+          setShowTodoDetails(false);
+        }}
         onEscapeKeyDown={() => {
           setShowTodoDetails(false);
         }}
         trapFocus={false}
       >
-        <Drawer.Content
-          className="h-full min-h-96"
-          onFocus={(e) => e.preventDefault()}
-        >
-          <Drawer.Header>
-            <Drawer.Title className="w-full">
-              <div className="flex flex-row place-items-center h-8">
-                <TodoCheckbox
-                  onChange={handleToggleCurrentTodoComplete}
-                  data-todo-id={currentTodo.id}
-                  checked={currentTodo.isCompleted}
-                  className="w-8 h-8 flex-none"
-                  size="lg"
-                />
-                <TodoTitleInput
-                  value={currentTodo.title}
-                  onChange={handleUpdateTitle}
-                  className="w-full h-8 min-w-0"
-                  placeholder="할 일을 입력해주세요"
-                />
-                <IconButton
-                  size="md"
-                  variant="ghost"
-                  onClick={handleClickDeleteCurrentTodo}
-                  className="flex-none "
-                >
-                  <Trash2Icon size={24} />
-                </IconButton>
-              </div>
-            </Drawer.Title>
-          </Drawer.Header>
-          <Drawer.Description>
-            <section className="flex flex-row place-items-center gap-3 px-4">
-              <CalendarIcon size={24} />
-              <Input
-                type="date"
-                value={formatDate(currentTodo.date, "yyyy-MM-dd")}
-                onChange={handleUpdateDate}
-              />
-              <Button size="sm" onClick={handleClickDelayTomorrow}>
-                내일로
-              </Button>
-              <Button size="sm" onClick={handleClickDelayWeek}>
-                다음주로
-              </Button>
-            </section>
-          </Drawer.Description>
-          <Drawer.Footer>
-            <Button onClick={handleClickUpdateConfirm}>확인</Button>
-          </Drawer.Footer>
-        </Drawer.Content>
+        <Portal>
+          <Drawer.Backdrop />
+          <Drawer.Positioner>
+            <Drawer.Content
+              className="h-full min-h-96"
+              onFocus={(e) => e.preventDefault()}
+            >
+              <Drawer.Header>
+                <Drawer.Title className="w-full">
+                  <div className="flex flex-row place-items-center h-8">
+                    <TodoCheckbox
+                      onChange={handleToggleCurrentTodoComplete}
+                      data-todo-id={currentTodo.id}
+                      checked={currentTodo.isCompleted}
+                      className="w-8 h-8 flex-none"
+                      size="lg"
+                    />
+                    <TodoTitleInput
+                      value={currentTodo.title}
+                      onChange={handleUpdateTitle}
+                      className="w-full h-8 min-w-0"
+                      placeholder="할 일을 입력해주세요"
+                    />
+                    <IconButton
+                      size="md"
+                      variant="ghost"
+                      onClick={handleClickDeleteCurrentTodo}
+                      className="flex-none "
+                    >
+                      <Trash2Icon size={24} />
+                    </IconButton>
+                  </div>
+                </Drawer.Title>
+              </Drawer.Header>
+              <Drawer.Description>
+                <section className="flex flex-row place-items-center gap-3 px-4">
+                  <CalendarIcon size={24} />
+                  <Dialog.Root>
+                    {/* <Input type="date" onChange={handleUpdateDate} /> */}
+                    {formatDate(currentTodo.date, "yyyy-MM-dd")}
+                    <Dialog.Trigger asChild>
+                      <IconButton size="sm">
+                        <CalendarIcon size={24} />
+                      </IconButton>
+                    </Dialog.Trigger>
+                    <Dialog.Backdrop />
+                    <Dialog.Positioner>
+                      <Dialog.Content className="w-4/5 min-w-92 h-96 py-4 flex flex-col">
+                        <Dialog.Title className="text-center flex-none">
+                          날짜 변경
+                        </Dialog.Title>
+                        <Dialog.Description className="flex-1">
+                          calendar
+                        </Dialog.Description>
+                        <div className="flex flex-row-reverse flex-none px-4 gap-3">
+                          <Button theme="primary">확인</Button>
+                          <Dialog.CloseTrigger asChild>
+                            <Button variant="outline" theme="neutral">
+                              닫기
+                            </Button>
+                          </Dialog.CloseTrigger>
+                        </div>
+                      </Dialog.Content>
+                    </Dialog.Positioner>
+                  </Dialog.Root>
+                  <Button size="sm" onClick={handleClickDelayTomorrow}>
+                    내일로
+                  </Button>
+                  <Button size="sm" onClick={handleClickDelayWeek}>
+                    다음주로
+                  </Button>
+                </section>
+              </Drawer.Description>
+              <Drawer.Footer>
+                <Button onClick={handleClickUpdateConfirm}>확인</Button>
+              </Drawer.Footer>
+            </Drawer.Content>
+          </Drawer.Positioner>
+        </Portal>
       </Drawer.Root>
     </main>
   );
