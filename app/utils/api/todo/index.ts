@@ -84,14 +84,10 @@ export async function deleteTodo(payload: DeleteTodoPayload) {
 
 type CreateTodoPayload = Omit<Todo, "id" | "isCompleted">;
 export async function createTodo(payload: CreateTodoPayload) {
-  const data = {
-    title: payload.title,
-    date: new Date(payload.date.getTime() + 9 * 60 * 60 * 1000),
-  };
   try {
     const result = await authAPI
       .post(`todos`, {
-        body: JSON.stringify(data),
+        body: JSON.stringify(payload),
         headers: {
           Authorization: `Bearer ${Cookies.get("accessToken")}`,
         },
@@ -119,9 +115,6 @@ export async function updateTodo(payload: UpdateTodoPayload) {
     await authAPI.put(`todos/${id}`, {
       body: JSON.stringify({
         ...rest,
-        date: rest.date
-          ? new Date(rest.date.getTime() + 9 * 60 * 60 * 1000) // 한국시간으로 저장
-          : undefined,
       }),
       headers: {
         Authorization: `Bearer ${Cookies.get("accessToken")}`,
