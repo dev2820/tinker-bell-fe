@@ -18,12 +18,12 @@ export const subDays = (date: Date, day: number) => {
   return new Date(date.getTime() - ONE_DAY * day);
 };
 
-export const addWeeks = (date: Date, day: number) => {
-  return new Date(date.getTime() + ONE_WEEK * day);
+export const addWeeks = (date: Date, week: number) => {
+  return new Date(date.getTime() + ONE_WEEK * week);
 };
 
-export const subWeeks = (date: Date, day: number) => {
-  return new Date(date.getTime() - ONE_WEEK * day);
+export const subWeeks = (date: Date, week: number) => {
+  return new Date(date.getTime() - ONE_WEEK * week);
 };
 
 export const isSameDay = (date1: Date, date2: Date) => {
