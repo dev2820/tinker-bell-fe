@@ -257,17 +257,31 @@ export default function Index() {
       ...currentTodo,
       date: addDays(currentTodo.date, 1),
     });
+    updateTodoById(currentTodo.id, {
+      ...currentTodo,
+      date: addDays(currentTodo.date, 1),
+    });
+    todoAPI.updateTodo({
+      ...currentTodo,
+      date: addDays(currentTodo.date, 1),
+    });
+    setShowTodoDetails(false);
   };
 
   const handleClickDelayWeek = () => {
-    if (!currentTodo) {
-      return;
-    }
-
     setCurrentTodo({
       ...currentTodo,
       date: addWeeks(currentTodo.date, 1),
     });
+    updateTodoById(currentTodo.id, {
+      ...currentTodo,
+      date: addWeeks(currentTodo.date, 1),
+    });
+    todoAPI.updateTodo({
+      ...currentTodo,
+      date: addWeeks(currentTodo.date, 1),
+    });
+    setShowTodoDetails(false);
   };
 
   return (
