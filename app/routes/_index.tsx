@@ -41,6 +41,7 @@ import {
   subDays,
 } from "@/utils/date-time";
 import { vibrateShort } from "@/utils/device/vibrate";
+import Calendar from "@/components/calendar/Calendar";
 
 export const meta: MetaFunction = () => {
   return [
@@ -216,8 +217,9 @@ export default function Index() {
       });
     }
   };
-  const handleUpdateDate = (e: ChangeEvent<HTMLInputElement>) => {
-    const newDate = new Date(e.currentTarget.value);
+  const handleUpdateDate = (dateStr: string) => {
+    // dateStr = yyyy-MM-dd
+    const newDate = new Date(dateStr);
     if (currentTodo) {
       setCurrentTodo({
         ...currentTodo,
@@ -480,14 +482,17 @@ export default function Index() {
                     </Dialog.Trigger>
                     <Dialog.Backdrop />
                     <Dialog.Positioner>
-                      <Dialog.Content className="w-4/5 min-w-92 h-96 py-4 flex flex-col">
-                        <Dialog.Title className="text-center flex-none">
+                      <Dialog.Content className="w-4/5 min-w-92 h-112 py-6 flex flex-col">
+                        <Dialog.Title className="text-center flex-none px-4">
                           날짜 변경
                         </Dialog.Title>
-                        <Dialog.Description className="flex-1">
-                          calendar
+                        <Dialog.Description className="flex-1 px-6">
+                          <Calendar
+                            today={currentTodo.date}
+                            onSelect={handleUpdateDate}
+                          />
                         </Dialog.Description>
-                        <div className="flex flex-row-reverse flex-none px-4 gap-3">
+                        <div className="flex flex-row-reverse flex-none px-6 gap-3">
                           <Button theme="primary">확인</Button>
                           <Dialog.CloseTrigger asChild>
                             <Button variant="outline" theme="neutral">
