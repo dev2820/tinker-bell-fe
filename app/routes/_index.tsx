@@ -1,4 +1,3 @@
-import { TodoCheckbox } from "@/components/todo/TodoCheckbox";
 import { TodoTitleInput } from "@/components/todo/TodoTitleInput";
 import { useTodo } from "@/hooks/use-todo";
 import { Todo } from "@/types/todo";
@@ -166,24 +165,7 @@ export default function Index() {
     vibrateShort();
     toggleTodoCompleteById(todoId);
   };
-  const handleToggleCurrentTodoComplete = (
-    e: ChangeEvent<HTMLInputElement>
-  ) => {
-    if (!currentTodo) {
-      return;
-    }
 
-    const isCompleted = e.currentTarget.checked;
-    toggleTodoCompleteById(currentTodo.id);
-    setCurrentTodo({
-      ...currentTodo,
-      isCompleted: isCompleted,
-    });
-    todoAPI.updateTodoComplete({
-      id: currentTodo.id,
-      isCompleted: isCompleted,
-    });
-  };
   const handleClickTodoItem = (e: MouseEvent<HTMLButtonElement>) => {
     // show todo details
     const $target = e.currentTarget;
@@ -488,13 +470,6 @@ export default function Index() {
               <Drawer.Header>
                 <Drawer.Title className="w-full">
                   <div className="flex flex-row place-items-center h-8">
-                    <TodoCheckbox
-                      onChange={handleToggleCurrentTodoComplete}
-                      data-todo-id={currentTodo.id}
-                      checked={currentTodo.isCompleted}
-                      className="w-8 h-8 flex-none"
-                      size="lg"
-                    />
                     <TodoTitleInput
                       value={currentTodo.title}
                       onChange={handleUpdateTitle}
