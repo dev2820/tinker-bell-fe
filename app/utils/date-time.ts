@@ -10,6 +10,13 @@ export const formatKoreanDate = (date: Date, format: string) => {
 
 export { formatDate };
 
+export const getToday = () => {
+  const _today = new Date();
+  const year = _today.getFullYear();
+  const month = _today.getMonth();
+  const date = _today.getDate();
+  return new Date(year, month, date);
+};
 export const addDays = (date: Date, day: number) => {
   return new Date(date.getTime() + ONE_DAY * day);
 };
@@ -27,18 +34,16 @@ export const subWeeks = (date: Date, week: number) => {
 };
 
 export const isSameDay = (date1: Date, date2: Date) => {
-  const date1Korean = date1.toLocaleDateString("ko-KR", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    timeZone: "Asia/Seoul",
-  });
-  const date2Korean = date2.toLocaleDateString("ko-KR", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    timeZone: "Asia/Seoul",
-  });
+  const date1Korean = `${date1.getFullYear()}${date1.getMonth() + 1}${date1
+    .getDate()
+    .toString()
+    .padStart(2, "0")}`;
+
+  const date2Korean = `${date2.getFullYear()}${date2.getMonth() + 1}${date2
+    .getDate()
+    .toString()
+    .padStart(2, "0")}`;
+  console.log(date1Korean, date2Korean);
 
   return date1Korean === date2Korean;
 };

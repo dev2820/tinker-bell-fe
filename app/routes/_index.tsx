@@ -35,12 +35,18 @@ import {
   formatDate,
   formatKoreanDate,
   addDays,
-  addWeeks,
-  isSameDay,
   subDays,
+  getToday,
 } from "@/utils/date-time";
 import { vibrateShort } from "@/utils/device/vibrate";
 import Calendar from "@/components/calendar/Calendar";
+import {
+  changeDateOfTodo,
+  delayNextDay,
+  delayNextWeek,
+  getDateFromTodo,
+  isTargetDateTodo,
+} from "@/utils/helper/todo";
 
 export const meta: MetaFunction = () => {
   return [
@@ -75,10 +81,11 @@ export const loader: LoaderFunction = async ({ request }) => {
         },
       })
       .json();
+    const timezone = "KR";
 
     return json({
       loadFailed: false,
-      todos: req,
+      todos: req.map((rawTodo) => toTodo(rawTodo, timezone)),
     });
   } catch (err) {
     if (isHTTPError(err)) {
@@ -97,13 +104,13 @@ export const loader: LoaderFunction = async ({ request }) => {
 export default function Index() {
   // TODO: 해당 날짜의 todo만 받을 수 있게 개선 필요
   const { todos: defaultTodos } = useLoaderData<typeof loader>() as {
-    todos: RawTodo[];
+    todos: Todo[];
     loadFailed: boolean;
   };
 
-  const [today, setToday] = useState<Date>(new Date());
+  const [today, setToday] = useState<Date>(getToday());
   const [todos, setTodos] = useState<Todo[]>(
-    defaultTodos.map(toTodo).filter((todo) => isSameDay(todo.date, today))
+    defaultTodos.filter((todo) => isTargetDateTodo(todo, today))
   );
   const [calendarDate, setCalendarDate] = useState<Date>(today);
   const {
@@ -127,16 +134,21 @@ export default function Index() {
         return;
       }
       const newTodos = result.value.filter((todo) =>
-        isSameDay(todo.date, today)
+        isTargetDateTodo(todo, today)
       );
       setTodos(newTodos);
     };
     updateTodos();
   }, [today]);
+
   const [currentTodo, setCurrentTodo] = useState<Todo>({
     id: -1,
     title: "",
-    date: new Date(),
+    date: {
+      year: 1970,
+      month: 1,
+      day: 1,
+    },
     isCompleted: false,
   });
 
@@ -198,7 +210,11 @@ export default function Index() {
     if (e.key === "Enter") {
       const req = await todoAPI.createTodo({
         title: title,
-        date: today,
+        date: {
+          year: today.getFullYear(),
+          month: today.getMonth() + 1,
+          day: today.getDate(),
+        },
       });
       if (isFailed(req)) {
         return;
@@ -232,7 +248,11 @@ export default function Index() {
   const handleClickCreateTodo = async () => {
     const req = await todoAPI.createTodo({
       title: title,
-      date: today,
+      date: {
+        year: today.getFullYear(),
+        month: today.getMonth() + 1,
+        day: today.getDate(),
+      },
     });
     if (isFailed(req)) {
       return;
@@ -263,33 +283,30 @@ export default function Index() {
   };
 
   const handleClickDelayTomorrow = () => {
+    const delayedTodo = delayNextDay(currentTodo);
     setCurrentTodo({
-      ...currentTodo,
-      date: addDays(currentTodo.date, 1),
+      ...delayedTodo,
     });
     updateTodoById(currentTodo.id, {
-      ...currentTodo,
-      date: addDays(currentTodo.date, 1),
+      ...delayedTodo,
     });
     todoAPI.updateTodo({
-      ...currentTodo,
-      date: addDays(currentTodo.date, 1),
+      ...delayedTodo,
     });
     setShowTodoDetails(false);
   };
 
   const handleClickDelayWeek = () => {
+    const delayedTodo = delayNextWeek(currentTodo);
+
     setCurrentTodo({
-      ...currentTodo,
-      date: addWeeks(currentTodo.date, 1),
+      ...delayedTodo,
     });
     updateTodoById(currentTodo.id, {
-      ...currentTodo,
-      date: addWeeks(currentTodo.date, 1),
+      ...delayedTodo,
     });
     todoAPI.updateTodo({
-      ...currentTodo,
-      date: addWeeks(currentTodo.date, 1),
+      ...delayedTodo,
     });
     setShowTodoDetails(false);
   };
@@ -300,25 +317,23 @@ export default function Index() {
   };
 
   const handleClickUpdateDateConfirm = () => {
+    const changedTodo = changeDateOfTodo(currentTodo, calendarDate);
     if (currentTodo) {
       setCurrentTodo({
-        ...currentTodo,
-        date: calendarDate,
+        ...changedTodo,
       });
       updateTodoById(currentTodo.id, {
-        ...currentTodo,
-        date: calendarDate,
+        ...changedTodo,
       });
       todoAPI.updateTodo({
-        ...currentTodo,
-        date: calendarDate,
+        ...changedTodo,
       });
       setShowTodoDetails(false);
     }
   };
 
   const handleClickCalendarIcon = () => {
-    setCalendarDate(new Date(currentTodo.date.getTime()));
+    setCalendarDate(getDateFromTodo(currentTodo));
   };
 
   return (
@@ -502,7 +517,11 @@ export default function Index() {
                   <CalendarIcon size={24} />
                   <Dialog.Root>
                     {/* <Input type="date" onChange={handleUpdateDate} /> */}
-                    {formatDate(currentTodo.date, "yyyy-MM-dd")}
+                    {`${currentTodo.date.year}-${currentTodo.date.month
+                      .toString()
+                      .padStart(2, "0")}-${currentTodo.date.day
+                      .toString()
+                      .padStart(2, "0")}`}
                     <Dialog.Trigger asChild>
                       <IconButton size="sm" onClick={handleClickCalendarIcon}>
                         <CalendarIcon size={24} />

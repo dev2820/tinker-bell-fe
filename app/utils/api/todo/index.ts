@@ -21,7 +21,7 @@ export async function fetchTodos() {
       .json<RawTodo[]>();
     return {
       isFailed: false,
-      value: result.map(toTodo),
+      value: result.map((rawTodo) => toTodo(rawTodo)),
       error: null,
     } as Success<Todo[]>;
   } catch (err) {
@@ -87,7 +87,14 @@ export async function createTodo(payload: CreateTodoPayload) {
   try {
     const result = await authAPI
       .post(`todos`, {
-        body: JSON.stringify(payload),
+        body: JSON.stringify({
+          title: payload.title,
+          date: new Date(
+            payload.date.year,
+            payload.date.month - 1,
+            payload.date.day
+          ),
+        }),
         headers: {
           Authorization: `Bearer ${Cookies.get("accessToken")}`,
         },
@@ -114,7 +121,11 @@ export async function updateTodo(payload: UpdateTodoPayload) {
   try {
     await authAPI.put(`todos/${id}`, {
       body: JSON.stringify({
-        ...rest,
+        title: rest.title,
+        date:
+          rest.date &&
+          new Date(rest.date.year, rest.date.month - 1, rest.date.day),
+        isCompleted: rest.isCompleted,
       }),
       headers: {
         Authorization: `Bearer ${Cookies.get("accessToken")}`,
@@ -162,9 +173,25 @@ export async function updateTodoComplete(payload: UpdateTodoCompletePayload) {
   }
 }
 
-export const toTodo = (rawTodo: RawTodo): Todo => {
+export const toTodo = (rawTodo: RawTodo, timezone: "KR" = "KR"): Todo => {
+  const date = new Date(rawTodo.date);
+  const localDate = new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
+    date.getHours() + TIMEZONE_OFFSET[timezone]
+  );
+
   return {
     ...rawTodo,
-    date: new Date(rawTodo.date),
+    date: {
+      year: localDate.getFullYear(),
+      month: localDate.getMonth() + 1,
+      day: localDate.getDate(),
+    },
   };
 };
+
+const TIMEZONE_OFFSET = {
+  KR: 9,
+} as const;
