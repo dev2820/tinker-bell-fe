@@ -1,5 +1,5 @@
 import { Todo } from "@/types/todo";
-import { isSameDay } from "date-fns";
+import { isTargetDateTodo } from "@/utils/helper/todo";
 import { useEffect, useMemo, useState } from "react";
 
 export const useTodo = (defaultTodos: Todo[] = [], currentDate: Date) => {
@@ -31,7 +31,7 @@ export const useTodo = (defaultTodos: Todo[] = [], currentDate: Date) => {
             ...todos[incompletedTargetIndex],
             ...payload,
           })
-          .filter((todo) => isSameDay(todo.date, currentDate))
+          .filter((todo) => isTargetDateTodo(todo, currentDate))
       );
       return;
     }
@@ -45,7 +45,7 @@ export const useTodo = (defaultTodos: Todo[] = [], currentDate: Date) => {
             ...todos[completedTargetIndex],
             ...payload,
           })
-          .filter((todo) => isSameDay(todo.date, currentDate))
+          .filter((todo) => isTargetDateTodo(todo, currentDate))
       );
     }
   };
