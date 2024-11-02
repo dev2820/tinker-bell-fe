@@ -390,7 +390,7 @@ export default function Index() {
         <Portal>
           <Drawer.Backdrop />
           <Drawer.Positioner>
-            <Drawer.Content className="h-full min-h-96">
+            <Drawer.Content className="h-full min-h-96 rounded-t-lg pt-4">
               <Drawer.Header className="h-full">
                 <div className="flex flex-row">
                   <TodoTitleInput
@@ -434,7 +434,7 @@ export default function Index() {
         <Portal>
           <Drawer.Backdrop />
           <Drawer.Positioner>
-            <Drawer.Content className="h-96">
+            <Drawer.Content className="h-96 rounded-t-lg pt-4">
               <Drawer.Body>
                 <div className="flex flex-row-reverse mb-2">
                   <Drawer.CloseTrigger asChild>
@@ -482,7 +482,7 @@ export default function Index() {
           <Drawer.Backdrop />
           <Drawer.Positioner>
             <Drawer.Content
-              className="h-full min-h-96"
+              className="h-full min-h-96 rounded-t-lg pt-4"
               onFocus={(e) => e.preventDefault()}
             >
               <Drawer.Header>
