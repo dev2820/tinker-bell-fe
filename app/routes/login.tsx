@@ -4,14 +4,16 @@ export async function loader() {
   const KAKAO_CLIENT_ID = process.env.KAKAO_CLIENT_ID;
   const API_URL = process.env.API_URL;
   const kakaoLoginUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_CLIENT_ID}&redirect_uri=${API_URL}/oauth/redirect&response_type=code`;
+  const appleLoginUrl = `https://appleid.apple.com/auth/authorize/?client_id=store.ticketbell$redurect_uri=${API_URL}/oauth/redirect/apple&response_type=code`;
 
   return json({
     kakaoLoginUrl,
+    appleLoginUrl,
   });
 }
 
 export default function Login() {
-  const { kakaoLoginUrl } = useLoaderData<typeof loader>();
+  const { kakaoLoginUrl, appleLoginUrl } = useLoaderData<typeof loader>();
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -27,6 +29,7 @@ export default function Login() {
               className="h-10 w-auto"
             />
           </Link>
+          <Link to={appleLoginUrl}>애플 로그인</Link>
         </div>
       </div>
     </div>
