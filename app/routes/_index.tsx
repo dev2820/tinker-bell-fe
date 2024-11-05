@@ -179,8 +179,8 @@ export default function Index() {
   const handleClickDeleteCurrentTodo = () => {
     // show todo details
     if (currentTodo) {
-      deleteTodoById(currentTodo.id);
       setShowTodoDetails(false);
+      deleteTodoById(currentTodo.id);
       todoAPI.deleteTodo({ id: currentTodo.id });
     }
   };
@@ -213,6 +213,14 @@ export default function Index() {
         ...currentTodo,
         title: newTitle,
       });
+      updateTodoById(currentTodo.id, {
+        ...currentTodo,
+        title: newTitle,
+      });
+      todoAPI.updateTodo({
+        ...currentTodo,
+        title: newTitle,
+      });
     }
   };
   // const handleUpdateDate = (dateStr: string) => {
@@ -242,18 +250,6 @@ export default function Index() {
 
     addIncompletedTodo(req.value);
     setTitle("");
-  };
-
-  const handleClickUpdateConfirm = () => {
-    // server update
-    setShowTodoDetails(false);
-
-    updateTodoById(currentTodo.id, {
-      ...currentTodo,
-    });
-    todoAPI.updateTodo({
-      ...currentTodo,
-    });
   };
 
   const handleGotoPrevDate = () => {
@@ -296,6 +292,22 @@ export default function Index() {
   const handleUpdateCalendarDate = (dateStr: string) => {
     const newDate = new Date(dateStr);
     setCalendarDate(newDate);
+    updateTodoById(currentTodo.id, {
+      ...currentTodo,
+      date: {
+        year: newDate.getFullYear(),
+        month: newDate.getMonth(),
+        day: newDate.getDate(),
+      },
+    });
+    todoAPI.updateTodo({
+      ...currentTodo,
+      date: {
+        year: newDate.getFullYear(),
+        month: newDate.getMonth(),
+        day: newDate.getDate(),
+      },
+    });
   };
 
   const handleClickUpdateDateConfirm = () => {
@@ -316,6 +328,10 @@ export default function Index() {
 
   const handleClickCalendarIcon = () => {
     setCalendarDate(getDateFromTodo(currentTodo));
+  };
+
+  const handleCloseTodoDetail = () => {
+    setShowTodoDetails(false);
   };
 
   return (
@@ -452,12 +468,8 @@ export default function Index() {
       <Drawer.Root
         variant="bottom"
         open={showTodoDetails}
-        onInteractOutside={() => {
-          setShowTodoDetails(false);
-        }}
-        onEscapeKeyDown={() => {
-          setShowTodoDetails(false);
-        }}
+        onInteractOutside={handleCloseTodoDetail}
+        onEscapeKeyDown={handleCloseTodoDetail}
         trapFocus={false}
       >
         <Portal>
@@ -541,7 +553,7 @@ export default function Index() {
                 </section>
               </Drawer.Description>
               <Drawer.Footer>
-                <Button onClick={handleClickUpdateConfirm}>확인</Button>
+                <Button onClick={handleCloseTodoDetail}>닫기</Button>
               </Drawer.Footer>
             </Drawer.Content>
           </Drawer.Positioner>
