@@ -118,6 +118,7 @@ export default function Index() {
 
   const addTodoDrawer = useDisclosure();
   const completedTodoDrawer = useDisclosure();
+  const detailDrawer = useDisclosure();
   const [today, setToday] = useState<Date>(getToday());
   const [todos, setTodos] = useState<Todo[]>(
     defaultTodos.filter((todo) => isTargetDateTodo(todo, today))
@@ -163,7 +164,6 @@ export default function Index() {
   });
 
   const [title, setTitle] = useState<string>("");
-  const [showTodoDetails, setShowTodoDetails] = useState<boolean>(false);
   const handleChangeTodoComplete = (e: ChangeEvent<HTMLInputElement>) => {
     const $target = e.currentTarget;
     const isCompleted = e.currentTarget.checked;
@@ -185,12 +185,12 @@ export default function Index() {
     if (todo) {
       setCurrentTodo({ ...todo });
     }
-    setShowTodoDetails(true);
+    detailDrawer.onOpen();
   };
   const handleClickDeleteCurrentTodo = () => {
     // show todo details
     if (currentTodo) {
-      setShowTodoDetails(false);
+      detailDrawer.onClose();
       deleteTodoById(currentTodo.id);
       todoAPI.deleteTodo({ id: currentTodo.id });
     }
@@ -283,7 +283,7 @@ export default function Index() {
     todoAPI.updateTodo({
       ...delayedTodo,
     });
-    setShowTodoDetails(false);
+    detailDrawer.onClose();
   };
 
   const handleClickDelayWeek = () => {
@@ -298,28 +298,12 @@ export default function Index() {
     todoAPI.updateTodo({
       ...delayedTodo,
     });
-    setShowTodoDetails(false);
+    detailDrawer.onClose();
   };
 
   const handleUpdateCalendarDate = (dateStr: string) => {
     const newDate = new Date(dateStr);
     setCalendarDate(newDate);
-    updateTodoById(currentTodo.id, {
-      ...currentTodo,
-      date: {
-        year: newDate.getFullYear(),
-        month: newDate.getMonth(),
-        day: newDate.getDate(),
-      },
-    });
-    todoAPI.updateTodo({
-      ...currentTodo,
-      date: {
-        year: newDate.getFullYear(),
-        month: newDate.getMonth(),
-        day: newDate.getDate(),
-      },
-    });
   };
 
   const handleClickUpdateDateConfirm = () => {
@@ -334,16 +318,12 @@ export default function Index() {
       todoAPI.updateTodo({
         ...changedTodo,
       });
-      setShowTodoDetails(false);
+      detailDrawer.onClose();
     }
   };
 
   const handleClickCalendarIcon = () => {
     setCalendarDate(getDateFromTodo(currentTodo));
-  };
-
-  const handleCloseTodoDetail = () => {
-    setShowTodoDetails(false);
   };
 
   const handleSlideChange = (swiper: SwiperType) => {
@@ -521,9 +501,9 @@ export default function Index() {
        */}
       <Drawer.Root
         variant="bottom"
-        open={showTodoDetails}
-        onInteractOutside={handleCloseTodoDetail}
-        onEscapeKeyDown={handleCloseTodoDetail}
+        open={detailDrawer.isOpen}
+        onInteractOutside={detailDrawer.onClose}
+        onEscapeKeyDown={detailDrawer.onClose}
         trapFocus={false}
       >
         <Portal>
@@ -607,7 +587,7 @@ export default function Index() {
                 </section>
               </Drawer.Description>
               <Drawer.Footer>
-                <Button onClick={handleCloseTodoDetail}>닫기</Button>
+                <Button onClick={detailDrawer.onClose}>닫기</Button>
               </Drawer.Footer>
             </Drawer.Content>
           </Drawer.Positioner>
