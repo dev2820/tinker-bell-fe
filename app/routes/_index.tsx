@@ -46,6 +46,13 @@ import {
   getDateFromTodo,
   isTargetDateTodo,
 } from "@/utils/helper/todo";
+import { Virtual } from "swiper/modules";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import "swiper/css/virtual";
+import { useDisclosure } from "@/hooks/use-disclosure";
+import { Swiper as SwiperType } from "swiper/types";
+import { range } from "@/utils/range";
 
 export const meta: MetaFunction = () => {
   return [
@@ -107,6 +114,10 @@ export default function Index() {
     loadFailed: boolean;
   };
 
+  const [slides] = useState<number[]>(range(-500, 500, 1));
+
+  const addTodoDrawer = useDisclosure();
+  const completedTodoDrawer = useDisclosure();
   const [today, setToday] = useState<Date>(getToday());
   const [todos, setTodos] = useState<Todo[]>(
     defaultTodos.filter((todo) => isTargetDateTodo(todo, today))
@@ -249,6 +260,7 @@ export default function Index() {
     }
 
     addIncompletedTodo(req.value);
+    addTodoDrawer.onClose();
     setTitle("");
   };
 
@@ -334,57 +346,102 @@ export default function Index() {
     setShowTodoDetails(false);
   };
 
+  const handleSlideChange = (swiper: SwiperType) => {
+    // swiper가 바뀌면 끝에 도달했는지 여부에 따라 todo를 새로 패치
+    // next, prev에 해당하는 todo 배치
+    console.log(swiper);
+  };
   return (
     <main className="flex flex-col w-full h-screen items-stretch">
-      <h2 className="text-center mt-4 mb-4">
-        <small className="block">{formatKoreanDate(today, "MM월 dd일")}</small>
-        <div className="flex flex-row place-items-center justify-center gap-3">
-          <button onClick={handleGotoPrevDate}>
-            <ChevronLeftIcon size={28} strokeWidth={1} />
-          </button>
-          <time
-            dateTime={formatDate(today, "yyyy-MM-dd")}
-            className="font-bold w-36"
-          >
-            {formatKoreanDate(today, "EEEE")}
-          </time>
-          <button onClick={handleGotoNextDate}>
-            <ChevronRightIcon size={28} strokeWidth={1} />
-          </button>
-        </div>
-      </h2>
-      <div className="overflow-y-scroll">
-        <Reorder.Group
-          axis="y"
-          as="ul"
-          values={incompletedTodos}
-          onReorder={setIncompletedTodos}
-          layoutScroll
-          className="px-4 overflow-y-hidden overflow-x-hidden"
-        >
-          <AnimatePresence>
-            {incompletedTodos.map((todo) => (
-              <TodoDraggableItem
-                key={todo.id}
-                todo={todo}
-                onChangeComplete={handleChangeTodoComplete}
-                onClickTodo={handleClickTodoItem}
-              />
-            ))}
-          </AnimatePresence>
-        </Reorder.Group>
-      </div>
+      <Swiper
+        modules={[Virtual]}
+        className="h-full w-full"
+        slidesPerView={1}
+        onSlideChange={handleSlideChange}
+        centeredSlides={true}
+        spaceBetween={0}
+        initialSlide={slides.length / 2}
+        virtual
+      >
+        {slides.map((slideContent, index) => (
+          <SwiperSlide key={slideContent} virtualIndex={index}>
+            {/**
+             * index가 끝에 도달하면 더 불러오기 버튼으로 교체
+             */}
+            <div className="h-full overflow-y-auto">
+              <h2 className="text-center mt-4 mb-4">
+                <small className="block">
+                  {formatKoreanDate(today, "MM월 dd일")} {slideContent}
+                </small>
+                <div className="flex flex-row place-items-center justify-center gap-3">
+                  <button onClick={handleGotoPrevDate}>
+                    <ChevronLeftIcon size={28} strokeWidth={1} />
+                  </button>
+                  <time
+                    dateTime={formatDate(today, "yyyy-MM-dd")}
+                    className="font-bold w-36"
+                  >
+                    {formatKoreanDate(today, "EEEE")}
+                  </time>
+                  <button onClick={handleGotoNextDate}>
+                    <ChevronRightIcon size={28} strokeWidth={1} />
+                  </button>
+                </div>
+              </h2>
+              <div className="overflow-y-scroll pb-4">
+                <Reorder.Group
+                  axis="y"
+                  as="ul"
+                  values={incompletedTodos}
+                  onReorder={setIncompletedTodos}
+                  layoutScroll
+                  className="px-4 overflow-y-hidden overflow-x-hidden"
+                >
+                  <AnimatePresence>
+                    {incompletedTodos.map((todo) => (
+                      <TodoDraggableItem
+                        key={todo.id}
+                        todo={todo}
+                        onChangeComplete={handleChangeTodoComplete}
+                        onClickTodo={handleClickTodoItem}
+                      />
+                    ))}
+                  </AnimatePresence>
+                </Reorder.Group>
+                <div className="px-4">
+                  <Button
+                    className="w-full mb-2"
+                    theme="primary"
+                    size="lg"
+                    onClick={addTodoDrawer.onOpen}
+                  >
+                    + 할 일 추가하기
+                  </Button>
+                  <Button
+                    className="w-full"
+                    theme="neutral"
+                    size="lg"
+                    onClick={completedTodoDrawer.onOpen}
+                  >
+                    완료된 작업 보기
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </SwiperSlide>
+        ))}
+      </Swiper>
+
       {/**
        * todo 생성
        */}
-      <Drawer.Root variant="bottom">
-        <div className="px-4 mb-2 flex-none">
-          <Drawer.Trigger asChild>
-            <Button className="w-full" theme="primary" size="lg">
-              + 할 일 추가하기
-            </Button>
-          </Drawer.Trigger>
-        </div>
+      <Drawer.Root
+        variant="bottom"
+        open={addTodoDrawer.isOpen}
+        onInteractOutside={addTodoDrawer.onClose}
+        onEscapeKeyDown={addTodoDrawer.onClose}
+        trapFocus={false}
+      >
         <Portal>
           <Drawer.Backdrop />
           <Drawer.Positioner>
@@ -402,16 +459,16 @@ export default function Index() {
               </Drawer.Header>
               <Drawer.Body></Drawer.Body>
               <Drawer.Footer>
-                <Drawer.CloseTrigger asChild>
-                  <Button variant="outline" className="mr-3">
-                    닫기
-                  </Button>
-                </Drawer.CloseTrigger>
-                <Drawer.CloseTrigger asChild>
-                  <Button theme="primary" onClick={handleClickCreateTodo}>
-                    확인
-                  </Button>
-                </Drawer.CloseTrigger>
+                <Button
+                  variant="outline"
+                  className="mr-3"
+                  onClick={addTodoDrawer.onClose}
+                >
+                  닫기
+                </Button>
+                <Button theme="primary" onClick={handleClickCreateTodo}>
+                  확인
+                </Button>
               </Drawer.Footer>
             </Drawer.Content>
           </Drawer.Positioner>
@@ -421,23 +478,20 @@ export default function Index() {
       {/**
        * 완료된 todo 보기
        */}
-      <Drawer.Root variant="bottom">
-        <div className="px-4 mb-4 flex-none">
-          <Drawer.Trigger asChild>
-            <Button className="w-full" theme="neutral" size="lg">
-              완료된 작업 보기
-            </Button>
-          </Drawer.Trigger>
-        </div>
+      <Drawer.Root
+        variant="bottom"
+        open={completedTodoDrawer.isOpen}
+        onInteractOutside={completedTodoDrawer.onClose}
+        onEscapeKeyDown={completedTodoDrawer.onClose}
+        trapFocus={false}
+      >
         <Portal>
           <Drawer.Backdrop />
           <Drawer.Positioner>
             <Drawer.Content className="h-96 rounded-t-lg pt-4">
               <Drawer.Body>
                 <div className="flex flex-row-reverse mb-2">
-                  <Drawer.CloseTrigger asChild>
-                    <Button>닫기</Button>
-                  </Drawer.CloseTrigger>
+                  <Button onClick={completedTodoDrawer.onClose}>닫기</Button>
                 </div>
                 <Reorder.Group
                   axis="y"
