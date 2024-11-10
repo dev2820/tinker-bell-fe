@@ -1,5 +1,5 @@
 import { TodoTitleInput } from "@/components/todo/TodoTitleInput";
-import { useTodo } from "@/hooks/use-todo";
+// import { useTodo } from "@/hooks/use-todo";
 import { Todo } from "@/types/todo";
 import { authAPI } from "@/utils/api";
 import type { MetaFunction } from "@remix-run/node";
@@ -13,10 +13,11 @@ import {
 } from "lucide-react";
 import {
   useState,
-  MouseEvent,
   ChangeEvent,
   KeyboardEvent,
+  MouseEvent,
   useMemo,
+  useEffect,
 } from "react";
 import * as todoAPI from "@/utils/api/todo";
 import { toTodo, type RawTodo } from "@/utils/api/todo";
@@ -28,14 +29,12 @@ import {
   Portal,
   Dialog,
 } from "terra-design-system/react";
-import { isFailed } from "@/utils/is";
 import { AnimatePresence, Reorder } from "framer-motion";
 import {
   formatDate,
   formatKoreanDate,
-  addDays,
-  subDays,
   getToday,
+  calcRelativeDate,
 } from "@/utils/date-time";
 import { vibrateShort } from "@/utils/device/vibrate";
 import Calendar from "@/components/calendar/Calendar";
@@ -57,7 +56,9 @@ import {
   dehydrate,
   HydrationBoundary,
   QueryClient,
+  useMutation,
   useQuery,
+  useQueryClient,
 } from "@tanstack/react-query";
 
 export const meta: MetaFunction = () => {
@@ -125,18 +126,15 @@ function TodoPage() {
   const [currentSlideIndex, setCurrentSlideIndex] =
     useState<number>(initialSlideIndex);
   const [baseDate, setBaseDate] = useState<Date>(getToday());
-  const currentDate = useMemo(() => {
-    return new Date(
-      baseDate.getFullYear(),
-      baseDate.getMonth(),
-      baseDate.getDate() + slides[currentSlideIndex]
-    );
-  }, [baseDate, currentSlideIndex]);
+  const currentDate = useMemo(
+    () => calcRelativeDate(baseDate, slides[currentSlideIndex]),
+    [baseDate, currentSlideIndex]
+  );
 
   const todoQueryKey = `${currentDate.getFullYear()}-${
     currentDate.getMonth() + 1
   }-${currentDate.getDate()}`;
-
+  const queryClient = useQueryClient();
   const { data: todos } = useQuery({
     queryKey: ["todos", todoQueryKey],
     queryFn: async () => {
@@ -151,6 +149,69 @@ function TodoPage() {
       return todos.filter((todo) => isTargetDateTodo(todo, currentDate));
     },
   });
+  const updateMutation = useMutation({
+    mutationKey: ["todos", todoQueryKey],
+    mutationFn: todoAPI.updateTodo,
+    onSuccess: (res) => {
+      if (res.isFailed) {
+        throw res.error;
+      }
+
+      queryClient.invalidateQueries({
+        queryKey: ["todos"],
+      });
+    },
+    onError: (error) => {
+      console.error("Error adding item:", error);
+    },
+  });
+  const createMutation = useMutation({
+    mutationKey: ["todos", todoQueryKey],
+    mutationFn: todoAPI.createTodo,
+    onSuccess: (res) => {
+      if (res.isFailed) {
+        throw res.error;
+      }
+
+      queryClient.invalidateQueries({
+        queryKey: ["todos"],
+      });
+    },
+    onError: (error) => {
+      console.error("Error adding item:", error);
+    },
+  });
+  const deleteMutation = useMutation({
+    mutationKey: ["todos", todoQueryKey],
+    mutationFn: todoAPI.deleteTodo,
+    onSuccess: (res) => {
+      if (res.isFailed) {
+        throw res.error;
+      }
+      queryClient.invalidateQueries({
+        queryKey: ["todos"],
+      });
+    },
+    onError: (error) => {
+      console.error("Error adding item:", error);
+    },
+  });
+  const toggleMutation = useMutation({
+    mutationKey: ["todos", todoQueryKey],
+    mutationFn: todoAPI.updateTodoComplete,
+    onSuccess: (res) => {
+      if (res.isFailed) {
+        throw res.error;
+      }
+
+      queryClient.invalidateQueries({
+        queryKey: ["todos"],
+      });
+    },
+    onError: (error) => {
+      console.error("Error adding item:", error);
+    },
+  });
 
   const addTodoDrawer = useDisclosure();
   const completedTodoDrawer = useDisclosure();
@@ -159,17 +220,8 @@ function TodoPage() {
   const [swiperRef, setSwiperRef] = useState<SwiperType | null>(null);
 
   const [calendarDate, setCalendarDate] = useState<Date>(baseDate);
-  const {
-    allTodos,
-    completedTodos,
-    incompletedTodos,
-    updateTodoById,
-    toggleTodoCompleteById,
-    addIncompletedTodo,
-    deleteTodoById,
-    setIncompletedTodos,
-    setCompletedTodos,
-  } = useTodo(todos, baseDate);
+  // TODO: useTodo로 mutation과 query 로직을 옮기기
+  // const {  } = useTodo(todos, baseDate);
 
   const [currentTodo, setCurrentTodo] = useState<Todo>({
     id: -1,
@@ -183,35 +235,39 @@ function TodoPage() {
   });
 
   const [title, setTitle] = useState<string>("");
-  const handleChangeTodoComplete = (e: ChangeEvent<HTMLInputElement>) => {
-    const $target = e.currentTarget;
-    const isCompleted = e.currentTarget.checked;
-    const todoId = Number($target.dataset["todoId"]);
-    todoAPI.updateTodoComplete({
-      id: todoId,
-      isCompleted: isCompleted,
+  const handleChangeTodoComplete = (todoId: number) => {
+    if (!todos) {
+      return null;
+    }
+    const targetTodo = todos.find((todo) => todo.id === todoId);
+    if (!targetTodo) {
+      return null;
+    }
+    toggleMutation.mutate({
+      id: targetTodo.id,
+      isCompleted: !targetTodo.isCompleted,
     });
 
     vibrateShort();
-    toggleTodoCompleteById(todoId);
   };
 
-  const handleClickTodoItem = (e: MouseEvent<HTMLButtonElement>) => {
+  const handleClickTodoItem = (todoId: number) => {
+    if (!todos) {
+      return;
+    }
     // show todo details
-    const $target = e.currentTarget;
-    const todoId = Number($target.dataset["todoId"]);
-    const todo = allTodos.find((todo) => todo.id === todoId);
+    const todo = todos.find((todo) => todo.id === todoId);
     if (todo) {
       setCurrentTodo({ ...todo });
     }
     detailDrawer.onOpen();
   };
+
   const handleClickDeleteCurrentTodo = () => {
     // show todo details
     if (currentTodo) {
+      deleteMutation.mutate({ id: currentTodo.id });
       detailDrawer.onClose();
-      deleteTodoById(currentTodo.id);
-      todoAPI.deleteTodo({ id: currentTodo.id });
     }
   };
 
@@ -220,19 +276,15 @@ function TodoPage() {
   };
   const handleKeydownTitle = async (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      const req = await todoAPI.createTodo({
+      createMutation.mutate({
         title: title,
         date: {
-          year: baseDate.getFullYear(),
-          month: baseDate.getMonth(),
-          day: baseDate.getDate(),
+          year: currentDate.getFullYear(),
+          month: currentDate.getMonth() + 1,
+          day: currentDate.getDate(),
         },
       });
-      if (isFailed(req)) {
-        return;
-      }
 
-      addIncompletedTodo(req.value);
       setTitle("");
     }
   };
@@ -243,80 +295,52 @@ function TodoPage() {
         ...currentTodo,
         title: newTitle,
       });
-      updateTodoById(currentTodo.id, {
-        ...currentTodo,
-        title: newTitle,
-      });
-      todoAPI.updateTodo({
+      console.log(currentTodo);
+      updateMutation.mutate({
         ...currentTodo,
         title: newTitle,
       });
     }
   };
-  // const handleUpdateDate = (dateStr: string) => {
-  //   // dateStr = yyyy-MM-dd
-  //   console.log(dateStr);
-  //   const newDate = new Date(dateStr);
-  //   if (currentTodo) {
-  //     setCurrentTodo({
-  //       ...currentTodo,
-  //       date: newDate,
-  //     });
-  //   }
-  // };
 
   const handleClickCreateTodo = async () => {
-    const req = await todoAPI.createTodo({
+    createMutation.mutate({
       title: title,
       date: {
-        year: baseDate.getFullYear(),
-        month: baseDate.getMonth() + 1,
-        day: baseDate.getDate(),
+        year: currentDate.getFullYear(),
+        month: currentDate.getMonth() + 1,
+        day: currentDate.getDate(),
       },
     });
-    if (isFailed(req)) {
-      return;
-    }
-
-    addIncompletedTodo(req.value);
     addTodoDrawer.onClose();
     setTitle("");
   };
 
   const handleGotoPrevDate = () => {
-    setBaseDate(subDays(baseDate, 1));
+    if (!swiperRef) {
+      return;
+    }
+    swiperRef.slidePrev(0);
   };
 
   const handleGotoNextDate = () => {
-    setBaseDate(addDays(baseDate, 1));
+    if (!swiperRef) {
+      return;
+    }
+    swiperRef.slideNext(0);
   };
 
   const handleClickDelayTomorrow = () => {
     const delayedTodo = delayNextDay(currentTodo);
-    setCurrentTodo({
-      ...delayedTodo,
-    });
-    updateTodoById(currentTodo.id, {
-      ...delayedTodo,
-    });
-    todoAPI.updateTodo({
-      ...delayedTodo,
-    });
+    setCurrentTodo({ ...delayedTodo });
+    updateMutation.mutate({ ...delayedTodo });
     detailDrawer.onClose();
   };
 
   const handleClickDelayWeek = () => {
     const delayedTodo = delayNextWeek(currentTodo);
-
-    setCurrentTodo({
-      ...delayedTodo,
-    });
-    updateTodoById(currentTodo.id, {
-      ...delayedTodo,
-    });
-    todoAPI.updateTodo({
-      ...delayedTodo,
-    });
+    setCurrentTodo({ ...delayedTodo });
+    updateMutation.mutate({ ...delayedTodo });
     detailDrawer.onClose();
   };
 
@@ -331,12 +355,7 @@ function TodoPage() {
       setCurrentTodo({
         ...changedTodo,
       });
-      updateTodoById(currentTodo.id, {
-        ...changedTodo,
-      });
-      todoAPI.updateTodo({
-        ...changedTodo,
-      });
+      updateMutation.mutate({ ...changedTodo });
       detailDrawer.onClose();
     }
   };
@@ -346,9 +365,6 @@ function TodoPage() {
   };
 
   const handleSlideChange = (swiper: SwiperType) => {
-    // swiper가 바뀌면 끝에 도달했는지 여부에 따라 todo를 새로 패치
-    // next, prev에 해당하는 todo 배치
-    console.log(swiper);
     setCurrentSlideIndex(swiper.activeIndex);
   };
 
@@ -388,66 +404,15 @@ function TodoPage() {
               </div>
             )}
             {[slides[0], slides.at(-1)].every((s) => s !== slideContent) && (
-              <div className="h-full overflow-y-auto">
-                <h2 className="text-center mt-4 mb-4">
-                  <small className="block">
-                    {formatKoreanDate(currentDate, "yyyy년 MM월 dd일")}
-                  </small>
-                  <div className="flex flex-row place-items-center justify-center gap-3">
-                    <button onClick={handleGotoPrevDate}>
-                      <ChevronLeftIcon size={28} strokeWidth={1} />
-                    </button>
-                    <time
-                      dateTime={formatDate(currentDate, "yyyy-MM-dd")}
-                      className="font-bold w-36"
-                    >
-                      {formatKoreanDate(currentDate, "EEEE")}
-                    </time>
-                    <button onClick={handleGotoNextDate}>
-                      <ChevronRightIcon size={28} strokeWidth={1} />
-                    </button>
-                  </div>
-                </h2>
-                <div className="overflow-y-scroll pb-4">
-                  <Reorder.Group
-                    axis="y"
-                    as="ul"
-                    values={incompletedTodos}
-                    onReorder={setIncompletedTodos}
-                    layoutScroll
-                    className="px-4 overflow-y-hidden overflow-x-hidden"
-                  >
-                    <AnimatePresence>
-                      {incompletedTodos.map((todo) => (
-                        <TodoDraggableItem
-                          key={todo.id}
-                          todo={todo}
-                          onChangeComplete={handleChangeTodoComplete}
-                          onClickTodo={handleClickTodoItem}
-                        />
-                      ))}
-                    </AnimatePresence>
-                  </Reorder.Group>
-                  <div className="px-4">
-                    <Button
-                      className="w-full mb-2"
-                      theme="primary"
-                      size="lg"
-                      onClick={addTodoDrawer.onOpen}
-                    >
-                      + 할 일 추가하기
-                    </Button>
-                    <Button
-                      className="w-full"
-                      theme="neutral"
-                      size="lg"
-                      onClick={completedTodoDrawer.onOpen}
-                    >
-                      완료된 작업 보기
-                    </Button>
-                  </div>
-                </div>
-              </div>
+              <TodoView
+                currentDate={calcRelativeDate(baseDate, slideContent)}
+                onClickPrev={handleGotoPrevDate}
+                onClickNext={handleGotoNextDate}
+                onClickTodoCheck={handleChangeTodoComplete}
+                onClickTodo={handleClickTodoItem}
+                onClickAddTodo={addTodoDrawer.onOpen}
+                onClickCompletedTodo={completedTodoDrawer.onOpen}
+              ></TodoView>
             )}
           </SwiperSlide>
         ))}
@@ -514,24 +479,10 @@ function TodoPage() {
                 <div className="flex flex-row-reverse mb-2">
                   <Button onClick={completedTodoDrawer.onClose}>닫기</Button>
                 </div>
-                <Reorder.Group
-                  axis="y"
-                  as="ul"
-                  values={completedTodos}
-                  onReorder={setCompletedTodos}
-                  layoutScroll
-                  className="p-4 overflow-y-scroll overflow-x-visible"
-                >
-                  <AnimatePresence>
-                    {completedTodos.map((todo) => (
-                      <TodoDraggableItem
-                        key={todo.id}
-                        todo={todo}
-                        onChangeComplete={handleChangeTodoComplete}
-                      />
-                    ))}
-                  </AnimatePresence>
-                </Reorder.Group>
+                <CompletedTodoView
+                  currentDate={currentDate}
+                  onChangeComplete={handleChangeTodoComplete}
+                />
               </Drawer.Body>
             </Drawer.Content>
           </Drawer.Positioner>
@@ -635,5 +586,200 @@ function TodoPage() {
         </Portal>
       </Drawer.Root>
     </main>
+  );
+}
+
+type TodoViewProps = {
+  currentDate: Date;
+  onClickPrev: () => void;
+  onClickNext: () => void;
+  onClickTodoCheck: (id: Todo["id"]) => void;
+  onClickTodo: (id: Todo["id"]) => void;
+  onClickAddTodo: () => void;
+  onClickCompletedTodo: () => void;
+};
+function TodoView(props: TodoViewProps) {
+  const {
+    currentDate,
+    onClickPrev,
+    onClickNext,
+    onClickTodoCheck,
+    onClickTodo,
+    onClickAddTodo,
+    onClickCompletedTodo,
+  } = props;
+
+  const todoQueryKey = `${currentDate.getFullYear()}-${
+    currentDate.getMonth() + 1
+  }-${currentDate.getDate()}`;
+
+  /**
+   * fetch 요구사항
+   * - 정렬이 바뀌면 mutation 후 refetch
+   * -
+   */
+  const { data: todos } = useQuery({
+    queryKey: ["todos", todoQueryKey],
+    queryFn: async () => {
+      const res = await todoAPI.fetchTodos();
+      if (res.isFailed) {
+        throw res.error;
+      }
+      const todos = res.value;
+      /**
+       * TODO: server단에서 필터링하도록 수정
+       */
+      return todos.filter((todo) => isTargetDateTodo(todo, currentDate));
+    },
+  });
+
+  /**
+   * TODO: order api가 생기면 todo 상태를 따로 저장할 필요 없어짐
+   */
+  const [incompletedTodos, setIncompletedTodos] = useState<Todo[]>(
+    todos?.filter((todo) => !todo.isCompleted) ?? []
+  );
+
+  useEffect(() => {
+    setIncompletedTodos(todos?.filter((todo) => !todo.isCompleted) ?? []);
+  }, [todos]);
+
+  const handleChangeComplete = (e: ChangeEvent<HTMLElement>) => {
+    const $target = e.currentTarget;
+    const todoId = Number($target.dataset["todoId"]);
+
+    onClickTodoCheck(todoId);
+  };
+  const handleClickTodoItem = (e: MouseEvent<HTMLElement>) => {
+    const $target = e.currentTarget;
+    const todoId = Number($target.dataset["todoId"]);
+
+    onClickTodo(todoId);
+  };
+  return (
+    <div className="h-full overflow-y-auto">
+      <h2 className="text-center mt-4 mb-4">
+        <small className="block">
+          {formatKoreanDate(currentDate, "yyyy년 MM월 dd일")}
+        </small>
+        <div className="flex flex-row place-items-center justify-center gap-3">
+          <button onClick={onClickPrev}>
+            <ChevronLeftIcon size={28} strokeWidth={1} />
+          </button>
+          <time
+            dateTime={formatDate(currentDate, "yyyy-MM-dd")}
+            className="font-bold w-36"
+          >
+            {formatKoreanDate(currentDate, "EEEE")}
+          </time>
+          <button onClick={onClickNext}>
+            <ChevronRightIcon size={28} strokeWidth={1} />
+          </button>
+        </div>
+      </h2>
+      <div className="overflow-y-scroll pb-4">
+        <Reorder.Group
+          axis="y"
+          as="ul"
+          values={incompletedTodos}
+          onReorder={setIncompletedTodos}
+          layoutScroll
+          className="px-4 overflow-y-hidden overflow-x-hidden"
+        >
+          <AnimatePresence>
+            {incompletedTodos.map((todo) => (
+              <TodoDraggableItem
+                key={todo.id}
+                todo={todo}
+                onChangeComplete={handleChangeComplete}
+                onClickTodo={handleClickTodoItem}
+              />
+            ))}
+          </AnimatePresence>
+        </Reorder.Group>
+        <div className="px-4">
+          <Button
+            className="w-full mb-2"
+            theme="primary"
+            size="lg"
+            onClick={onClickAddTodo}
+          >
+            + 할 일 추가하기
+          </Button>
+          <Button
+            className="w-full"
+            theme="neutral"
+            size="lg"
+            onClick={onClickCompletedTodo}
+          >
+            완료된 작업 보기
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CompletedTodoView({
+  currentDate,
+  onChangeComplete,
+}: {
+  currentDate: Date;
+  onChangeComplete: (id: Todo["id"]) => void;
+}) {
+  const todoQueryKey = `${currentDate.getFullYear()}-${
+    currentDate.getMonth() + 1
+  }-${currentDate.getDate()}`;
+  const { data: todos } = useQuery({
+    queryKey: ["todos", todoQueryKey],
+    queryFn: async () => {
+      const res = await todoAPI.fetchTodos();
+      if (res.isFailed) {
+        throw res.error;
+      }
+      const todos = res.value;
+      /**
+       * TODO: server단에서 필터링하도록 수정
+       */
+      return todos.filter((todo) => isTargetDateTodo(todo, currentDate));
+    },
+  });
+
+  const [completedTodos, setCompletedTodos] = useState<Todo[]>(
+    todos?.filter((todo) => todo.isCompleted) ?? []
+  );
+
+  useEffect(() => {
+    setCompletedTodos(todos?.filter((todo) => todo.isCompleted) ?? []);
+  }, [todos]);
+
+  const handleChangeComplete = (e: ChangeEvent<HTMLElement>) => {
+    const $target = e.currentTarget;
+    const todoId = Number($target.dataset["todoId"]);
+
+    onChangeComplete(todoId);
+  };
+
+  return (
+    <>
+      <Reorder.Group
+        axis="y"
+        as="ul"
+        values={completedTodos}
+        onReorder={setCompletedTodos}
+        layoutScroll
+        className="p-4 overflow-y-scroll overflow-x-visible"
+      >
+        <AnimatePresence>
+          {completedTodos.map((todo) => (
+            <TodoDraggableItem
+              key={todo.id}
+              todo={todo}
+              onChangeComplete={handleChangeComplete}
+            />
+          ))}
+        </AnimatePresence>
+      </Reorder.Group>
+    </>
   );
 }

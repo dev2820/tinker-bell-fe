@@ -47,3 +47,11 @@ export const isSameDay = (date1: Date, date2: Date) => {
 
   return date1Korean === date2Korean;
 };
+
+export const calcRelativeDate = (baseDate: Date, relative: number = 0) => {
+  return new Date(
+    baseDate.getFullYear(),
+    baseDate.getMonth(),
+    baseDate.getDate() + relative
+  );
+};

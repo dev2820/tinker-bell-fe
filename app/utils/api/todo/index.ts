@@ -146,7 +146,7 @@ export async function updateTodo(payload: UpdateTodoPayload) {
   }
 }
 
-type UpdateTodoCompletePayload = Pick<Todo, "id"> & { isCompleted: boolean };
+type UpdateTodoCompletePayload = Pick<Todo, "id" | "isCompleted">;
 export async function updateTodoComplete(payload: UpdateTodoCompletePayload) {
   const { id, ...rest } = payload;
   try {
