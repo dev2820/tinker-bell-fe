@@ -14,8 +14,8 @@ export const getToday = () => {
   const _today = new Date();
   const year = _today.getFullYear();
   const month = _today.getMonth();
-  const date = _today.getDate();
-  return new Date(year, month, date);
+  const day = _today.getDate();
+  return new Date(year, month, day);
 };
 export const addDays = (date: Date, day: number) => {
   return new Date(date.getTime() + ONE_DAY * day);

@@ -17,6 +17,7 @@ import {
   ChangeEvent,
   KeyboardEvent,
   useEffect,
+  useMemo,
 } from "react";
 import * as todoAPI from "@/utils/api/todo";
 import { toTodo, type RawTodo } from "@/utils/api/todo";
@@ -107,6 +108,9 @@ export const loader: LoaderFunction = async ({ request }) => {
   }
 };
 
+const slides = range(-500, 500, 1);
+const initialSlideIndex = slides.length / 2;
+
 export default function Index() {
   // TODO: 해당 날짜의 todo만 받을 수 있게 개선 필요
   const { todos: defaultTodos } = useLoaderData<typeof loader>() as {
@@ -114,16 +118,26 @@ export default function Index() {
     loadFailed: boolean;
   };
 
-  const [slides] = useState<number[]>(range(-500, 500, 1));
-
   const addTodoDrawer = useDisclosure();
   const completedTodoDrawer = useDisclosure();
   const detailDrawer = useDisclosure();
-  const [today, setToday] = useState<Date>(getToday());
+  const [currentSlideIndex, setCurrentSlideIndex] =
+    useState<number>(initialSlideIndex);
+  const [baseDate, setBaseDate] = useState<Date>(getToday());
+  const currentDate = useMemo(() => {
+    return new Date(
+      baseDate.getFullYear(),
+      baseDate.getMonth(),
+      baseDate.getDate() + slides[currentSlideIndex]
+    );
+  }, [baseDate, currentSlideIndex]);
+
   const [todos, setTodos] = useState<Todo[]>(
-    defaultTodos.filter((todo) => isTargetDateTodo(todo, today))
+    defaultTodos.filter((todo) => isTargetDateTodo(todo, currentDate))
   );
-  const [calendarDate, setCalendarDate] = useState<Date>(today);
+  const [swiperRef, setSwiperRef] = useState<SwiperType | null>(null);
+
+  const [calendarDate, setCalendarDate] = useState<Date>(baseDate);
   const {
     allTodos,
     completedTodos,
@@ -134,7 +148,7 @@ export default function Index() {
     deleteTodoById,
     setIncompletedTodos,
     setCompletedTodos,
-  } = useTodo(todos, today);
+  } = useTodo(todos, baseDate);
 
   useEffect(() => {
     const updateTodos = async () => {
@@ -145,12 +159,12 @@ export default function Index() {
         return;
       }
       const newTodos = result.value.filter((todo) =>
-        isTargetDateTodo(todo, today)
+        isTargetDateTodo(todo, baseDate)
       );
       setTodos(newTodos);
     };
     updateTodos();
-  }, [today]);
+  }, [baseDate]);
 
   const [currentTodo, setCurrentTodo] = useState<Todo>({
     id: -1,
@@ -204,9 +218,9 @@ export default function Index() {
       const req = await todoAPI.createTodo({
         title: title,
         date: {
-          year: today.getFullYear(),
-          month: today.getMonth() + 1,
-          day: today.getDate(),
+          year: baseDate.getFullYear(),
+          month: baseDate.getMonth(),
+          day: baseDate.getDate(),
         },
       });
       if (isFailed(req)) {
@@ -250,9 +264,9 @@ export default function Index() {
     const req = await todoAPI.createTodo({
       title: title,
       date: {
-        year: today.getFullYear(),
-        month: today.getMonth() + 1,
-        day: today.getDate(),
+        year: baseDate.getFullYear(),
+        month: baseDate.getMonth() + 1,
+        day: baseDate.getDate(),
       },
     });
     if (isFailed(req)) {
@@ -265,11 +279,11 @@ export default function Index() {
   };
 
   const handleGotoPrevDate = () => {
-    setToday(subDays(today, 1));
+    setBaseDate(subDays(baseDate, 1));
   };
 
   const handleGotoNextDate = () => {
-    setToday(addDays(today, 1));
+    setBaseDate(addDays(baseDate, 1));
   };
 
   const handleClickDelayTomorrow = () => {
@@ -330,84 +344,106 @@ export default function Index() {
     // swiper가 바뀌면 끝에 도달했는지 여부에 따라 todo를 새로 패치
     // next, prev에 해당하는 todo 배치
     console.log(swiper);
+    setCurrentSlideIndex(swiper.activeIndex);
   };
+
+  const handleClickLoadMore = () => {
+    if (!swiperRef) {
+      return;
+    }
+
+    setBaseDate(currentDate);
+    swiperRef.slideTo(initialSlideIndex, 0);
+  };
+
   return (
     <main className="flex flex-col w-full h-screen items-stretch">
       <Swiper
         modules={[Virtual]}
         className="h-full w-full"
         slidesPerView={1}
+        onSwiper={setSwiperRef}
         onSlideChange={handleSlideChange}
         centeredSlides={true}
         spaceBetween={0}
-        initialSlide={slides.length / 2}
+        initialSlide={initialSlideIndex}
         virtual
       >
         {slides.map((slideContent, index) => (
           <SwiperSlide key={slideContent} virtualIndex={index}>
-            {/**
-             * index가 끝에 도달하면 더 불러오기 버튼으로 교체
-             */}
-            <div className="h-full overflow-y-auto">
-              <h2 className="text-center mt-4 mb-4">
-                <small className="block">
-                  {formatKoreanDate(today, "MM월 dd일")} {slideContent}
-                </small>
-                <div className="flex flex-row place-items-center justify-center gap-3">
-                  <button onClick={handleGotoPrevDate}>
-                    <ChevronLeftIcon size={28} strokeWidth={1} />
-                  </button>
-                  <time
-                    dateTime={formatDate(today, "yyyy-MM-dd")}
-                    className="font-bold w-36"
+            {[slides[0], slides.at(-1)].some((s) => s === slideContent) && (
+              <div className="h-full overflow-y-auto flex flex-col items-center justify-center">
+                <p className="text-center mb-8">
+                  더 많은 Todo를 불러오려면 아래 &apos;더 불러오기&apos; 버튼을
+                  눌러주세요.
+                </p>
+                <Button theme="primary" onClick={handleClickLoadMore}>
+                  더 불러오기
+                </Button>
+              </div>
+            )}
+            {[slides[0], slides.at(-1)].every((s) => s !== slideContent) && (
+              <div className="h-full overflow-y-auto">
+                <h2 className="text-center mt-4 mb-4">
+                  <small className="block">
+                    {formatKoreanDate(currentDate, "yyyy년 MM월 dd일")}
+                  </small>
+                  <div className="flex flex-row place-items-center justify-center gap-3">
+                    <button onClick={handleGotoPrevDate}>
+                      <ChevronLeftIcon size={28} strokeWidth={1} />
+                    </button>
+                    <time
+                      dateTime={formatDate(currentDate, "yyyy-MM-dd")}
+                      className="font-bold w-36"
+                    >
+                      {formatKoreanDate(currentDate, "EEEE")}
+                    </time>
+                    <button onClick={handleGotoNextDate}>
+                      <ChevronRightIcon size={28} strokeWidth={1} />
+                    </button>
+                  </div>
+                </h2>
+                <div className="overflow-y-scroll pb-4">
+                  <Reorder.Group
+                    axis="y"
+                    as="ul"
+                    values={incompletedTodos}
+                    onReorder={setIncompletedTodos}
+                    layoutScroll
+                    className="px-4 overflow-y-hidden overflow-x-hidden"
                   >
-                    {formatKoreanDate(today, "EEEE")}
-                  </time>
-                  <button onClick={handleGotoNextDate}>
-                    <ChevronRightIcon size={28} strokeWidth={1} />
-                  </button>
-                </div>
-              </h2>
-              <div className="overflow-y-scroll pb-4">
-                <Reorder.Group
-                  axis="y"
-                  as="ul"
-                  values={incompletedTodos}
-                  onReorder={setIncompletedTodos}
-                  layoutScroll
-                  className="px-4 overflow-y-hidden overflow-x-hidden"
-                >
-                  <AnimatePresence>
-                    {incompletedTodos.map((todo) => (
-                      <TodoDraggableItem
-                        key={todo.id}
-                        todo={todo}
-                        onChangeComplete={handleChangeTodoComplete}
-                        onClickTodo={handleClickTodoItem}
-                      />
-                    ))}
-                  </AnimatePresence>
-                </Reorder.Group>
-                <div className="px-4">
-                  <Button
-                    className="w-full mb-2"
-                    theme="primary"
-                    size="lg"
-                    onClick={addTodoDrawer.onOpen}
-                  >
-                    + 할 일 추가하기
-                  </Button>
-                  <Button
-                    className="w-full"
-                    theme="neutral"
-                    size="lg"
-                    onClick={completedTodoDrawer.onOpen}
-                  >
-                    완료된 작업 보기
-                  </Button>
+                    <AnimatePresence>
+                      {incompletedTodos.map((todo) => (
+                        <TodoDraggableItem
+                          key={todo.id}
+                          todo={todo}
+                          onChangeComplete={handleChangeTodoComplete}
+                          onClickTodo={handleClickTodoItem}
+                        />
+                      ))}
+                    </AnimatePresence>
+                  </Reorder.Group>
+                  <div className="px-4">
+                    <Button
+                      className="w-full mb-2"
+                      theme="primary"
+                      size="lg"
+                      onClick={addTodoDrawer.onOpen}
+                    >
+                      + 할 일 추가하기
+                    </Button>
+                    <Button
+                      className="w-full"
+                      theme="neutral"
+                      size="lg"
+                      onClick={completedTodoDrawer.onOpen}
+                    >
+                      완료된 작업 보기
+                    </Button>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
           </SwiperSlide>
         ))}
       </Swiper>
