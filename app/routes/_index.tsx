@@ -1,7 +1,7 @@
 import { TodoTitleInput } from "@/components/todo/TodoTitleInput";
 import { useTodo } from "@/hooks/use-todo";
 import { Todo } from "@/types/todo";
-import { authAPI, isHTTPError } from "@/utils/api";
+import { authAPI } from "@/utils/api";
 import type { MetaFunction } from "@remix-run/node";
 import { LoaderFunction, redirect } from "@remix-run/node";
 import { json, useLoaderData } from "@remix-run/react";
@@ -16,7 +16,6 @@ import {
   MouseEvent,
   ChangeEvent,
   KeyboardEvent,
-  useEffect,
   useMemo,
 } from "react";
 import * as todoAPI from "@/utils/api/todo";
@@ -54,6 +53,12 @@ import "swiper/css/virtual";
 import { useDisclosure } from "@/hooks/use-disclosure";
 import { Swiper as SwiperType } from "swiper/types";
 import { range } from "@/utils/range";
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+  useQuery,
+} from "@tanstack/react-query";
 
 export const meta: MetaFunction = () => {
   return [
@@ -80,47 +85,43 @@ export const loader: LoaderFunction = async ({ request }) => {
   }
 
   const accessToken = cookie.get("accessToken");
-  try {
-    const req = await authAPI
-      .get<RawTodo[]>("todos", {
-        headers: {
-          authorization: `Bearer ${accessToken}`,
-        },
-      })
-      .json();
-    const timezone = "KR";
+  // todo 패치
+  const queryClient = new QueryClient();
 
-    return json({
-      loadFailed: false,
-      todos: req.map((rawTodo) => toTodo(rawTodo, timezone)),
-    });
-  } catch (err) {
-    if (isHTTPError(err)) {
-      console.log(err.request.headers);
-      console.log(err.request.url);
-    }
-    // console.error(error);
+  await queryClient.prefetchQuery({
+    queryKey: ["todos"],
+    queryFn: async () => {
+      return await authAPI
+        .get<RawTodo[]>("todos", {
+          headers: {
+            authorization: `Bearer ${accessToken}`,
+          },
+        })
+        .json()
+        .then((rawTodos) => {
+          return rawTodos.map((rawTodo) => toTodo(rawTodo, "KR"));
+        });
+    },
+    initialData: [],
+  });
 
-    return json({
-      loadFailed: true,
-      todos: [],
-    });
-  }
+  return json({ dehydratedState: dehydrate(queryClient) });
 };
+
+export default function Index() {
+  const { dehydratedState } = useLoaderData<typeof loader>();
+
+  return (
+    <HydrationBoundary state={dehydratedState}>
+      <TodoPage />
+    </HydrationBoundary>
+  );
+}
 
 const slides = range(-500, 500, 1);
 const initialSlideIndex = slides.length / 2;
 
-export default function Index() {
-  // TODO: 해당 날짜의 todo만 받을 수 있게 개선 필요
-  const { todos: defaultTodos } = useLoaderData<typeof loader>() as {
-    todos: Todo[];
-    loadFailed: boolean;
-  };
-
-  const addTodoDrawer = useDisclosure();
-  const completedTodoDrawer = useDisclosure();
-  const detailDrawer = useDisclosure();
+function TodoPage() {
   const [currentSlideIndex, setCurrentSlideIndex] =
     useState<number>(initialSlideIndex);
   const [baseDate, setBaseDate] = useState<Date>(getToday());
@@ -132,9 +133,29 @@ export default function Index() {
     );
   }, [baseDate, currentSlideIndex]);
 
-  const [todos, setTodos] = useState<Todo[]>(
-    defaultTodos.filter((todo) => isTargetDateTodo(todo, currentDate))
-  );
+  const todoQueryKey = `${currentDate.getFullYear()}-${
+    currentDate.getMonth() + 1
+  }-${currentDate.getDate()}`;
+
+  const { data: todos } = useQuery({
+    queryKey: ["todos", todoQueryKey],
+    queryFn: async () => {
+      const res = await todoAPI.fetchTodos();
+      if (res.isFailed) {
+        throw res.error;
+      }
+      const todos = res.value;
+      /**
+       * TODO: server단에서 필터링하도록 수정
+       */
+      return todos.filter((todo) => isTargetDateTodo(todo, currentDate));
+    },
+  });
+
+  const addTodoDrawer = useDisclosure();
+  const completedTodoDrawer = useDisclosure();
+  const detailDrawer = useDisclosure();
+
   const [swiperRef, setSwiperRef] = useState<SwiperType | null>(null);
 
   const [calendarDate, setCalendarDate] = useState<Date>(baseDate);
@@ -149,22 +170,6 @@ export default function Index() {
     setIncompletedTodos,
     setCompletedTodos,
   } = useTodo(todos, baseDate);
-
-  useEffect(() => {
-    const updateTodos = async () => {
-      // TODO: fetch today's todos
-      const result = await todoAPI.fetchTodos();
-      if (isFailed(result)) {
-        // TODO: handle fetch failed
-        return;
-      }
-      const newTodos = result.value.filter((todo) =>
-        isTargetDateTodo(todo, baseDate)
-      );
-      setTodos(newTodos);
-    };
-    updateTodos();
-  }, [baseDate]);
 
   const [currentTodo, setCurrentTodo] = useState<Todo>({
     id: -1,
