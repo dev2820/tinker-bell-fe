@@ -18,7 +18,7 @@ const ToastContext = createContext<ToastContextType | undefined>(undefined);
 export const ToastProvider = ({ children }: { children: ReactNode }) => {
   const toaster = Toast.createToaster({
     placement: "bottom",
-    // overlap: true,
+    overlap: true,
     gap: 16,
     removeDelay: 300,
     duration: 2000,
@@ -37,6 +37,7 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
     toaster.create({
       title,
       description,
+      type: "info",
     });
   };
 

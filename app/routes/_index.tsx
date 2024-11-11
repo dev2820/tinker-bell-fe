@@ -140,8 +140,6 @@ function TodoPage() {
   const [swiperRef, setSwiperRef] = useState<SwiperType | null>(null);
 
   const [calendarDate, setCalendarDate] = useState<Date>(baseDate);
-  // TODO: useTodo로 mutation과 query 로직을 옮기기
-  // const {  } = useTodo(todos, baseDate);
 
   const [currentTodo, setCurrentTodo] = useState<Todo>({
     id: -1,
@@ -165,14 +163,10 @@ function TodoPage() {
     }
 
     toggleTodoById(targetTodo.id);
-    if (targetTodo.isCompleted) {
+    if (!targetTodo.isCompleted) {
       /**
        * TODO: undo action 만들기
        */
-      showToast({
-        description: `완료되지 않은 작업으로 변경되었습니다`,
-      });
-    } else {
       showToast({
         description: `작업 완료! 🥳`,
       });
