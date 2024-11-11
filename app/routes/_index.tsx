@@ -301,6 +301,11 @@ function TodoPage() {
     swiperRef.slideTo(initialSlideIndex, 0);
   };
 
+  const handleCloseCreateTodo = () => {
+    addTodoDrawer.onClose();
+    setTitle("");
+  };
+
   return (
     <main className="flex flex-col w-full h-screen items-stretch">
       <Swiper
@@ -361,9 +366,9 @@ function TodoPage() {
       <Drawer.Root
         variant="bottom"
         open={addTodoDrawer.isOpen}
-        onInteractOutside={addTodoDrawer.onClose}
-        onEscapeKeyDown={addTodoDrawer.onClose}
-        trapFocus={false}
+        onInteractOutside={handleCloseCreateTodo}
+        onEscapeKeyDown={handleCloseCreateTodo}
+        // trapFocus={false}
       >
         <Portal>
           <Drawer.Backdrop />
@@ -377,6 +382,7 @@ function TodoPage() {
                     onKeyDown={handleKeydownTitle}
                     className="flex-1"
                     placeholder="할 일을 입력해주세요"
+                    enterKeyHint="done"
                   />
                 </div>
               </Drawer.Header>
@@ -385,7 +391,7 @@ function TodoPage() {
                 <Button
                   variant="outline"
                   className="mr-3"
-                  onClick={addTodoDrawer.onClose}
+                  onClick={handleCloseCreateTodo}
                 >
                   닫기
                 </Button>
