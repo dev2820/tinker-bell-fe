@@ -91,7 +91,7 @@ export async function createTodo(payload: CreateTodoPayload) {
           title: payload.title,
           date: new Date(
             payload.date.year,
-            payload.date.month,
+            payload.date.month - 1,
             payload.date.day
           ),
         }),
