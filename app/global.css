@@ -64,6 +64,7 @@
      * trds color system 
      */
     --my-colors-primary: var(--primary);
+    --my-colors-primary-500: var(--primary);
     --my-colors-primary-foreground: var(--primary-foreground);
     --my-colors-primary-hover: var(--primary-hover);
     --my-colors-primary-pressed: var(--primary-pressed);

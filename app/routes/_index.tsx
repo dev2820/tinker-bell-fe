@@ -26,6 +26,7 @@ import {
   IconButton,
   Portal,
   Dialog,
+  Toast,
 } from "terra-design-system/react";
 import { AnimatePresence, Reorder } from "framer-motion";
 import {
@@ -55,6 +56,7 @@ import {
   QueryClient,
 } from "@tanstack/react-query";
 import { useTodo } from "@/hooks/use-todo";
+import { ToastProvider, useToast } from "@/contexts/toast";
 
 export const meta: MetaFunction = () => {
   return [
@@ -109,7 +111,9 @@ export default function Index() {
 
   return (
     <HydrationBoundary state={dehydratedState}>
-      <TodoPage />
+      <ToastProvider>
+        <TodoPage />
+      </ToastProvider>
     </HydrationBoundary>
   );
 }
@@ -132,7 +136,7 @@ function TodoPage() {
   const addTodoDrawer = useDisclosure();
   const completedTodoDrawer = useDisclosure();
   const detailDrawer = useDisclosure();
-
+  const { toaster, showToast } = useToast();
   const [swiperRef, setSwiperRef] = useState<SwiperType | null>(null);
 
   const [calendarDate, setCalendarDate] = useState<Date>(baseDate);
@@ -161,6 +165,18 @@ function TodoPage() {
     }
 
     toggleTodoById(targetTodo.id);
+    if (targetTodo.isCompleted) {
+      /**
+       * TODO: undo action 만들기
+       */
+      showToast({
+        description: `완료되지 않은 작업으로 변경되었습니다`,
+      });
+    } else {
+      showToast({
+        description: `작업 완료! 🥳`,
+      });
+    }
     vibrateShort();
   };
 
@@ -181,6 +197,9 @@ function TodoPage() {
     if (currentTodo) {
       deleteTodoById(currentTodo.id);
       detailDrawer.onClose();
+      showToast({
+        description: "Todo를 삭제했습니다",
+      });
     }
   };
 
@@ -328,7 +347,20 @@ function TodoPage() {
           </SwiperSlide>
         ))}
       </Swiper>
-
+      <Toast.Toaster toaster={toaster}>
+        {(toast) => (
+          <Toast.Root key={toast.id} className="bg-neutral-800 py-3 w-full">
+            <Toast.Description className="text-white">
+              {toast.description}
+            </Toast.Description>
+            <Toast.CloseTrigger asChild className="top-1.5">
+              <button className="text-md text-primary rounded-md px-2 py-1">
+                확인
+              </button>
+            </Toast.CloseTrigger>
+          </Toast.Root>
+        )}
+      </Toast.Toaster>
       {/**
        * todo 생성
        */}
