@@ -1,5 +1,4 @@
 import { TodoTitleInput } from "@/components/todo/TodoTitleInput";
-// import { useTodo } from "@/hooks/use-todo";
 import { Todo } from "@/types/todo";
 import { authAPI } from "@/utils/api";
 import type { MetaFunction } from "@remix-run/node";
@@ -19,7 +18,6 @@ import {
   useMemo,
   useEffect,
 } from "react";
-import * as todoAPI from "@/utils/api/todo";
 import { toTodo, type RawTodo } from "@/utils/api/todo";
 import { TodoDraggableItem } from "@/components/todo/TodoDraggableItem";
 import {
@@ -43,7 +41,6 @@ import {
   delayNextDay,
   delayNextWeek,
   getDateFromTodo,
-  isTargetDateTodo,
 } from "@/utils/helper/todo";
 import { Virtual } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -56,10 +53,8 @@ import {
   dehydrate,
   HydrationBoundary,
   QueryClient,
-  useMutation,
-  useQuery,
-  useQueryClient,
 } from "@tanstack/react-query";
+import { useTodo } from "@/hooks/use-todo";
 
 export const meta: MetaFunction = () => {
   return [
@@ -131,87 +126,8 @@ function TodoPage() {
     [baseDate, currentSlideIndex]
   );
 
-  const todoQueryKey = `${currentDate.getFullYear()}-${
-    currentDate.getMonth() + 1
-  }-${currentDate.getDate()}`;
-  const queryClient = useQueryClient();
-  const { data: todos } = useQuery({
-    queryKey: ["todos", todoQueryKey],
-    queryFn: async () => {
-      const res = await todoAPI.fetchTodos();
-      if (res.isFailed) {
-        throw res.error;
-      }
-      const todos = res.value;
-      /**
-       * TODO: server단에서 필터링하도록 수정
-       */
-      return todos.filter((todo) => isTargetDateTodo(todo, currentDate));
-    },
-  });
-  const updateMutation = useMutation({
-    mutationKey: ["todos", todoQueryKey],
-    mutationFn: todoAPI.updateTodo,
-    onSuccess: (res) => {
-      if (res.isFailed) {
-        throw res.error;
-      }
-
-      queryClient.invalidateQueries({
-        queryKey: ["todos"],
-      });
-    },
-    onError: (error) => {
-      console.error("Error adding item:", error);
-    },
-  });
-  const createMutation = useMutation({
-    mutationKey: ["todos", todoQueryKey],
-    mutationFn: todoAPI.createTodo,
-    onSuccess: (res) => {
-      if (res.isFailed) {
-        throw res.error;
-      }
-
-      queryClient.invalidateQueries({
-        queryKey: ["todos"],
-      });
-    },
-    onError: (error) => {
-      console.error("Error adding item:", error);
-    },
-  });
-  const deleteMutation = useMutation({
-    mutationKey: ["todos", todoQueryKey],
-    mutationFn: todoAPI.deleteTodo,
-    onSuccess: (res) => {
-      if (res.isFailed) {
-        throw res.error;
-      }
-      queryClient.invalidateQueries({
-        queryKey: ["todos"],
-      });
-    },
-    onError: (error) => {
-      console.error("Error adding item:", error);
-    },
-  });
-  const toggleMutation = useMutation({
-    mutationKey: ["todos", todoQueryKey],
-    mutationFn: todoAPI.updateTodoComplete,
-    onSuccess: (res) => {
-      if (res.isFailed) {
-        throw res.error;
-      }
-
-      queryClient.invalidateQueries({
-        queryKey: ["todos"],
-      });
-    },
-    onError: (error) => {
-      console.error("Error adding item:", error);
-    },
-  });
+  const { todos, updateTodoById, toggleTodoById, createTodo, deleteTodoById } =
+    useTodo(currentDate);
 
   const addTodoDrawer = useDisclosure();
   const completedTodoDrawer = useDisclosure();
@@ -243,11 +159,8 @@ function TodoPage() {
     if (!targetTodo) {
       return null;
     }
-    toggleMutation.mutate({
-      id: targetTodo.id,
-      isCompleted: !targetTodo.isCompleted,
-    });
 
+    toggleTodoById(targetTodo.id);
     vibrateShort();
   };
 
@@ -266,7 +179,7 @@ function TodoPage() {
   const handleClickDeleteCurrentTodo = () => {
     // show todo details
     if (currentTodo) {
-      deleteMutation.mutate({ id: currentTodo.id });
+      deleteTodoById(currentTodo.id);
       detailDrawer.onClose();
     }
   };
@@ -276,7 +189,7 @@ function TodoPage() {
   };
   const handleKeydownTitle = async (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      createMutation.mutate({
+      createTodo({
         title: title,
         date: {
           year: currentDate.getFullYear(),
@@ -295,16 +208,14 @@ function TodoPage() {
         ...currentTodo,
         title: newTitle,
       });
-      console.log(currentTodo);
-      updateMutation.mutate({
-        ...currentTodo,
+      updateTodoById(currentTodo.id, {
         title: newTitle,
       });
     }
   };
 
   const handleClickCreateTodo = async () => {
-    createMutation.mutate({
+    createTodo({
       title: title,
       date: {
         year: currentDate.getFullYear(),
@@ -333,14 +244,14 @@ function TodoPage() {
   const handleClickDelayTomorrow = () => {
     const delayedTodo = delayNextDay(currentTodo);
     setCurrentTodo({ ...delayedTodo });
-    updateMutation.mutate({ ...delayedTodo });
+    updateTodoById(delayedTodo.id, { date: delayedTodo.date });
     detailDrawer.onClose();
   };
 
   const handleClickDelayWeek = () => {
     const delayedTodo = delayNextWeek(currentTodo);
     setCurrentTodo({ ...delayedTodo });
-    updateMutation.mutate({ ...delayedTodo });
+    updateTodoById(delayedTodo.id, { date: delayedTodo.date });
     detailDrawer.onClose();
   };
 
@@ -355,7 +266,7 @@ function TodoPage() {
       setCurrentTodo({
         ...changedTodo,
       });
-      updateMutation.mutate({ ...changedTodo });
+      updateTodoById(changedTodo.id, { date: changedTodo.date });
       detailDrawer.onClose();
     }
   };
@@ -609,30 +520,7 @@ function TodoView(props: TodoViewProps) {
     onClickCompletedTodo,
   } = props;
 
-  const todoQueryKey = `${currentDate.getFullYear()}-${
-    currentDate.getMonth() + 1
-  }-${currentDate.getDate()}`;
-
-  /**
-   * fetch 요구사항
-   * - 정렬이 바뀌면 mutation 후 refetch
-   * -
-   */
-  const { data: todos } = useQuery({
-    queryKey: ["todos", todoQueryKey],
-    queryFn: async () => {
-      const res = await todoAPI.fetchTodos();
-      if (res.isFailed) {
-        throw res.error;
-      }
-      const todos = res.value;
-      /**
-       * TODO: server단에서 필터링하도록 수정
-       */
-      return todos.filter((todo) => isTargetDateTodo(todo, currentDate));
-    },
-  });
-
+  const { todos } = useTodo(currentDate);
   /**
    * TODO: order api가 생기면 todo 상태를 따로 저장할 필요 없어짐
    */
@@ -727,23 +615,7 @@ function CompletedTodoView({
   currentDate: Date;
   onChangeComplete: (id: Todo["id"]) => void;
 }) {
-  const todoQueryKey = `${currentDate.getFullYear()}-${
-    currentDate.getMonth() + 1
-  }-${currentDate.getDate()}`;
-  const { data: todos } = useQuery({
-    queryKey: ["todos", todoQueryKey],
-    queryFn: async () => {
-      const res = await todoAPI.fetchTodos();
-      if (res.isFailed) {
-        throw res.error;
-      }
-      const todos = res.value;
-      /**
-       * TODO: server단에서 필터링하도록 수정
-       */
-      return todos.filter((todo) => isTargetDateTodo(todo, currentDate));
-    },
-  });
+  const { todos } = useTodo(currentDate);
 
   const [completedTodos, setCompletedTodos] = useState<Todo[]>(
     todos?.filter((todo) => todo.isCompleted) ?? []

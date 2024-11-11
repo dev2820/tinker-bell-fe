@@ -1,146 +1,143 @@
-import { Todo } from "@/types/todo";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { isTargetDateTodo } from "@/utils/helper/todo";
-import { useEffect, useMemo, useState } from "react";
+import * as todoAPI from "@/utils/api/todo";
+import { useMemo } from "react";
+import { formatDate } from "date-fns";
+import { Todo } from "@/types/todo";
+import { isNil } from "@/utils/type-guard";
 
-export const useTodo = (defaultTodos: Todo[] = [], currentDate: Date) => {
-  const _incompletedTodos = defaultTodos.filter((todo) => !todo.isCompleted);
-  const _completedTodos = defaultTodos.filter((todo) => todo.isCompleted);
-  const [incompletedTodos, setIncompletedTodos] =
-    useState<Todo[]>(_incompletedTodos);
-  const [completedTodos, setCompletedTodos] = useState<Todo[]>(_completedTodos);
+export const useTodo = (currentDate: Date) => {
+  const todoQueryKey = useMemo(() => {
+    return formatDate(currentDate, "yyyy-MM-dd");
+  }, [currentDate]);
 
-  useEffect(() => {
-    const _incompletedTodos = defaultTodos.filter((todo) => !todo.isCompleted);
-    const _completedTodos = defaultTodos.filter((todo) => todo.isCompleted);
+  const queryClient = useQueryClient();
+  const { data: todos } = useQuery({
+    queryKey: ["todos", todoQueryKey],
+    queryFn: async () => {
+      const res = await todoAPI.fetchTodos();
+      if (res.isFailed) {
+        throw res.error;
+      }
+      const todos = res.value;
+      /**
+       * TODO: server단에서 필터링하도록 수정
+       */
+      return todos.filter((todo) => isTargetDateTodo(todo, currentDate));
+    },
+  });
+  const updateMutation = useMutation({
+    mutationKey: ["todos", todoQueryKey],
+    mutationFn: todoAPI.updateTodo,
+    onSuccess: (res) => {
+      if (res.isFailed) {
+        throw res.error;
+      }
 
-    setIncompletedTodos(_incompletedTodos);
-    setCompletedTodos(_completedTodos);
-  }, [defaultTodos]);
+      queryClient.invalidateQueries({
+        queryKey: ["todos"],
+      });
+    },
+    onError: (error) => {
+      console.error("Error adding item:", error);
+    },
+  });
+  const createMutation = useMutation({
+    mutationKey: ["todos", todoQueryKey],
+    mutationFn: todoAPI.createTodo,
+    onSuccess: (res) => {
+      if (res.isFailed) {
+        throw res.error;
+      }
+
+      queryClient.invalidateQueries({
+        queryKey: ["todos"],
+      });
+    },
+    onError: (error) => {
+      console.error("Error adding item:", error);
+    },
+  });
+  const deleteMutation = useMutation({
+    mutationKey: ["todos", todoQueryKey],
+    mutationFn: todoAPI.deleteTodo,
+    onSuccess: (res) => {
+      if (res.isFailed) {
+        throw res.error;
+      }
+      queryClient.invalidateQueries({
+        queryKey: ["todos"],
+      });
+    },
+    onError: (error) => {
+      console.error("Error adding item:", error);
+    },
+  });
+  const toggleMutation = useMutation({
+    mutationKey: ["todos", todoQueryKey],
+    mutationFn: todoAPI.updateTodoComplete,
+    onSuccess: (res) => {
+      if (res.isFailed) {
+        throw res.error;
+      }
+
+      queryClient.invalidateQueries({
+        queryKey: ["todos"],
+      });
+    },
+    onError: (error) => {
+      console.error("Error adding item:", error);
+    },
+  });
 
   const updateTodoById = (
     id: Todo["id"],
     payload: Partial<Omit<Todo, "id">>
   ) => {
-    const incompletedTargetIndex = incompletedTodos.findIndex(
-      (todo) => todo.id === id
-    );
-    if (incompletedTargetIndex >= 0) {
-      setIncompletedTodos((todos) =>
-        todos
-          .toSpliced(incompletedTargetIndex, 1, {
-            ...todos[incompletedTargetIndex],
-            ...payload,
-          })
-          .filter((todo) => isTargetDateTodo(todo, currentDate))
-      );
+    if (!todos) {
       return;
     }
-    const completedTargetIndex = completedTodos.findIndex(
-      (todo) => todo.id === id
-    );
-    if (completedTargetIndex > -1) {
-      setCompletedTodos((todos) =>
-        todos
-          .toSpliced(completedTargetIndex, 1, {
-            ...todos[completedTargetIndex],
-            ...payload,
-          })
-          .filter((todo) => isTargetDateTodo(todo, currentDate))
-      );
-    }
-  };
 
-  const toggleTodoCompleteById = (id: Todo["id"]) => {
-    const incompletedTargetIndex = incompletedTodos.findIndex(
-      (todo) => todo.id === id
-    );
-    if (incompletedTargetIndex > -1) {
-      const target = incompletedTodos[incompletedTargetIndex];
-      setIncompletedTodos((todos) =>
-        todos.toSpliced(incompletedTargetIndex, 1)
-      );
-
-      setCompletedTodos((todos) =>
-        todos.toSpliced(0, 0, {
-          ...target,
-          isCompleted: !target.isCompleted,
-        })
-      );
+    const targetTodo = todos.find((todo) => todo.id === id);
+    if (isNil(targetTodo)) {
       return;
     }
-    const completedTargetIndex = completedTodos.findIndex(
-      (todo) => todo.id === id
-    );
-    if (completedTargetIndex > -1) {
-      const target = completedTodos[completedTargetIndex];
 
-      setCompletedTodos((todos) => todos.toSpliced(completedTargetIndex, 1));
-      setIncompletedTodos((todos) =>
-        todos.toSpliced(todos.length, 0, {
-          ...target,
-          isCompleted: !target.isCompleted,
-        })
-      );
-    }
+    updateMutation.mutate({
+      ...targetTodo,
+      ...payload,
+    });
   };
 
+  const toggleTodoById = (id: Todo["id"]) => {
+    if (!todos) {
+      return;
+    }
+    const targetTodo = todos.find((todo) => todo.id === id);
+    if (!targetTodo) {
+      return;
+    }
+    toggleMutation.mutate({
+      id,
+      isCompleted: !targetTodo.isCompleted,
+    });
+  };
+
+  const createTodo = (payload: Omit<Todo, "id" | "isCompleted">) => {
+    createMutation.mutate({
+      ...payload,
+    });
+  };
   const deleteTodoById = (id: Todo["id"]) => {
-    const incompletedTargetIndex = incompletedTodos.findIndex(
-      (todo) => todo.id === id
-    );
-    if (incompletedTargetIndex >= 0) {
-      setIncompletedTodos((todos) =>
-        todos.toSpliced(incompletedTargetIndex, 1)
-      );
-      return;
-    }
-    const completedTargetIndex = completedTodos.findIndex(
-      (todo) => todo.id === id
-    );
-    if (completedTargetIndex > -1) {
-      setCompletedTodos((todos) => todos.toSpliced(completedTargetIndex, 1));
-    }
-  };
-
-  const addIncompletedTodo = (newTodo: Todo) => {
-    setIncompletedTodos((todos) => [...todos, newTodo]);
-  };
-
-  const moveIncompletedTodo = (fromIndex: number, toIndex: number) => {
-    setIncompletedTodos((todos) => {
-      const target = todos[fromIndex];
-      return todos
-        .filter((todo) => todo.id !== target.id)
-        .toSpliced(toIndex, 0, target);
+    deleteMutation.mutate({
+      id,
     });
   };
-
-  const moveCompletedTodo = (fromIndex: number, toIndex: number) => {
-    setCompletedTodos((todos) => {
-      const target = todos[fromIndex];
-      return todos
-        .filter((todo) => todo.id !== target.id)
-        .toSpliced(toIndex, 0, target);
-    });
-  };
-
-  const allTodos = useMemo(
-    () => [...incompletedTodos, ...completedTodos],
-    [completedTodos, incompletedTodos]
-  );
-
-  // add todo, remove todo, update todo ...
   return {
-    allTodos,
-    completedTodos,
-    incompletedTodos,
+    todos,
     updateTodoById,
-    toggleTodoCompleteById,
+    toggleTodoById,
+    createTodo,
     deleteTodoById,
-    moveIncompletedTodo,
-    moveCompletedTodo,
-    addIncompletedTodo,
-    setIncompletedTodos,
-    setCompletedTodos,
   };
 };
