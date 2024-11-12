@@ -107,13 +107,12 @@ export const loader: LoaderFunction = async ({ request }) => {
 };
 
 export default function Index() {
-  const { dehydratedState, accessToken } = useLoaderData<typeof loader>();
+  const { dehydratedState } = useLoaderData<typeof loader>();
 
   return (
     <HydrationBoundary state={dehydratedState}>
       <ToastProvider>
         <TodoPage />
-        {accessToken}
       </ToastProvider>
     </HydrationBoundary>
   );
