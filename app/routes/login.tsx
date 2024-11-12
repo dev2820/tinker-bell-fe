@@ -16,20 +16,26 @@ export default function Login() {
   const { kakaoLoginUrl, appleLoginUrl } = useLoaderData<typeof loader>();
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="max-w-md w-full bg-white p-8">
+    <div className="min-h-screen relative">
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 max-w-md w-full h-[400px] bg-white p-8">
         <h2 className="text-2xl font-semibold text-gray-900 text-center mb-4">
           Sign in
         </h2>
-        <div className="flex flex-col place-items-center">
+        <div className="flex flex-col place-items-center gap-3">
           <Link to={kakaoLoginUrl}>
             <img
               src="/kakao_login_medium_narrow.png"
               alt="kakao login"
-              className="h-10 w-auto"
+              className="h-[45px] w-auto"
             />
           </Link>
-          <Link to={appleLoginUrl}>애플 로그인</Link>
+          <Link to={appleLoginUrl}>
+            <img
+              src="/appleid_button@2x.png"
+              alt="kakao login"
+              className="h-[45px] w-auto"
+            />
+          </Link>
         </div>
       </div>
     </div>
