@@ -60,8 +60,15 @@ import { ToastProvider, useToast } from "@/contexts/toast";
 
 export const meta: MetaFunction = () => {
   return [
-    { title: "New Remix App" },
-    { name: "description", content: "Welcome to Remix!" },
+    { title: "Ticket bell todo" },
+    {
+      property: "og:title",
+      content: "Ticket bell todo",
+    },
+    {
+      name: "description",
+      content: "세상에서 제일 쉬운 Todo",
+    },
   ];
 };
 
