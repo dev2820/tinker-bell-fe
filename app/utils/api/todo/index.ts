@@ -176,13 +176,13 @@ export async function updateTodoComplete(payload: UpdateTodoCompletePayload) {
   }
 }
 
-export const toTodo = (rawTodo: RawTodo, timezone: "KR" = "KR"): Todo => {
+export const toTodo = (rawTodo: RawTodo): Todo => {
   const date = new Date(rawTodo.date);
   const localDate = new Date(
     date.getFullYear(),
     date.getMonth(),
     date.getDate(),
-    date.getHours() + TIMEZONE_OFFSET[timezone]
+    date.getHours()
   );
 
   return {
@@ -194,7 +194,3 @@ export const toTodo = (rawTodo: RawTodo, timezone: "KR" = "KR"): Todo => {
     },
   };
 };
-
-const TIMEZONE_OFFSET = {
-  KR: 9,
-} as const;

@@ -104,7 +104,7 @@ export const loader: LoaderFunction = async ({ request }) => {
         })
         .json()
         .then((rawTodos) => {
-          return rawTodos.map((rawTodo) => toTodo(rawTodo, "KR"));
+          return rawTodos.map((rawTodo) => toTodo(rawTodo));
         });
     },
     initialData: [],
