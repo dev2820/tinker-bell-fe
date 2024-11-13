@@ -3,7 +3,7 @@ import { Todo } from "@/types/todo";
 import { authAPI } from "@/utils/api";
 import type { MetaFunction } from "@remix-run/node";
 import { LoaderFunction, redirect } from "@remix-run/node";
-import { json, useLoaderData } from "@remix-run/react";
+import { json, useLoaderData, useNavigate } from "@remix-run/react";
 import {
   CalendarIcon,
   ChevronLeftIcon,
@@ -57,6 +57,7 @@ import {
 } from "@tanstack/react-query";
 import { useTodo } from "@/hooks/use-todo";
 import { ToastProvider, useToast } from "@/contexts/toast";
+import { stackRouterPush } from "@/utils/helper/app";
 
 export const meta: MetaFunction = () => {
   return [
@@ -134,6 +135,7 @@ const slides = range(-500, 500, 1);
 const initialSlideIndex = slides.length / 2;
 
 function TodoPage() {
+  const navigate = useNavigate();
   const [currentSlideIndex, setCurrentSlideIndex] =
     useState<number>(initialSlideIndex);
   const [baseDate, setBaseDate] = useState<Date>(getToday());
@@ -322,7 +324,7 @@ function TodoPage() {
     <main className="flex flex-col w-full h-screen items-stretch">
       <Swiper
         modules={[Virtual]}
-        className="h-full w-full"
+        className="h-[calc(100%_-_60px)] w-full"
         slidesPerView={1}
         onSwiper={setSwiperRef}
         onSlideChange={handleSlideChange}
@@ -358,6 +360,11 @@ function TodoPage() {
           </SwiperSlide>
         ))}
       </Swiper>
+      <div className="h-[60px]">
+        <button onClick={() => stackRouterPush(navigate, "/setting")}>
+          go setting
+        </button>
+      </div>
       <Toast.Toaster toaster={toaster}>
         {(toast) => (
           <Toast.Root key={toast.id} className="bg-neutral-800 py-3 w-full">
