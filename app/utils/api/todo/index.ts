@@ -85,12 +85,7 @@ export async function deleteTodo(payload: DeleteTodoPayload) {
 type CreateTodoPayload = Omit<Todo, "id" | "isCompleted">;
 export async function createTodo(payload: CreateTodoPayload) {
   const { title, date } = payload;
-  const isoDate = new Date(
-    `${String(date.year).padStart(2, "0")}-${String(date.month).padStart(
-      2,
-      "0"
-    )}-${String(date.day).padStart(2, "0")}T00:00:00.000Z`
-  );
+  const isoDate = toISODate(date);
   try {
     const result = await authAPI
       .post(`todos`, {
@@ -120,15 +115,13 @@ export async function createTodo(payload: CreateTodoPayload) {
 
 type UpdateTodoPayload = Partial<Omit<Todo, "id">> & Pick<Todo, "id">;
 export async function updateTodo(payload: UpdateTodoPayload) {
-  const { id, ...rest } = payload;
+  const { id, title, date, isCompleted } = payload;
   try {
     await authAPI.put(`todos/${id}`, {
       body: JSON.stringify({
-        title: rest.title,
-        date:
-          rest.date &&
-          new Date(rest.date.year, rest.date.month - 1, rest.date.day),
-        isCompleted: rest.isCompleted,
+        title: title,
+        date: date && toISODate(date),
+        isCompleted: isCompleted,
       }),
       headers: {
         Authorization: `Bearer ${Cookies.get("accessToken")}`,
@@ -178,19 +171,22 @@ export async function updateTodoComplete(payload: UpdateTodoCompletePayload) {
 
 export const toTodo = (rawTodo: RawTodo): Todo => {
   const date = new Date(rawTodo.date);
-  const localDate = new Date(
-    date.getFullYear(),
-    date.getMonth(),
-    date.getDate(),
-    date.getHours()
-  );
 
   return {
     ...rawTodo,
     date: {
-      year: localDate.getFullYear(),
-      month: localDate.getMonth() + 1,
-      day: localDate.getDate(),
+      year: date.getFullYear(),
+      month: date.getMonth() + 1,
+      day: date.getDate(),
     },
   };
+};
+
+const toISODate = (date: Todo["date"]) => {
+  return new Date(
+    `${String(date.year).padStart(2, "0")}-${String(date.month).padStart(
+      2,
+      "0"
+    )}-${String(date.day).padStart(2, "0")}T00:00:00.000Z`
+  );
 };
