@@ -83,14 +83,19 @@ export const loader: LoaderFunction = async ({ request }) => {
       )
   );
 
-  // 쿠키에 인증 정보가 없으면 로그인 페이지로 리다이렉트
+  /**
+   * TODO: accessToken 검사
+   * accessToken 없음 -> refreshToken 삭제 후 로그인으로 (이상한 케이스)
+   * accessToken 만료 -> refreshToken으로 accessToken 업데이트
+   * refreshToken 만료 -> 로그인페이지로 이동
+   * accessToken 사용시 refreshToken 업데이트? (고민좀)
+   */
   const isLogined = cookie.has("accessToken");
   if (!isLogined) {
     return redirect("/login");
   }
 
   const accessToken = cookie.get("accessToken");
-  // todo 패치
   const queryClient = new QueryClient();
 
   await queryClient.prefetchQuery({
