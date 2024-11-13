@@ -84,16 +84,19 @@ export async function deleteTodo(payload: DeleteTodoPayload) {
 
 type CreateTodoPayload = Omit<Todo, "id" | "isCompleted">;
 export async function createTodo(payload: CreateTodoPayload) {
+  const { title, date } = payload;
+  const isoDate = new Date(
+    `${String(date.year).padStart(2, "0")}-${String(date.month).padStart(
+      2,
+      "0"
+    )}-${String(date.day).padStart(2, "0")}T00:00:00.000Z`
+  );
   try {
     const result = await authAPI
       .post(`todos`, {
         body: JSON.stringify({
-          title: payload.title,
-          date: new Date(
-            payload.date.year,
-            payload.date.month - 1,
-            payload.date.day
-          ),
+          title: title,
+          date: isoDate,
         }),
         headers: {
           Authorization: `Bearer ${Cookies.get("accessToken")}`,
