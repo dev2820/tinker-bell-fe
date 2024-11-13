@@ -6,7 +6,7 @@ const isApp = () => {
 
 const sendRouterEvent = (path: string): void => {
   window.ReactNativeWebView.postMessage(
-    JSON.stringify({ type: "ROUTER_EVENT", data: path })
+    JSON.stringify({ type: "ROUTER_EVENT", path: path })
   );
 };
 
