@@ -8,6 +8,7 @@ import {
   CalendarIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  SettingsIcon,
   Trash2Icon,
 } from "lucide-react";
 import {
@@ -320,65 +321,86 @@ function TodoPage() {
     setTitle("");
   };
 
+  const handleGoToday = () => {
+    swiperRef?.slideTo(initialSlideIndex, 200);
+    showToast({
+      description: "오늘 날짜로 이동했어요",
+    });
+  };
+
   return (
     <main className="flex flex-col w-full h-screen items-stretch">
-      <Swiper
-        modules={[Virtual]}
-        className="h-[calc(100%_-_60px)] w-full"
-        slidesPerView={1}
-        onSwiper={setSwiperRef}
-        onSlideChange={handleSlideChange}
-        centeredSlides={true}
-        spaceBetween={0}
-        initialSlide={initialSlideIndex}
-        virtual
-      >
-        {slides.map((slideContent, index) => (
-          <SwiperSlide key={slideContent} virtualIndex={index}>
-            {[slides[0], slides.at(-1)].some((s) => s === slideContent) && (
-              <div className="h-full overflow-y-auto flex flex-col items-center justify-center">
-                <p className="text-center mb-8">
-                  더 많은 Todo를 불러오려면 아래 &apos;더 불러오기&apos; 버튼을
-                  눌러주세요.
-                </p>
-                <Button theme="primary" onClick={handleClickLoadMore}>
-                  더 불러오기
-                </Button>
-              </div>
-            )}
-            {[slides[0], slides.at(-1)].every((s) => s !== slideContent) && (
-              <TodoView
-                currentDate={calcRelativeDate(baseDate, slideContent)}
-                onClickPrev={handleGotoPrevDate}
-                onClickNext={handleGotoNextDate}
-                onClickTodoCheck={handleChangeTodoComplete}
-                onClickTodo={handleClickTodoItem}
-                onClickAddTodo={addTodoDrawer.onOpen}
-                onClickCompletedTodo={completedTodoDrawer.onOpen}
-              ></TodoView>
-            )}
-          </SwiperSlide>
-        ))}
-      </Swiper>
-      <div className="h-[60px]">
-        <button onClick={() => stackRouterPush(navigate, "/setting")}>
-          go setting
-        </button>
+      <div className="h-[calc(100%_-_60px)] w-full">
+        <Swiper
+          modules={[Virtual]}
+          className="h-full w-full"
+          slidesPerView={1}
+          onSwiper={setSwiperRef}
+          onSlideChange={handleSlideChange}
+          centeredSlides={true}
+          spaceBetween={0}
+          initialSlide={initialSlideIndex}
+          virtual
+        >
+          {slides.map((slideContent, index) => (
+            <SwiperSlide key={slideContent} virtualIndex={index}>
+              {[slides[0], slides.at(-1)].some((s) => s === slideContent) && (
+                <div className="h-full overflow-y-auto flex flex-col items-center justify-center">
+                  <p className="text-center mb-8">
+                    더 많은 Todo를 불러오려면 아래 &apos;더 불러오기&apos;
+                    버튼을 눌러주세요.
+                  </p>
+                  <Button theme="primary" onClick={handleClickLoadMore}>
+                    더 불러오기
+                  </Button>
+                </div>
+              )}
+              {[slides[0], slides.at(-1)].every((s) => s !== slideContent) && (
+                <TodoView
+                  currentDate={calcRelativeDate(baseDate, slideContent)}
+                  onClickPrev={handleGotoPrevDate}
+                  onClickNext={handleGotoNextDate}
+                  onClickTodoCheck={handleChangeTodoComplete}
+                  onClickTodo={handleClickTodoItem}
+                  onClickAddTodo={addTodoDrawer.onOpen}
+                  onClickCompletedTodo={completedTodoDrawer.onOpen}
+                ></TodoView>
+              )}
+            </SwiperSlide>
+          ))}
+        </Swiper>
+        <Toast.Toaster toaster={toaster}>
+          {(toast) => (
+            <Toast.Root key={toast.id} className="bg-neutral-800 py-3 w-full">
+              <Toast.Description className="text-white">
+                {toast.description}
+              </Toast.Description>
+              <Toast.CloseTrigger asChild className="top-1.5">
+                <button className="text-md text-primary rounded-md px-2 py-1">
+                  확인
+                </button>
+              </Toast.CloseTrigger>
+            </Toast.Root>
+          )}
+        </Toast.Toaster>
       </div>
-      <Toast.Toaster toaster={toaster}>
-        {(toast) => (
-          <Toast.Root key={toast.id} className="bg-neutral-800 py-3 w-full">
-            <Toast.Description className="text-white">
-              {toast.description}
-            </Toast.Description>
-            <Toast.CloseTrigger asChild className="top-1.5">
-              <button className="text-md text-primary rounded-md px-2 py-1">
-                확인
-              </button>
-            </Toast.CloseTrigger>
-          </Toast.Root>
-        )}
-      </Toast.Toaster>
+      <div className="h-[72px] border-t border-gray-200 rounded-t-xl flex flex-row gap-2 place-items-stretch px-2 py-2">
+        <Button
+          className="w-full h-full my-auto"
+          variant="ghost"
+          onClick={handleGoToday}
+        >
+          <CalendarIcon size={24} />
+        </Button>
+        <Button
+          className="w-full h-full my-auto"
+          variant="ghost"
+          onClick={() => stackRouterPush(navigate, "/setting")}
+        >
+          <SettingsIcon size={24} />
+        </Button>
+      </div>
+
       {/**
        * todo 생성
        */}

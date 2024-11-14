@@ -22,6 +22,7 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
     gap: 16,
     removeDelay: 300,
     duration: 2000,
+    offsets: "80px",
   });
 
   const showToast: ToastContextType["showToast"] = ({
