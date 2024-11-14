@@ -206,7 +206,7 @@ function TodoPage() {
       deleteTodoById(currentTodo.id);
       detailDrawer.onClose();
       showToast({
-        description: "Todo를 삭제했습니다",
+        description: "삭제 완료 🗑️",
       });
     }
   };
