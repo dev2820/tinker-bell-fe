@@ -106,6 +106,10 @@ body {
   }
 }
 
+* {
+  user-select: none;
+}
+
 @layer base {
   * {
     @apply border-border;
