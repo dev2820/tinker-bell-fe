@@ -371,7 +371,10 @@ function TodoPage() {
         </Swiper>
         <Toast.Toaster toaster={toaster}>
           {(toast) => (
-            <Toast.Root key={toast.id} className="bg-neutral-800 py-3 w-full">
+            <Toast.Root
+              key={toast.id}
+              className="bg-neutral-800 py-3 w-full min-w-[calc(100vw_-_32px)]"
+            >
               <Toast.Description className="text-white">
                 {toast.description}
               </Toast.Description>
@@ -384,7 +387,7 @@ function TodoPage() {
           )}
         </Toast.Toaster>
       </div>
-      <div className="h-[72px] border-t border-gray-200 rounded-t-xl flex flex-row gap-2 place-items-stretch px-2 py-2">
+      <div className="z-10 h-[72px] border-t border-gray-200 rounded-t-xl flex flex-row gap-2 place-items-stretch px-2 py-2">
         <Button
           className="w-full h-full my-auto"
           variant="ghost"
