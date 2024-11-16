@@ -8,6 +8,7 @@ interface CalendarGridProps {
   month: number;
   today: Date;
   onSelect: (dateStr: string) => void;
+  className: string;
 }
 
 export const CalendarGrid = ({
@@ -15,6 +16,7 @@ export const CalendarGrid = ({
   month,
   today,
   onSelect,
+  className,
 }: CalendarGridProps) => {
   const getDaysInMonth = (year: number, month: number) => {
     return new Date(year, month + 1, 0).getDate();
@@ -49,28 +51,34 @@ export const CalendarGrid = ({
 
   const handleClickCell = (e: MouseEvent<HTMLButtonElement>) => {
     const day = Number(e.currentTarget.dataset["day"]);
-    onSelect(`${year}-${month + 1}-${day.toString().padStart(2, "0")}`);
+    const month = Number(e.currentTarget.dataset["month"]);
+    onSelect(
+      `${year}-${(month + 1).toString().padStart(2, "0")}-${day
+        .toString()
+        .padStart(2, "0")}`
+    );
   };
 
   return (
-    <div className="grid grid-cols-7 gap-2">
+    <div className={cn("grid grid-cols-7 gap-1 place-items-center", className)}>
       {["일", "월", "화", "수", "목", "금", "토"].map((dayOfWeek) => (
-        <div
+        <span
           className={cn(
-            "w-10 h-10 text-center leading-10",
-            dayOfWeek === "일" && "text-red",
-            dayOfWeek === "토" && "text-blue"
+            "w-8 h-8 text-center leading-10 text-green",
+            dayOfWeek === "일" && "text-red-500",
+            dayOfWeek === "토" && "text-blue-500"
           )}
           key={dayOfWeek}
         >
           {dayOfWeek}
-        </div>
+        </span>
       ))}
       {days.map(([year, month, day], index) => (
         <CalendarCell
           key={index}
           day={day}
           data-day={day}
+          data-month={month}
           isCurrentMonth={index >= startDay && index < startDay + daysInMonth}
           isSaturday={isSaturday(new Date(year, month, day))}
           isSunday={isSunday(new Date(year, month, day))}

@@ -533,13 +533,13 @@ function TodoPage() {
                         <Dialog.Title className="text-center flex-none px-4">
                           날짜 변경
                         </Dialog.Title>
-                        <Dialog.Description className="flex-1 px-6">
+                        <Dialog.Description className="flex-1 px-4">
                           <Calendar
                             today={calendarDate}
                             onSelect={handleUpdateCalendarDate}
                           />
                         </Dialog.Description>
-                        <div className="flex flex-row-reverse flex-none px-6 gap-3">
+                        <div className="flex flex-row-reverse flex-none px-4 gap-3">
                           <Dialog.CloseTrigger asChild>
                             <Button
                               theme="primary"

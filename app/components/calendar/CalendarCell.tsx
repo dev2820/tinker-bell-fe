@@ -20,7 +20,7 @@ export const CalendarCell = ({
   return (
     <button
       className={cn(
-        "flex items-center justify-center h-10 w-10 rounded-full text-black",
+        "flex items-center justify-center h-8 w-8 rounded-full text-black active:bg-primary active:text-primary-foreground transition-colors duration-300",
         isSunday && "text-red-500",
         isSaturday && "text-blue-500",
         !isCurrentMonth && "opacity-30",

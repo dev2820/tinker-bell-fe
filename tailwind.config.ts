@@ -27,6 +27,9 @@ export default {
         foreground: "hsl(var(--foreground))",
         primary: {
           DEFAULT: "var(--primary)",
+          subtle: "var(--primary-subtle)",
+          hover: "var(--primary-hover)",
+          pressed: "var(--primary-pressed)",
           foreground: "var(--primary-foreground)",
         },
         secondary: {
@@ -106,6 +109,12 @@ export default {
           },
         },
       },
+      screen: {
+        "no-hover": { raw: "(hover: none)" },
+        hoverable: {
+          raw: "(hover: hover) and (pointer: fine)",
+        },
+      },
       boxShadow: {
         "1": "0px 4px 12px 0px rgba(52, 52, 52, 0.2)",
       },
@@ -114,6 +123,11 @@ export default {
         "accordion-up": "accordion-up 0.2s ease-out",
         "fade-in": "fade-in 0.3s ease-in",
         "fade-out": "fade-out 0.3s ease-out",
+      },
+    },
+    variants: {
+      extend: {
+        backgroundColor: ["hover", "active", "no-hover", "hoverable"],
       },
     },
   },
