@@ -75,8 +75,8 @@ dependencies:
     specifier: ^1.0.7
     version: 1.0.7(tailwindcss@3.4.13)
   terra-design-system:
-    specifier: 1.0.37
-    version: 1.0.37(@ark-ui/react@4.1.1)(react-dom@18.3.1)(react@18.3.1)(tailwind-variants@0.2.1)
+    specifier: 1.0.38
+    version: 1.0.38(@ark-ui/react@4.1.1)(react-dom@18.3.1)(react@18.3.1)(tailwind-variants@0.2.1)
 
 devDependencies:
   '@remix-run/dev':
@@ -6890,8 +6890,8 @@ packages:
       mkdirp: 1.0.4
       yallist: 4.0.0
 
-  /terra-design-system@1.0.37(@ark-ui/react@4.1.1)(react-dom@18.3.1)(react@18.3.1)(tailwind-variants@0.2.1):
-    resolution: {integrity: sha512-Cgquk4xYEjC4mt6ETEjYmeXvfi/Is6na8skT1hG3zm0TecipgLoEBcOOU0Rupmv2T5wXsam6eQM1EephYEMVcw==}
+  /terra-design-system@1.0.38(@ark-ui/react@4.1.1)(react-dom@18.3.1)(react@18.3.1)(tailwind-variants@0.2.1):
+    resolution: {integrity: sha512-/eCuyFrzuhBIk1MptnXIygwDGPiw7FnIfl7rb93I1VB24OxhSf6KzZL/4nIrB/p0mP7scyXdr8ozJosM0jsJWg==}
     peerDependencies:
       '@ark-ui/react': ^3.6.2
       react: ^18.2.0
