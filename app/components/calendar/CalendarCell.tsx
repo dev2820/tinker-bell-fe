@@ -5,21 +5,26 @@ type CalendarCellProps = ComponentProps<"button"> & {
   day: number | null;
   isToday: boolean;
   isCurrentMonth: boolean;
+  isSaturday?: boolean;
+  isSunday?: boolean;
 };
 
 export const CalendarCell = ({
   day,
   isCurrentMonth,
   isToday,
+  isSaturday,
+  isSunday,
   ...rest
 }: CalendarCellProps) => {
   return (
     <button
       className={cn(
-        "flex items-center justify-center h-10 w-10 rounded-full",
-        isCurrentMonth ? "text-black" : "text-gray-400",
-        isToday && isCurrentMonth && "bg-primary text-white",
-        isToday && !isCurrentMonth && "bg-primary text-white opacity-50"
+        "flex items-center justify-center h-10 w-10 rounded-full text-black",
+        isSunday && "text-red-500",
+        isSaturday && "text-blue-500",
+        !isCurrentMonth && "opacity-30",
+        isToday && "bg-primary text-white"
       )}
       {...rest}
     >

@@ -1,6 +1,7 @@
 import { MouseEvent } from "react";
 import { CalendarCell } from "./CalendarCell";
 import { cn } from "@/lib/utils";
+import { isSaturday, isSunday } from "date-fns";
 
 interface CalendarGridProps {
   year: number;
@@ -71,6 +72,8 @@ export const CalendarGrid = ({
           day={day}
           data-day={day}
           isCurrentMonth={index >= startDay && index < startDay + daysInMonth}
+          isSaturday={isSaturday(new Date(year, month, day))}
+          isSunday={isSunday(new Date(year, month, day))}
           onClick={handleClickCell}
           isToday={
             today.getDate() === day &&

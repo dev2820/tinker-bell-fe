@@ -43,7 +43,6 @@ export const isSameDay = (date1: Date, date2: Date) => {
     .getDate()
     .toString()
     .padStart(2, "0")}`;
-  console.log(date1Korean, date2Korean);
 
   return date1Korean === date2Korean;
 };
