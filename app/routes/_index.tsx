@@ -550,7 +550,7 @@ function TodoPage() {
                           </Dialog.CloseTrigger>
                           <Dialog.CloseTrigger asChild>
                             <Button variant="outline" theme="neutral">
-                              닫기
+                              취소
                             </Button>
                           </Dialog.CloseTrigger>
                         </div>
