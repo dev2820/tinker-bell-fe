@@ -109,6 +109,12 @@ body {
 * {
   user-select: none;
 }
+@media (hover: none) {
+  button:hover {
+    /* 모바일 환경에서 hover 스타일 제거 */
+    background-color: inherit !important;
+  }
+}
 
 @layer base {
   * {
