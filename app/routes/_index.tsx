@@ -59,6 +59,7 @@ import {
 import { useTodo } from "@/hooks/use-todo";
 import { ToastProvider, useToast } from "@/contexts/toast";
 import { stackRouterPush } from "@/utils/helper/app";
+import { useCurrentTodo } from "@/hooks/use-current-todo";
 
 export const meta: MetaFunction = () => {
   return [
@@ -155,17 +156,7 @@ function TodoPage() {
   const [swiperRef, setSwiperRef] = useState<SwiperType | null>(null);
 
   const [calendarDate, setCalendarDate] = useState<Date>(baseDate);
-
-  const [currentTodo, setCurrentTodo] = useState<Todo>({
-    id: -1,
-    title: "",
-    date: {
-      year: 1970,
-      month: 1,
-      day: 1,
-    },
-    isCompleted: false,
-  });
+  const currentTodo = useCurrentTodo();
 
   const [title, setTitle] = useState<string>("");
   const handleChangeTodoComplete = (todoId: number) => {
@@ -196,15 +187,15 @@ function TodoPage() {
     // show todo details
     const todo = todos.find((todo) => todo.id === todoId);
     if (todo) {
-      setCurrentTodo({ ...todo });
+      currentTodo.update(todo);
     }
     detailDrawer.onOpen();
   };
 
   const handleClickDeleteCurrentTodo = () => {
     // show todo details
-    if (currentTodo) {
-      deleteTodoById(currentTodo.id);
+    if (currentTodo.value) {
+      deleteTodoById(currentTodo.value.id);
       detailDrawer.onClose();
       showToast({
         description: "삭제 완료 🗑️",
@@ -231,12 +222,11 @@ function TodoPage() {
   };
   const handleUpdateTitle = (e: ChangeEvent<HTMLInputElement>) => {
     const newTitle = e.currentTarget.value;
-    if (currentTodo) {
-      setCurrentTodo({
-        ...currentTodo,
+    if (currentTodo.value) {
+      currentTodo.update({
         title: newTitle,
       });
-      updateTodoById(currentTodo.id, {
+      updateTodoById(currentTodo.value.id, {
         title: newTitle,
       });
     }
@@ -270,15 +260,15 @@ function TodoPage() {
   };
 
   const handleClickDelayTomorrow = () => {
-    const delayedTodo = delayNextDay(currentTodo);
-    setCurrentTodo({ ...delayedTodo });
+    const delayedTodo = delayNextDay(currentTodo.value);
+    currentTodo.update(delayedTodo);
     updateTodoById(delayedTodo.id, { date: delayedTodo.date });
     detailDrawer.onClose();
   };
 
   const handleClickDelayWeek = () => {
-    const delayedTodo = delayNextWeek(currentTodo);
-    setCurrentTodo({ ...delayedTodo });
+    const delayedTodo = delayNextWeek(currentTodo.value);
+    currentTodo.update(delayedTodo);
     updateTodoById(delayedTodo.id, { date: delayedTodo.date });
     detailDrawer.onClose();
   };
@@ -289,18 +279,16 @@ function TodoPage() {
   };
 
   const handleClickUpdateDateConfirm = () => {
-    const changedTodo = changeDateOfTodo(currentTodo, calendarDate);
+    const changedTodo = changeDateOfTodo(currentTodo.value, calendarDate);
     if (currentTodo) {
-      setCurrentTodo({
-        ...changedTodo,
-      });
+      currentTodo.update(changedTodo);
       updateTodoById(changedTodo.id, { date: changedTodo.date });
       detailDrawer.onClose();
     }
   };
 
   const handleClickCalendarIcon = () => {
-    setCalendarDate(getDateFromTodo(currentTodo));
+    setCalendarDate(getDateFromTodo(currentTodo.value));
   };
 
   const handleSlideChange = (swiper: SwiperType) => {
@@ -496,7 +484,7 @@ function TodoPage() {
                 <Drawer.Title className="w-full">
                   <div className="flex flex-row place-items-center h-8">
                     <TodoTitleInput
-                      value={currentTodo.title}
+                      value={currentTodo.value.title}
                       onChange={handleUpdateTitle}
                       className="w-full h-8 min-w-0"
                       placeholder="할 일을 입력해주세요"
@@ -517,9 +505,11 @@ function TodoPage() {
                   <CalendarIcon size={24} />
                   <Dialog.Root>
                     {/* <Input type="date" onChange={handleUpdateDate} /> */}
-                    {`${currentTodo.date.year}-${currentTodo.date.month
+                    {`${
+                      currentTodo.value.date.year
+                    }-${currentTodo.value.date.month
                       .toString()
-                      .padStart(2, "0")}-${currentTodo.date.day
+                      .padStart(2, "0")}-${currentTodo.value.date.day
                       .toString()
                       .padStart(2, "0")}`}
                     <Dialog.Trigger asChild>
