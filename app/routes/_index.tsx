@@ -310,6 +310,7 @@ function TodoPage() {
   };
 
   const handleGoToday = () => {
+    setBaseDate(new Date());
     swiperRef?.slideTo(initialSlideIndex, 200);
     showToast({
       description: "오늘 날짜로 이동했어요",
