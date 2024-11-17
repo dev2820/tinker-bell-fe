@@ -335,7 +335,7 @@ function TodoPage() {
               {[slides[0], slides.at(-1)].some((s) => s === slideContent) && (
                 <div className="h-full overflow-y-auto flex flex-col items-center justify-center">
                   <p className="text-center mb-8">
-                    더 많은 Todo를 불러오려면 아래 &apos;더 불러오기&apos;
+                    다음 날짜의 Todo를 불러오려면 아래 &apos;더 불러오기&apos;
                     버튼을 눌러주세요.
                   </p>
                   <Button theme="primary" onClick={handleClickLoadMore}>
