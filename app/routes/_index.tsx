@@ -398,8 +398,9 @@ function TodoPage() {
       <Drawer.Root
         variant="bottom"
         open={addTodoDrawer.isOpen}
-        onInteractOutside={handleCloseCreateTodo}
-        onEscapeKeyDown={handleCloseCreateTodo}
+        onExitComplete={handleCloseCreateTodo}
+        onInteractOutside={addTodoDrawer.onClose}
+        onEscapeKeyDown={addTodoDrawer.onClose}
         // trapFocus={false}
       >
         <Portal>
