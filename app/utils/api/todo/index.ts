@@ -8,6 +8,7 @@ export type RawTodo = {
   title: string;
   date: string;
   isCompleted: boolean;
+  order?: number;
 };
 
 export async function fetchTodos() {
