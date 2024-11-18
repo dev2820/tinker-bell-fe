@@ -14,7 +14,7 @@ export type RawTodo = {
 export async function fetchTodos(date: Date) {
   try {
     const result = await authAPI
-      .get(`todos?todoQuery=${toDateStr(date)}`, {
+      .get(`todos?from=${toDateStr(date)}&to=${toDateStr(date)}`, {
         headers: {
           Authorization: `Bearer ${Cookies.get("accessToken")}`,
         },
