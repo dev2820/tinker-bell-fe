@@ -11,10 +11,10 @@ export type RawTodo = {
   order?: number;
 };
 
-export async function fetchTodos() {
+export async function fetchTodos(date: Date) {
   try {
     const result = await authAPI
-      .get("todos", {
+      .get(`todos?todoQuery=${toDateStr(date)}`, {
         headers: {
           Authorization: `Bearer ${Cookies.get("accessToken")}`,
         },
@@ -190,4 +190,11 @@ const toISODate = (date: Todo["date"]) => {
       "0"
     )}-${String(date.day).padStart(2, "0")}T00:00:00.000Z`
   );
+};
+
+const toDateStr = (date: Date) => {
+  const yyyy = date.getFullYear();
+  const mm = String(date.getMonth() + 1).padStart(2, "0");
+  const dd = String(date.getDate()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}`;
 };

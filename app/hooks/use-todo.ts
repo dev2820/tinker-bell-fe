@@ -15,7 +15,7 @@ export const useTodo = (currentDate: Date) => {
   const { data: todos } = useQuery({
     queryKey: ["todos", todoQueryKey],
     queryFn: async () => {
-      const res = await todoAPI.fetchTodos();
+      const res = await todoAPI.fetchTodos(currentDate);
       if (res.isFailed) {
         throw res.error;
       }
