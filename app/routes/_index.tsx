@@ -60,6 +60,7 @@ import { useTodo } from "@/hooks/use-todo";
 import { ToastProvider, useToast } from "@/contexts/toast";
 import { stackRouterPush } from "@/utils/helper/app";
 import { useCurrentTodo } from "@/hooks/use-current-todo";
+import { MenubarItem } from "@/components/menubar/MenubarItem";
 
 export const meta: MetaFunction = () => {
   return [
@@ -385,14 +386,17 @@ function TodoPage() {
           variant="ghost"
           onClick={handleGoToday}
         >
-          <CalendarIcon size={24} />
+          <MenubarItem
+            icon={<CalendarIcon size={24} />}
+            labelText="오늘로 이동하기"
+          />
         </Button>
         <Button
           className="w-full h-full my-auto"
           variant="ghost"
           onClick={() => stackRouterPush(navigate, "/setting")}
         >
-          <SettingsIcon size={24} />
+          <MenubarItem icon={<SettingsIcon size={24} />} labelText="설정" />
         </Button>
       </div>
 
