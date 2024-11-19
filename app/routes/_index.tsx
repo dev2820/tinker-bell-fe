@@ -207,6 +207,9 @@ function TodoPage() {
     setTitle(e.currentTarget.value);
   };
   const handleKeydownTitle = async (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.nativeEvent.isComposing) {
+      return;
+    }
     if (e.key === "Enter") {
       createTodo({
         title: title,
