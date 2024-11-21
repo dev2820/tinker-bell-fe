@@ -40,11 +40,15 @@ export function TodoDraggableItem(props: TodoItemProps) {
       <div
         className={cx(
           "todo",
-          "gap-2 flex flex-row h-12 border border-gray-200 bg-white rounded-lg px-4 my-2 place-items-center",
+          "gap-2 flex flex-row min-h-12 border border-gray-200 bg-white rounded-lg px-4 my-2 items-start pb-[11px]",
           isDragging ? "shadow-md" : ""
         )}
       >
-        <label className={cx("inline-flex place-items-center justify-center")}>
+        <label
+          className={cx(
+            "inline-flex place-items-center justify-center pt-[13px]"
+          )}
+        >
           <input
             type="checkbox"
             className={cx("peer hidden")}
@@ -61,7 +65,7 @@ export function TodoDraggableItem(props: TodoItemProps) {
         </label>
         <button
           className={cx(
-            "flex-1 h-full text-left text-ellipsis overflow-hidden whitespace-nowrap select-none",
+            "flex-1 h-full text-left whitespace-pre-line select-none pt-[11px]",
             todo.isCompleted ? "line-through text-disabled" : ""
           )}
           data-todo-id={todo.id}
@@ -70,7 +74,7 @@ export function TodoDraggableItem(props: TodoItemProps) {
           {todo.title}
         </button>
         <div
-          className="text-gray-300 opacity-50 cursor-grab flex-none"
+          className="text-gray-300 opacity-50 cursor-grab flex-none pt-[11px]"
           onPointerDown={(e) => controls.start(e)}
           style={{ touchAction: "none" }}
         >
