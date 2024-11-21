@@ -8,7 +8,7 @@ import {
   CalendarIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
-  FilterIcon,
+  ListFilterIcon,
   SettingsIcon,
   Trash2Icon,
 } from "lucide-react";
@@ -19,6 +19,7 @@ import {
   MouseEvent,
   useMemo,
   useEffect,
+  FormEvent,
 } from "react";
 import { toTodo, type RawTodo } from "@/utils/api/todo";
 import { TodoDraggableItem } from "@/components/todo/TodoDraggableItem";
@@ -62,7 +63,7 @@ import { ToastProvider, useToast } from "@/contexts/toast";
 import { stackRouterPush } from "@/utils/helper/app";
 import { useCurrentTodo } from "@/hooks/use-current-todo";
 import { MenubarItem } from "@/components/menubar/MenubarItem";
-import { RadioButton } from "@/components/ui/RadioButton";
+import { useSettingStore } from "@/stores/setting";
 
 export const meta: MetaFunction = () => {
   return [
@@ -141,6 +142,7 @@ const initialSlideIndex = slides.length / 2;
 
 function TodoPage() {
   const navigate = useNavigate();
+
   const [currentSlideIndex, setCurrentSlideIndex] =
     useState<number>(initialSlideIndex);
   const [baseDate, setBaseDate] = useState<Date>(getToday());
@@ -602,18 +604,32 @@ function TodoView(props: TodoViewProps) {
     onClickAddTodo,
     onClickCompletedTodo,
   } = props;
-
+  const { filterOption, changeFilter } = useSettingStore();
   const { todos } = useTodo(currentDate);
   /**
    * TODO: order api가 생기면 todo 상태를 따로 저장할 필요 없어짐
    */
-  const [incompletedTodos, setIncompletedTodos] = useState<Todo[]>(
-    todos?.filter((todo) => !todo.isCompleted) ?? []
+  const [orderedTodos, setOrderedTodos] = useState<Todo[]>(
+    todos?.filter((todo) =>
+      filterOption === "all"
+        ? true
+        : filterOption === "completed"
+        ? todo.isCompleted
+        : !todo.isCompleted
+    ) ?? []
   );
 
   useEffect(() => {
-    setIncompletedTodos(todos?.filter((todo) => !todo.isCompleted) ?? []);
-  }, [todos]);
+    setOrderedTodos(
+      todos?.filter((todo) =>
+        filterOption === "all"
+          ? true
+          : filterOption === "completed"
+          ? todo.isCompleted
+          : !todo.isCompleted
+      ) ?? []
+    );
+  }, [filterOption, todos]);
 
   const handleChangeComplete = (e: ChangeEvent<HTMLElement>) => {
     const $target = e.currentTarget;
@@ -627,13 +643,17 @@ function TodoView(props: TodoViewProps) {
 
     onClickTodo(todoId);
   };
+  const handleChangeFilter = (e: FormEvent<HTMLInputElement>) => {
+    const newOption = e.currentTarget.value as typeof filterOption;
+    changeFilter(newOption);
+  };
   return (
     <div className="h-full overflow-y-auto">
       <h2 className="text-center mt-4 mb-4">
         <small className="block">
           {formatKoreanDate(currentDate, "yyyy년 MM월 dd일")}
         </small>
-        <div className="flex flex-row place-items-center justify-center gap-3">
+        <div className="relative flex flex-row place-items-center justify-center gap-3">
           <button onClick={onClickPrev}>
             <ChevronLeftIcon size={28} strokeWidth={1} />
           </button>
@@ -647,32 +667,36 @@ function TodoView(props: TodoViewProps) {
             <ChevronRightIcon size={28} strokeWidth={1} />
           </button>
           <Dialog.Root>
-            <Dialog.Trigger asChild>
-              <IconButton>
-                <FilterIcon size={24} />
+            <Dialog.Trigger asChild className="absolute right-4 -top-1.5">
+              <IconButton variant="ghost">
+                <ListFilterIcon size={20} />
               </IconButton>
             </Dialog.Trigger>
             <Dialog.Backdrop />
             <Dialog.Positioner>
-              <Dialog.Content className="p-4">
+              <Dialog.Content className="p-4 w-full max-w-[240px]">
                 <Dialog.Title>할 일 보기 방식</Dialog.Title>
                 <Dialog.Description>
                   <ul>
-                    <li>
-                      <RadioButton name="show-filter" value="all">
-                        모든 할 일
-                      </RadioButton>
-                    </li>
-                    <li>
-                      <RadioButton name="show-filter" value="not-completed">
-                        완료되지 않은 할 일
-                      </RadioButton>
-                    </li>
-                    <li>
-                      <RadioButton name="show-filter" value="completed">
-                        완료된 할 일
-                      </RadioButton>
-                    </li>
+                    {["all", "not-completed", "completed"].map((v) => (
+                      <li key={v} className="mb-4 last:mb-0">
+                        <label className="cursor-pointer">
+                          <input
+                            type="radio"
+                            className="hidden peer"
+                            name="filter"
+                            value={v}
+                            checked={v === filterOption}
+                            onChange={handleChangeFilter}
+                          />
+                          <div className="px-4 py-3 border rounded-lg peer-checked:text-primary-pressed peer-checked:border-primary peer-checked:bg-primary-subtle ">
+                            {v === "all" && "모든 할 일"}
+                            {v === "not-completed" && "완료되지 않은 할 일"}
+                            {v === "completed" && "완료된 할 일"}
+                          </div>
+                        </label>
+                      </li>
+                    ))}
                   </ul>
                 </Dialog.Description>
                 <div className="flex flex-row-reverse gap-3">
@@ -689,13 +713,13 @@ function TodoView(props: TodoViewProps) {
         <Reorder.Group
           axis="y"
           as="ul"
-          values={incompletedTodos}
-          onReorder={setIncompletedTodos}
+          values={orderedTodos}
+          onReorder={setOrderedTodos}
           layoutScroll
           className="px-4 overflow-y-hidden overflow-x-hidden"
         >
           <AnimatePresence>
-            {incompletedTodos.map((todo) => (
+            {orderedTodos.map((todo) => (
               <TodoDraggableItem
                 key={todo.id}
                 todo={todo}
