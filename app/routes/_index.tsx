@@ -1,4 +1,4 @@
-import { TodoTitleInput } from "@/components/todo/TodoTitleInput";
+import { TodoTitleTextarea } from "@/components/todo/TodoTitleInput";
 import { Todo } from "@/types/todo";
 import { authAPI } from "@/utils/api";
 import type { MetaFunction } from "@remix-run/node";
@@ -210,10 +210,10 @@ function TodoPage() {
     }
   };
 
-  const handleChangeTitle = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleChangeTitle = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setTitle(e.currentTarget.value);
   };
-  const handleKeydownTitle = async (e: KeyboardEvent<HTMLInputElement>) => {
+  const handleKeydownTitle = async (e: KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.nativeEvent.isComposing) {
       return;
     }
@@ -230,7 +230,7 @@ function TodoPage() {
       setTitle("");
     }
   };
-  const handleUpdateTitle = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleUpdateTitle = (e: ChangeEvent<HTMLTextAreaElement>) => {
     const newTitle = e.currentTarget.value;
     if (currentTodo.value) {
       currentTodo.update({
@@ -423,7 +423,7 @@ function TodoPage() {
             <Drawer.Content className="h-full min-h-96 rounded-t-lg pt-4">
               <Drawer.Header className="h-full">
                 <div className="flex flex-row">
-                  <TodoTitleInput
+                  <TodoTitleTextarea
                     value={title}
                     onChange={handleChangeTitle}
                     onKeyDown={handleKeydownTitle}
@@ -497,8 +497,8 @@ function TodoPage() {
             >
               <Drawer.Header>
                 <Drawer.Title className="w-full">
-                  <div className="flex flex-row place-items-center h-8">
-                    <TodoTitleInput
+                  <div className="flex flex-row place-items-start h-auto">
+                    <TodoTitleTextarea
                       value={currentTodo.value.title}
                       onChange={handleUpdateTitle}
                       className="w-full h-8 min-w-0"

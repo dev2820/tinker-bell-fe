@@ -1,18 +1,18 @@
 import { cx } from "@/utils/cx";
-import { ComponentProps } from "react";
+import TextareaAutosize, {
+  type TextareaAutosizeProps,
+} from "react-textarea-autosize";
 
-export type TodoTitleInputProps = ComponentProps<"input">;
-
-export function TodoTitleInput(props: TodoTitleInputProps) {
+export function TodoTitleTextarea(props: TextareaAutosizeProps) {
   const { className, ...rest } = props;
 
   return (
-    <input
-      type="text"
+    <TextareaAutosize
       className={cx(
         "focus:outline-none bg-white text-black text-lg",
         className
       )}
+      minRows={1}
       {...rest}
     />
   );
