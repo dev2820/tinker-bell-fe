@@ -366,7 +366,6 @@ function TodoPage() {
                   onClickTodoCheck={handleChangeTodoComplete}
                   onClickTodo={handleClickTodoItem}
                   onClickAddTodo={addTodoDrawer.onOpen}
-                  onClickCompletedTodo={completedTodoDrawer.onOpen}
                 ></TodoView>
               )}
             </SwiperSlide>
@@ -592,7 +591,6 @@ type TodoViewProps = {
   onClickTodoCheck: (id: Todo["id"]) => void;
   onClickTodo: (id: Todo["id"]) => void;
   onClickAddTodo: () => void;
-  onClickCompletedTodo: () => void;
 };
 function TodoView(props: TodoViewProps) {
   const {
@@ -602,7 +600,6 @@ function TodoView(props: TodoViewProps) {
     onClickTodoCheck,
     onClickTodo,
     onClickAddTodo,
-    onClickCompletedTodo,
   } = props;
   const { filterOption, changeFilter } = useSettingStore();
   const { todos } = useTodo(currentDate);
@@ -737,14 +734,6 @@ function TodoView(props: TodoViewProps) {
             onClick={onClickAddTodo}
           >
             + 할 일 추가하기
-          </Button>
-          <Button
-            className="w-full"
-            theme="neutral"
-            size="lg"
-            onClick={onClickCompletedTodo}
-          >
-            완료된 작업 보기
           </Button>
         </div>
       </div>
