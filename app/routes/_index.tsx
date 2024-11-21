@@ -8,6 +8,7 @@ import {
   CalendarIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  FilterIcon,
   SettingsIcon,
   Trash2Icon,
 } from "lucide-react";
@@ -61,6 +62,7 @@ import { ToastProvider, useToast } from "@/contexts/toast";
 import { stackRouterPush } from "@/utils/helper/app";
 import { useCurrentTodo } from "@/hooks/use-current-todo";
 import { MenubarItem } from "@/components/menubar/MenubarItem";
+import { RadioButton } from "@/components/ui/RadioButton";
 
 export const meta: MetaFunction = () => {
   return [
@@ -644,6 +646,43 @@ function TodoView(props: TodoViewProps) {
           <button onClick={onClickNext}>
             <ChevronRightIcon size={28} strokeWidth={1} />
           </button>
+          <Dialog.Root>
+            <Dialog.Trigger asChild>
+              <IconButton>
+                <FilterIcon size={24} />
+              </IconButton>
+            </Dialog.Trigger>
+            <Dialog.Backdrop />
+            <Dialog.Positioner>
+              <Dialog.Content className="p-4">
+                <Dialog.Title>할 일 보기 방식</Dialog.Title>
+                <Dialog.Description>
+                  <ul>
+                    <li>
+                      <RadioButton name="show-filter" value="all">
+                        모든 할 일
+                      </RadioButton>
+                    </li>
+                    <li>
+                      <RadioButton name="show-filter" value="not-completed">
+                        완료되지 않은 할 일
+                      </RadioButton>
+                    </li>
+                    <li>
+                      <RadioButton name="show-filter" value="completed">
+                        완료된 할 일
+                      </RadioButton>
+                    </li>
+                  </ul>
+                </Dialog.Description>
+                <div className="flex flex-row-reverse gap-3">
+                  <Dialog.CloseTrigger asChild>
+                    <Button>확인</Button>
+                  </Dialog.CloseTrigger>
+                </div>
+              </Dialog.Content>
+            </Dialog.Positioner>
+          </Dialog.Root>
         </div>
       </h2>
       <div className="overflow-y-scroll pb-4">
