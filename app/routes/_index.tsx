@@ -147,8 +147,14 @@ function TodoPage() {
     [baseDate, currentSlideIndex]
   );
 
-  const { todos, updateTodoById, toggleTodoById, createTodo, deleteTodoById } =
-    useTodo(currentDate);
+  const {
+    todos,
+    updateTodoById,
+    debouncedUpdateTodoById,
+    toggleTodoById,
+    createTodo,
+    deleteTodoById,
+  } = useTodo(currentDate);
 
   const addTodoDrawer = useDisclosure();
   const completedTodoDrawer = useDisclosure();
@@ -230,7 +236,7 @@ function TodoPage() {
       currentTodo.update({
         title: newTitle,
       });
-      updateTodoById(currentTodo.value.id, {
+      debouncedUpdateTodoById(currentTodo.value.id, {
         title: newTitle,
       });
     }

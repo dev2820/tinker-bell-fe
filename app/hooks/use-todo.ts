@@ -1,10 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { isTargetDateTodo } from "@/utils/helper/todo";
 import * as todoAPI from "@/utils/api/todo";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { formatDate } from "date-fns";
 import { Todo } from "@/types/todo";
 import { isNil } from "@/utils/type-guard";
+import { useDebounce } from "./use-debounce";
 
 export const useTodo = (currentDate: Date) => {
   const todoQueryKey = useMemo(() => {
@@ -90,24 +91,26 @@ export const useTodo = (currentDate: Date) => {
     },
   });
 
-  const updateTodoById = (
-    id: Todo["id"],
-    payload: Partial<Omit<Todo, "id">>
-  ) => {
-    if (!todos) {
-      return;
-    }
+  const updateTodoById = useCallback(
+    (id: Todo["id"], payload: Partial<Omit<Todo, "id">>) => {
+      if (!todos) {
+        return;
+      }
 
-    const targetTodo = todos.find((todo) => todo.id === id);
-    if (isNil(targetTodo)) {
-      return;
-    }
+      const targetTodo = todos.find((todo) => todo.id === id);
+      if (isNil(targetTodo)) {
+        return;
+      }
 
-    updateMutation.mutate({
-      ...targetTodo,
-      ...payload,
-    });
-  };
+      updateMutation.mutate({
+        ...targetTodo,
+        ...payload,
+      } satisfies Todo);
+    },
+    [todos, updateMutation]
+  );
+
+  const debouncedUpdateTodoById = useDebounce(updateTodoById, 300);
 
   const toggleTodoById = (id: Todo["id"]) => {
     if (!todos) {
@@ -136,6 +139,7 @@ export const useTodo = (currentDate: Date) => {
   return {
     todos,
     updateTodoById,
+    debouncedUpdateTodoById,
     toggleTodoById,
     createTodo,
     deleteTodoById,
