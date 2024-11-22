@@ -656,7 +656,7 @@ function TodoView(props: TodoViewProps) {
           </button>
           <time
             dateTime={formatDate(currentDate, "yyyy-MM-dd")}
-            className="font-bold w-36"
+            className="font-bold w-12"
           >
             {formatKoreanDate(currentDate, "EEEE")}
           </time>
