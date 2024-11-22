@@ -573,7 +573,7 @@ function TodoPage() {
                       size="md"
                       variant="ghost"
                       onClick={handleClickDeleteCurrentTodo}
-                      className="flex-none "
+                      className="flex-none -mt-1.5"
                     >
                       <Trash2Icon size={24} />
                     </IconButton>

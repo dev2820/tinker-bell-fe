@@ -12,7 +12,8 @@ export function TodoTitleTextarea(props: TextareaAutosizeProps) {
         "focus:outline-none bg-white text-black text-lg",
         className
       )}
-      minRows={1}
+      minRows={3}
+      maxRows={3}
       {...rest}
     />
   );
