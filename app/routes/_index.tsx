@@ -159,6 +159,7 @@ function TodoPage() {
     createTodo,
     deleteTodoById,
   } = useTodo(currentDate);
+  const { filterOption, changeFilter } = useSettingStore();
 
   const addTodoDrawer = useDisclosure();
   const completedTodoDrawer = useDisclosure();
@@ -330,10 +331,73 @@ function TodoPage() {
       description: "오늘 날짜로 이동했어요",
     });
   };
-
+  const handleChangeFilter = (e: FormEvent<HTMLInputElement>) => {
+    const newOption = e.currentTarget.value as typeof filterOption;
+    changeFilter(newOption);
+  };
   return (
     <main className="flex flex-col w-full h-screen items-stretch">
-      <div className="h-[calc(100%_-_60px)] w-full">
+      <h2 className="h-[72px] text-center pt-4">
+        <small className="block">
+          {formatKoreanDate(currentDate, "yyyy년 MM월 dd일")}
+        </small>
+        <div className="relative flex flex-row place-items-center justify-center gap-3">
+          <button onClick={handleGotoPrevDate}>
+            <ChevronLeftIcon size={28} strokeWidth={1} />
+          </button>
+          <time
+            dateTime={formatDate(currentDate, "yyyy-MM-dd")}
+            className="font-bold w-12"
+          >
+            {formatKoreanDate(currentDate, "EEEE")}
+          </time>
+          <button onClick={handleGotoNextDate}>
+            <ChevronRightIcon size={28} strokeWidth={1} />
+          </button>
+          <Dialog.Root>
+            <Dialog.Trigger asChild className="absolute right-4 -top-1.5">
+              <IconButton variant="ghost">
+                <ListFilterIcon size={20} />
+              </IconButton>
+            </Dialog.Trigger>
+            <Dialog.Backdrop />
+            <Dialog.Positioner>
+              <Dialog.Content className="p-4 w-full max-w-[240px]">
+                <Dialog.Title>할 일 보기 방식</Dialog.Title>
+                <Dialog.Description>
+                  <ul>
+                    {["all", "not-completed", "completed"].map((v) => (
+                      <li key={v} className="mb-4 last:mb-0">
+                        <label className="cursor-pointer">
+                          <input
+                            type="radio"
+                            className="hidden peer"
+                            name="filter"
+                            value={v}
+                            checked={v === filterOption}
+                            onChange={handleChangeFilter}
+                          />
+                          <div className="px-4 py-3 border rounded-lg peer-checked:text-primary-pressed peer-checked:border-primary peer-checked:bg-primary-subtle ">
+                            {v === "all" && "모든 할 일"}
+                            {v === "not-completed" && "완료되지 않은 할 일"}
+                            {v === "completed" && "완료된 할 일"}
+                          </div>
+                        </label>
+                      </li>
+                    ))}
+                  </ul>
+                </Dialog.Description>
+                <div className="flex flex-row-reverse gap-3">
+                  <Dialog.CloseTrigger asChild>
+                    <Button>확인</Button>
+                  </Dialog.CloseTrigger>
+                </div>
+              </Dialog.Content>
+            </Dialog.Positioner>
+          </Dialog.Root>
+        </div>
+      </h2>
+      <div className="h-[calc(100%_-_144px)] w-full">
         <Swiper
           modules={[Virtual]}
           className="h-full w-full"
@@ -361,8 +425,6 @@ function TodoPage() {
               {[slides[0], slides.at(-1)].every((s) => s !== slideContent) && (
                 <TodoView
                   currentDate={calcRelativeDate(baseDate, slideContent)}
-                  onClickPrev={handleGotoPrevDate}
-                  onClickNext={handleGotoNextDate}
                   onClickTodoCheck={handleChangeTodoComplete}
                   onClickTodo={handleClickTodoItem}
                   onClickAddTodo={addTodoDrawer.onOpen}
@@ -586,26 +648,17 @@ function TodoPage() {
 
 type TodoViewProps = {
   currentDate: Date;
-  onClickPrev: () => void;
-  onClickNext: () => void;
   onClickTodoCheck: (id: Todo["id"]) => void;
   onClickTodo: (id: Todo["id"]) => void;
   onClickAddTodo: () => void;
 };
 function TodoView(props: TodoViewProps) {
-  const {
-    currentDate,
-    onClickPrev,
-    onClickNext,
-    onClickTodoCheck,
-    onClickTodo,
-    onClickAddTodo,
-  } = props;
-  const { filterOption, changeFilter } = useSettingStore();
+  const { currentDate, onClickTodoCheck, onClickTodo, onClickAddTodo } = props;
   const { todos } = useTodo(currentDate);
   /**
    * TODO: order api가 생기면 todo 상태를 따로 저장할 필요 없어짐
    */
+  const { filterOption } = useSettingStore();
   const [orderedTodos, setOrderedTodos] = useState<Todo[]>(
     todos?.filter((todo) =>
       filterOption === "all"
@@ -640,72 +693,9 @@ function TodoView(props: TodoViewProps) {
 
     onClickTodo(todoId);
   };
-  const handleChangeFilter = (e: FormEvent<HTMLInputElement>) => {
-    const newOption = e.currentTarget.value as typeof filterOption;
-    changeFilter(newOption);
-  };
+
   return (
     <div className="h-full overflow-y-auto">
-      <h2 className="text-center mt-4 mb-4">
-        <small className="block">
-          {formatKoreanDate(currentDate, "yyyy년 MM월 dd일")}
-        </small>
-        <div className="relative flex flex-row place-items-center justify-center gap-3">
-          <button onClick={onClickPrev}>
-            <ChevronLeftIcon size={28} strokeWidth={1} />
-          </button>
-          <time
-            dateTime={formatDate(currentDate, "yyyy-MM-dd")}
-            className="font-bold w-12"
-          >
-            {formatKoreanDate(currentDate, "EEEE")}
-          </time>
-          <button onClick={onClickNext}>
-            <ChevronRightIcon size={28} strokeWidth={1} />
-          </button>
-          <Dialog.Root>
-            <Dialog.Trigger asChild className="absolute right-4 -top-1.5">
-              <IconButton variant="ghost">
-                <ListFilterIcon size={20} />
-              </IconButton>
-            </Dialog.Trigger>
-            <Dialog.Backdrop />
-            <Dialog.Positioner>
-              <Dialog.Content className="p-4 w-full max-w-[240px]">
-                <Dialog.Title>할 일 보기 방식</Dialog.Title>
-                <Dialog.Description>
-                  <ul>
-                    {["all", "not-completed", "completed"].map((v) => (
-                      <li key={v} className="mb-4 last:mb-0">
-                        <label className="cursor-pointer">
-                          <input
-                            type="radio"
-                            className="hidden peer"
-                            name="filter"
-                            value={v}
-                            checked={v === filterOption}
-                            onChange={handleChangeFilter}
-                          />
-                          <div className="px-4 py-3 border rounded-lg peer-checked:text-primary-pressed peer-checked:border-primary peer-checked:bg-primary-subtle ">
-                            {v === "all" && "모든 할 일"}
-                            {v === "not-completed" && "완료되지 않은 할 일"}
-                            {v === "completed" && "완료된 할 일"}
-                          </div>
-                        </label>
-                      </li>
-                    ))}
-                  </ul>
-                </Dialog.Description>
-                <div className="flex flex-row-reverse gap-3">
-                  <Dialog.CloseTrigger asChild>
-                    <Button>확인</Button>
-                  </Dialog.CloseTrigger>
-                </div>
-              </Dialog.Content>
-            </Dialog.Positioner>
-          </Dialog.Root>
-        </div>
-      </h2>
       <div className="overflow-y-scroll pb-4">
         <Reorder.Group
           axis="y"
