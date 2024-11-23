@@ -117,13 +117,13 @@ export default function Index() {
   return (
     <HydrationBoundary state={dehydratedState}>
       <ToastProvider>
-        <TodoPage />
+        <TodoCalendarPage />
       </ToastProvider>
     </HydrationBoundary>
   );
 }
 
-function TodoPage() {
+function TodoCalendarPage() {
   const navigate = useNavigate();
 
   return (
