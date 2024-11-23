@@ -2,7 +2,7 @@ import { authAPI } from "@/utils/api";
 import type { MetaFunction } from "@remix-run/node";
 import { LoaderFunction, redirect } from "@remix-run/node";
 import { json, useLoaderData, useNavigate } from "@remix-run/react";
-import { CalendarIcon, SettingsIcon } from "lucide-react";
+import { SettingsIcon } from "lucide-react";
 import { toTodo, type RawTodo } from "@/utils/api/todo";
 import { Button } from "terra-design-system/react";
 
@@ -93,28 +93,10 @@ export default function Index() {
 function TodoPage() {
   const navigate = useNavigate();
 
-  const handleGoToday = () => {
-    // setBaseDate(new Date());
-    // swiperRef?.slideTo(initialSlideIndex, 200);
-    // showToast({
-    //   description: "오늘 날짜로 이동했어요",
-    // });
-  };
-
   return (
     <main className="flex flex-col w-full h-screen items-stretch">
       <TodoDailyView className="h-[calc(100%_-_72px)]" />
       <div className="z-10 h-menubar border-t border-gray-200 rounded-t-xl flex flex-row gap-2 place-items-stretch px-2 py-2">
-        <Button
-          className="w-full h-full my-auto"
-          variant="ghost"
-          onClick={handleGoToday}
-        >
-          <MenubarItem
-            icon={<CalendarIcon size={24} />}
-            labelText="오늘로 이동하기"
-          />
-        </Button>
         <Button
           className="w-full h-full my-auto"
           variant="ghost"

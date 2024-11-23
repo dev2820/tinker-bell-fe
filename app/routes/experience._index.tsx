@@ -1,8 +1,27 @@
+import { TodoDetailDrawer } from "@/components/drawer/TodoDetailDrawer";
 import { stackRouterBack } from "@/utils/helper/app";
 import { useNavigate } from "@remix-run/react";
+import { MetaFunction } from "@remix-run/node";
 import { ChevronLeftIcon, TriangleAlertIcon } from "lucide-react";
 import { useState } from "react";
 import { Button, IconButton } from "terra-design-system/react";
+import { ToastProvider } from "@/contexts/toast";
+import { MockTodoDailyView } from "@/components/views/MockTodoDailyView";
+import { MockAddTodoDrawer } from "@/components/drawer/MockAddTodoDrawer";
+
+export const meta: MetaFunction = () => {
+  return [
+    { title: "Ticket bell todo" },
+    {
+      property: "og:title",
+      content: "Ticket bell todo",
+    },
+    {
+      name: "description",
+      content: "세상에서 제일 쉬운 Todo",
+    },
+  ];
+};
 
 export default function Experience() {
   const navigate = useNavigate();
@@ -19,16 +38,18 @@ export default function Experience() {
     stackRouterBack(navigate);
   };
   return (
-    <div className="min-h-screen relative">
-      {showGuide && (
-        <Guide
-          onClickBack={handleClickBack}
-          onClickStart={handleClickStart}
-          onClickLogin={handleClickLogin}
-        />
-      )}
-      {!showGuide && <ExperienceView />}
-    </div>
+    <ToastProvider>
+      <div className="min-h-screen relative">
+        {showGuide && (
+          <Guide
+            onClickBack={handleClickBack}
+            onClickStart={handleClickStart}
+            onClickLogin={handleClickLogin}
+          />
+        )}
+        {!showGuide && <ExperienceView />}
+      </div>
+    </ToastProvider>
   );
 }
 
@@ -89,5 +110,21 @@ function Guide({
 }
 
 function ExperienceView() {
-  return <></>;
+  const navigate = useNavigate();
+  return (
+    <main className="flex flex-col w-full h-screen items-stretch">
+      <MockTodoDailyView className="h-[calc(100%_-_72px)]" />
+      <div className="z-10 h-menubar border-t border-gray-200 rounded-t-xl flex flex-row gap-2 place-items-stretch px-2 py-2">
+        <Button
+          className="w-full h-full my-auto"
+          variant="ghost"
+          onClick={() => navigate("/login")}
+        >
+          로그인하기
+        </Button>
+      </div>
+      <MockAddTodoDrawer />
+      <TodoDetailDrawer />
+    </main>
+  );
 }
