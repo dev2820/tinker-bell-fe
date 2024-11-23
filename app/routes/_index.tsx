@@ -451,7 +451,7 @@ function TodoPage() {
           )}
         </Toast.Toaster>
       </div>
-      <div className="z-10 h-[72px] border-t border-gray-200 rounded-t-xl flex flex-row gap-2 place-items-stretch px-2 py-2">
+      <div className="z-10 h-menubar border-t border-gray-200 rounded-t-xl flex flex-row gap-2 place-items-stretch px-2 py-2">
         <Button
           className="w-full h-full my-auto"
           variant="ghost"

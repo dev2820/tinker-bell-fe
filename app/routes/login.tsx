@@ -1,4 +1,6 @@
-import { json, Link, useLoaderData } from "@remix-run/react";
+import { stackRouterPush } from "@/utils/helper/app";
+import { json, Link, useLoaderData, useNavigate } from "@remix-run/react";
+import { Button } from "terra-design-system/react";
 
 export async function loader() {
   const KAKAO_CLIENT_ID = process.env.KAKAO_CLIENT_ID;
@@ -14,12 +16,13 @@ export async function loader() {
 
 export default function Login() {
   const { kakaoLoginUrl, appleLoginUrl } = useLoaderData<typeof loader>();
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen relative">
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 max-w-md w-full h-[400px] bg-white p-8">
         <h2 className="text-2xl font-semibold text-gray-900 text-center mb-4">
-          회원가입
+          로그인
         </h2>
         <div className="flex flex-col place-items-center gap-3">
           <Link to={kakaoLoginUrl}>
@@ -36,6 +39,15 @@ export default function Login() {
               className="h-[45px] w-auto"
             />
           </Link>
+          <Button
+            className="w-full h-full my-auto"
+            variant="ghost"
+            onClick={() => stackRouterPush(navigate, "/experience")}
+          >
+            <Button variant="outline" className="h-[45px] w-[183px]">
+              체험하고 로그인하기
+            </Button>
+          </Button>
         </div>
       </div>
     </div>

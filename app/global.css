@@ -31,6 +31,17 @@
     --orange-700: #c2410c;
     --orange-800: #9a3412;
     --orange-900: #7c2d12;
+    --yellow-50: #fffff0;
+    --yellow-100: #fefcbf;
+    --yellow-200: #faf089;
+    --yellow-300: #f6e05e;
+    --yellow-400: #ecc94b;
+    --yellow-500: #f7b500;
+    --yellow-600: #b7791f;
+    --yellow-700: #975a16;
+    --yellow-800: #744210;
+    --yellow-900: #5f370e;
+
     --background: 0 0% 100%;
     --foreground: 0 0% 3.9%;
     --card: 0 0% 100%;
@@ -42,7 +53,7 @@
     --primary-hover: var(--orange-600);
     --primary-pressed: var(--orange-700);
     --primary-foreground: var(--neutral-50);
-
+    --warning: var(--yellow-500);
     --secondary: 0 0% 96.1%;
     --secondary-foreground: 0 0% 9%;
     --muted: 0 0% 96.1%;

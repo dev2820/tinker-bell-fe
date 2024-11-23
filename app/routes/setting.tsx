@@ -18,7 +18,7 @@ export default function Setting() {
   };
   return (
     <main className="h-screen w-full">
-      <header className="h-14 relative px-4 text-center border-b">
+      <header className="h-header relative px-4 text-center border-b">
         <button className="absolute left-4 top-3" onClick={handleGoBack}>
           <ChevronLeft size={32} strokeWidth={1} />
         </button>

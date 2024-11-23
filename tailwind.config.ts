@@ -19,6 +19,11 @@ export default {
         snug: "1.4",
         normal: "1.5",
       },
+      height: {
+        header: "64px",
+        footer: "56px",
+        menubar: "72px",
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -47,6 +52,9 @@ export default {
         accent: {
           DEFAULT: "hsl(var(--accent))",
           foreground: "hsl(var(--accent-foreground))",
+        },
+        warning: {
+          DEFAULT: "var(--warning)",
         },
         popover: {
           DEFAULT: "hsl(var(--popover))",
