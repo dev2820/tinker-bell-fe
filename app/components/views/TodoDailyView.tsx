@@ -31,6 +31,7 @@ import { useTodoDetailDrawerStore } from "@/stores/todo-detail-drawer";
 import { useAddTodoDrawerStore } from "@/stores/add-todo-drawer";
 import { useCurrentDateStore } from "@/stores/current-date";
 import { TodoFilterDialog } from "@/components/dialog/TodoFilterDialog";
+import { TodoLoadMore } from "../todo/TodoLoadMore";
 
 const slides = range(-500, 500, 1);
 const initialSlideIndex = slides.length / 2;
@@ -157,15 +158,7 @@ export function TodoDailyView(props: TodoDailyViewProps) {
           {slides.map((slideContent, index) => (
             <SwiperSlide key={slideContent} virtualIndex={index}>
               {[slides[0], slides.at(-1)].some((s) => s === slideContent) && (
-                <div className="h-full overflow-y-auto flex flex-col items-center justify-center">
-                  <p className="text-center mb-8">
-                    다음 날짜의 Todo를 불러오려면 아래 &apos;더 불러오기&apos;
-                    버튼을 눌러주세요.
-                  </p>
-                  <Button theme="primary" onClick={handleClickLoadMore}>
-                    더 불러오기
-                  </Button>
-                </div>
+                <TodoLoadMore onClickLoadMore={handleClickLoadMore} />
               )}
               {[slides[0], slides.at(-1)].every((s) => s !== slideContent) && (
                 <TodoView
