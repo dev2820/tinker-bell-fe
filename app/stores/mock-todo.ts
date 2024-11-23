@@ -64,9 +64,11 @@ export const useMockTodoStore = create<MockTodoState & MockTodoAction>(
       });
     },
     reorderTodos: (todos) => {
-      // 기존 todo에 todos의 새 order를 적용해야한다.
+      const tempIdSet = new Set(todos.map((todo) => todo.id));
+      const restTodos = get().todos.filter((todo) => !tempIdSet.has(todo.id));
+
       set({
-        todos: [...todos],
+        todos: [...restTodos, ...todos],
       });
     },
   })
