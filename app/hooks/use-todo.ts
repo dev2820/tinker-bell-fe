@@ -52,7 +52,7 @@ export const useTodo = (currentDate: Date) => {
       }
 
       queryClient.invalidateQueries({
-        queryKey: ["todos"],
+        queryKey: ["todos", todoQueryKey],
       });
     },
     onError: (error) => {
@@ -67,7 +67,7 @@ export const useTodo = (currentDate: Date) => {
         throw res.error;
       }
       queryClient.invalidateQueries({
-        queryKey: ["todos"],
+        queryKey: ["todos", todoQueryKey],
       });
     },
     onError: (error) => {
@@ -83,7 +83,7 @@ export const useTodo = (currentDate: Date) => {
       }
 
       queryClient.invalidateQueries({
-        queryKey: ["todos"],
+        queryKey: ["todos", todoQueryKey],
       });
     },
     onError: (error) => {
@@ -97,10 +97,6 @@ export const useTodo = (currentDate: Date) => {
       if (res.isFailed) {
         throw res.error;
       }
-
-      queryClient.invalidateQueries({
-        queryKey: ["todos"],
-      });
     },
     onError: (error) => {
       console.error("Error ordering item:", error);
