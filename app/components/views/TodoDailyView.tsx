@@ -7,11 +7,7 @@ import {
 } from "@/utils/date-time";
 import { range } from "@/utils/range";
 import { AnimatePresence, Reorder } from "framer-motion";
-import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  ListFilterIcon,
-} from "lucide-react";
+import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import {
   MouseEvent,
   ChangeEvent,
@@ -23,7 +19,7 @@ import {
 import { Virtual } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Swiper as SwiperType } from "swiper/types";
-import { Dialog, Toast, IconButton, Button } from "terra-design-system/react";
+import { Toast, Button } from "terra-design-system/react";
 import { TodoDraggableItem } from "../todo/TodoDraggableItem";
 import { vibrateShort } from "@/utils/device/vibrate";
 import { useTodo } from "@/hooks/use-todo";
@@ -34,6 +30,7 @@ import "swiper/css/virtual";
 import { useTodoDetailDrawerStore } from "@/stores/todo-detail-drawer";
 import { useAddTodoDrawerStore } from "@/stores/add-todo-drawer";
 import { useCurrentDateStore } from "@/stores/current-date";
+import { TodoFilterDialog } from "@/components/dialog/TodoFilterDialog";
 
 const slides = range(-500, 500, 1);
 const initialSlideIndex = slides.length / 2;
@@ -50,7 +47,6 @@ export function TodoDailyView(props: TodoDailyViewProps) {
     () => calcRelativeDate(baseDate, slides[currentSlideIndex]),
     [baseDate, currentSlideIndex]
   );
-  const { filterOption, changeFilter } = useSettingStore();
   const [swiperRef, setSwiperRef] = useState<SwiperType | null>(null);
 
   const { todos, toggleTodoById } = useTodo(relativeDate);
@@ -81,10 +77,6 @@ export function TodoDailyView(props: TodoDailyViewProps) {
 
     setBaseDate(relativeDate);
     swiperRef.slideTo(initialSlideIndex, 0);
-  };
-  const handleChangeFilter = (e: ChangeEvent<HTMLInputElement>) => {
-    const newOption = e.currentTarget.value as typeof filterOption;
-    changeFilter(newOption);
   };
 
   const handleGotoPrevDate = () => {
@@ -147,47 +139,7 @@ export function TodoDailyView(props: TodoDailyViewProps) {
           <button onClick={handleGotoNextDate}>
             <ChevronRightIcon size={28} strokeWidth={1} />
           </button>
-          <Dialog.Root>
-            <Dialog.Trigger asChild className="absolute right-4 -top-1.5">
-              <IconButton variant="ghost">
-                <ListFilterIcon size={20} />
-              </IconButton>
-            </Dialog.Trigger>
-            <Dialog.Backdrop />
-            <Dialog.Positioner>
-              <Dialog.Content className="p-4 w-full max-w-[240px]">
-                <Dialog.Title>할 일 보기 방식</Dialog.Title>
-                <Dialog.Description>
-                  <ul>
-                    {["all", "not-completed", "completed"].map((v) => (
-                      <li key={v} className="mb-4 last:mb-0">
-                        <label className="cursor-pointer">
-                          <input
-                            type="radio"
-                            className="hidden peer"
-                            name="filter"
-                            value={v}
-                            checked={v === filterOption}
-                            onChange={handleChangeFilter}
-                          />
-                          <div className="px-4 py-3 border rounded-lg peer-checked:text-primary-pressed peer-checked:border-primary peer-checked:bg-primary-subtle ">
-                            {v === "all" && "모든 할 일"}
-                            {v === "not-completed" && "완료되지 않은 할 일"}
-                            {v === "completed" && "완료된 할 일"}
-                          </div>
-                        </label>
-                      </li>
-                    ))}
-                  </ul>
-                </Dialog.Description>
-                <div className="flex flex-row-reverse gap-3">
-                  <Dialog.CloseTrigger asChild>
-                    <Button>확인</Button>
-                  </Dialog.CloseTrigger>
-                </div>
-              </Dialog.Content>
-            </Dialog.Positioner>
-          </Dialog.Root>
+          <TodoFilterDialog className={"absolute right-4 -top-1.5"} />
         </div>
       </h2>
       <div className="h-[calc(100%_-_72px)] w-full">
