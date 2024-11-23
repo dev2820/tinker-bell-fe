@@ -1,4 +1,4 @@
-import { authAPI } from "@/utils/api";
+import { authAPI, isHTTPError } from "@/utils/api";
 import type { MetaFunction } from "@remix-run/node";
 import { LoaderFunction, redirect } from "@remix-run/node";
 import { json, useLoaderData, useNavigate } from "@remix-run/react";
@@ -17,6 +17,7 @@ import { MenubarItem } from "@/components/menubar/MenubarItem";
 import { TodoDailyView } from "@/components/views/TodoDailyView";
 import { AddTodoDrawer } from "@/components/drawer/AddTodoDrawer";
 import { TodoDetailDrawer } from "@/components/drawer/TodoDetailDrawer";
+import { toCookieStorage, toRawCookie } from "@/utils/cookie";
 
 export const meta: MetaFunction = () => {
   return [
@@ -34,14 +35,7 @@ export const meta: MetaFunction = () => {
 
 export const loader: LoaderFunction = async ({ request }) => {
   const rawCookie = request.headers.get("Cookie") ?? "";
-  const cookie = new Map<string, string>(
-    rawCookie
-      .split("; ")
-      .map(
-        (cookieStr): Readonly<[string, string]> =>
-          [...cookieStr.split("=", 2), ""].slice(0, 2) as [string, string]
-      )
-  );
+  const cookie = toCookieStorage(rawCookie);
 
   /**
    * TODO: accessToken 검사
@@ -50,12 +44,50 @@ export const loader: LoaderFunction = async ({ request }) => {
    * refreshToken 만료 -> 로그인페이지로 이동
    * accessToken 사용시 refreshToken 업데이트? (고민좀)
    */
-  const isLogined = cookie.has("accessToken");
-  if (!isLogined) {
+  // const isLogined = cookie.has("accessToken");
+  const accessToken = cookie.get("accessToken");
+  const refreshToken = cookie.get("refreshToken");
+
+  if (!accessToken || !refreshToken) {
     return redirect("/login");
   }
 
-  const accessToken = cookie.get("accessToken");
+  /**
+   *
+   */
+  try {
+    await authAPI.get("token/verify", {
+      headers: {
+        authorization: `Bearer ${accessToken}`,
+      },
+    });
+  } catch (err) {
+    if (isHTTPError(err)) {
+      if (err.response.status === 403) {
+        try {
+          const { accessToken } = await authAPI
+            .post<{ accessToken: string }>("token/renew", {
+              body: JSON.stringify({
+                refreshToken: refreshToken,
+              }),
+            })
+            .json();
+
+          cookie.set("accessToken", accessToken);
+
+          return redirect("/", {
+            headers: {
+              "Set-Cookie": toRawCookie(cookie),
+            },
+          });
+        } catch (err) {
+          return redirect("/login");
+        }
+      }
+    }
+    return redirect("/login");
+  }
+
   const queryClient = new QueryClient();
 
   await queryClient.prefetchQuery({
