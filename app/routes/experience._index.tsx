@@ -1,4 +1,3 @@
-import { TodoDetailDrawer } from "@/components/drawer/TodoDetailDrawer";
 import { stackRouterBack } from "@/utils/helper/app";
 import { useNavigate } from "@remix-run/react";
 import { MetaFunction } from "@remix-run/node";
@@ -8,6 +7,7 @@ import { Button, IconButton } from "terra-design-system/react";
 import { ToastProvider } from "@/contexts/toast";
 import { MockTodoDailyView } from "@/components/views/MockTodoDailyView";
 import { MockAddTodoDrawer } from "@/components/drawer/MockAddTodoDrawer";
+import { MockTodoDetailDrawer } from "@/components/drawer/MockTodoDetailDrawer";
 
 export const meta: MetaFunction = () => {
   return [
@@ -124,7 +124,7 @@ function ExperienceView() {
         </Button>
       </div>
       <MockAddTodoDrawer />
-      <TodoDetailDrawer />
+      <MockTodoDetailDrawer />
     </main>
   );
 }
