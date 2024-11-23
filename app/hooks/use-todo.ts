@@ -90,6 +90,22 @@ export const useTodo = (currentDate: Date) => {
       console.error("Error adding item:", error);
     },
   });
+  const reorderMutation = useMutation({
+    mutationKey: ["todos", todoQueryKey],
+    mutationFn: todoAPI.updateTodoOrder,
+    onSuccess: (res) => {
+      if (res.isFailed) {
+        throw res.error;
+      }
+
+      queryClient.invalidateQueries({
+        queryKey: ["todos"],
+      });
+    },
+    onError: (error) => {
+      console.error("Error ordering item:", error);
+    },
+  });
 
   const updateTodoById = useCallback(
     (id: Todo["id"], payload: Partial<Omit<Todo, "id">>) => {
@@ -136,12 +152,20 @@ export const useTodo = (currentDate: Date) => {
       id,
     });
   };
+  const reorderTodos = (todos: Todo[]) => {
+    reorderMutation.mutate({
+      orderList: todos.map((todo, index) => ({ id: todo.id, order: index })),
+    });
+  };
+  const debouncedReorderTodos = useDebounce(reorderTodos, 500);
   return {
     todos,
     updateTodoById,
     debouncedUpdateTodoById,
+    debouncedReorderTodos,
     toggleTodoById,
     createTodo,
+    reorderTodos,
     deleteTodoById,
   };
 };

@@ -8,7 +8,7 @@ export type RawTodo = {
   title: string;
   date: string;
   isCompleted: boolean;
-  order?: number;
+  order: number;
 };
 
 export async function fetchTodos(date: Date) {
@@ -150,6 +150,35 @@ export async function updateTodoComplete(payload: UpdateTodoCompletePayload) {
     await authAPI.patch(`todos/completion/${id}`, {
       body: JSON.stringify({
         ...rest,
+      }),
+      headers: {
+        Authorization: `Bearer ${Cookies.get("accessToken")}`,
+      },
+    });
+
+    return {
+      isFailed: false,
+      value: true,
+      error: null,
+    } as Success<boolean>;
+  } catch (err) {
+    return {
+      isFailed: true,
+      value: null,
+      error: err as Error,
+    } as Failed<Error>;
+  }
+}
+
+type UpdateTodoOrderPayload = {
+  orderList: Pick<Todo, "id" | "order">[];
+};
+export async function updateTodoOrder(payload: UpdateTodoOrderPayload) {
+  const { orderList } = payload;
+  try {
+    await authAPI.put(`todos/orders`, {
+      body: JSON.stringify({
+        orderList: orderList,
       }),
       headers: {
         Authorization: `Bearer ${Cookies.get("accessToken")}`,

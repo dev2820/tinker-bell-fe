@@ -31,6 +31,7 @@ export function MockAddTodoDrawer() {
           month: currentDate.getMonth() + 1,
           day: currentDate.getDate(),
         },
+        order: 0,
       });
 
       setTitle("");
@@ -44,6 +45,7 @@ export function MockAddTodoDrawer() {
         month: currentDate.getMonth() + 1,
         day: currentDate.getDate(),
       },
+      order: 0,
     });
     addTodoDrawer.onClose();
     setTitle("");

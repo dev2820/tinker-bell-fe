@@ -201,11 +201,9 @@ type TodoViewProps = {
 };
 function TodoView(props: TodoViewProps) {
   const { currentDate, onClickTodoCheck, onClickTodo, onClickAddTodo } = props;
-  const { todos } = useTodo(currentDate);
-  /**
-   * TODO: order api가 생기면 todo 상태를 따로 저장할 필요 없어짐
-   */
   const { filterOption } = useSettingStore();
+  const { todos, debouncedReorderTodos } = useTodo(currentDate);
+
   const [orderedTodos, setOrderedTodos] = useState<Todo[]>(
     todos?.filter((todo) =>
       filterOption === "all"
@@ -241,6 +239,10 @@ function TodoView(props: TodoViewProps) {
     onClickTodo(todoId);
   };
 
+  const handleReorder = (newOrder: Todo[]) => {
+    setOrderedTodos(newOrder);
+    debouncedReorderTodos(newOrder);
+  };
   return (
     <div className="h-full overflow-y-auto">
       <div className="overflow-y-scroll pb-4">
@@ -248,7 +250,7 @@ function TodoView(props: TodoViewProps) {
           axis="y"
           as="ul"
           values={orderedTodos}
-          onReorder={setOrderedTodos}
+          onReorder={handleReorder}
           layoutScroll
           className="px-4 overflow-y-hidden overflow-x-hidden"
         >

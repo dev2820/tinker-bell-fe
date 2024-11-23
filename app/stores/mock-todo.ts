@@ -51,7 +51,6 @@ export const useMockTodoStore = create<MockTodoState & MockTodoAction>(
     },
     createTodo: (payload) => {
       const todos = get().todos;
-      console.log(payload, todos);
       set({
         todos: [...todos, { ...payload, id: mockId++, isCompleted: false }],
       });
