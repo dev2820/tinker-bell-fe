@@ -10,7 +10,7 @@ export function AddTodoDrawer() {
   const { currentDate } = useCurrentDateStore();
   const [title, setTitle] = useState<string>("");
   const { createTodo } = useTodo(currentDate);
-  console.log(currentDate);
+
   const handleCloseCreateTodo = () => {
     addTodoDrawer.onClose();
     setTitle("");
