@@ -1,7 +1,7 @@
 import { authAPI, isHTTPError } from "@/utils/api";
 import type { MetaFunction } from "@remix-run/node";
 import { LoaderFunction, redirect } from "@remix-run/node";
-import { json, useLoaderData, useNavigate } from "@remix-run/react";
+import { json, Link, useLoaderData, useNavigate } from "@remix-run/react";
 import { SettingsIcon, CalendarDaysIcon, ListChecksIcon } from "lucide-react";
 import { toTodo, type RawTodo } from "@/utils/api/todo";
 import { Button } from "terra-design-system/react";
@@ -20,6 +20,7 @@ import { TodoDetailDrawer } from "@/components/drawer/TodoDetailDrawer";
 import { toCookieStorage, toRawCookie } from "@/utils/cookie";
 import { Menubar } from "@/components/menubar/Menubar";
 import { MenubarItem } from "@/components/menubar/MenubarItem";
+
 export const meta: MetaFunction = () => {
   return [
     { title: "Ticket bell todo" },
@@ -131,26 +132,22 @@ function TodoPage() {
       <TodoDailyView className="h-[calc(100%_-_72px)]" />
       <Menubar>
         <MenubarItem>
-          <Button
-            className="w-full h-full my-auto"
-            variant="ghost"
-            onClick={() => navigate("/")}
-          >
-            <IconWithLabel labelText="오늘의 할 일">
-              <ListChecksIcon size={24} />
-            </IconWithLabel>
-          </Button>
+          <Link to={"/"} prefetch="render">
+            <Button className="w-full h-full my-auto" variant="ghost">
+              <IconWithLabel labelText="오늘의 할 일">
+                <ListChecksIcon size={24} />
+              </IconWithLabel>
+            </Button>
+          </Link>
         </MenubarItem>
         <MenubarItem>
-          <Button
-            className="w-full h-full my-auto"
-            variant="ghost"
-            onClick={() => navigate("/calendar")}
-          >
-            <IconWithLabel labelText="이달의 할 일">
-              <CalendarDaysIcon size={24} />
-            </IconWithLabel>
-          </Button>
+          <Link to={"/calendar"} prefetch="render">
+            <Button className="w-full h-full my-auto" variant="ghost">
+              <IconWithLabel labelText="이달의 할 일">
+                <CalendarDaysIcon size={24} />
+              </IconWithLabel>
+            </Button>
+          </Link>
         </MenubarItem>
         <MenubarItem>
           <Button
