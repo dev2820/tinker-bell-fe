@@ -54,3 +54,11 @@ export const calcRelativeDate = (baseDate: Date, relative: number = 0) => {
     baseDate.getDate() + relative
   );
 };
+
+export const calcRelativeMonth = (baseDate: Date, relative: number = 0) => {
+  return new Date(
+    baseDate.getFullYear(),
+    baseDate.getMonth() + relative,
+    baseDate.getDate()
+  );
+};

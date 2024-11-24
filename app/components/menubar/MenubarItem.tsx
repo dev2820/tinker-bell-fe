@@ -1,20 +1,12 @@
 import { cn } from "@/lib/utils";
-import { ComponentProps, ReactNode } from "react";
+import { ComponentProps } from "react";
 
-type MenubarItemProps = Omit<ComponentProps<"div">, "children"> & {
-  icon: ReactNode;
-  labelText: string;
-};
-
+type MenubarItemProps = ComponentProps<"li">;
 export function MenubarItem(props: MenubarItemProps) {
-  const { icon, labelText, className, ...rest } = props;
+  const { className, children, ...rest } = props;
   return (
-    <div
-      className={cn("inline-flex flex-col place-items-center", className)}
-      {...rest}
-    >
-      {icon}
-      <span className="text-xs mt-1">{labelText}</span>
-    </div>
+    <li className={cn("flex-1", className)} {...rest}>
+      {children}
+    </li>
   );
 }
