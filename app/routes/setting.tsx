@@ -1,4 +1,4 @@
-import { stackRouterBack } from "@/utils/helper/app";
+import { routerBack } from "@/utils/helper/app";
 import { useNavigate } from "@remix-run/react";
 import { ChevronLeft } from "lucide-react";
 import { deleteCookie } from "@/utils/cookie/client";
@@ -7,7 +7,7 @@ export default function Setting() {
   const navigate = useNavigate();
 
   const handleGoBack = () => {
-    stackRouterBack(navigate);
+    routerBack(navigate);
   };
 
   const handleClickLogout = () => {

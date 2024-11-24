@@ -1,7 +1,7 @@
 import { authAPI, isHTTPError } from "@/utils/api";
 import type { MetaFunction } from "@remix-run/node";
 import { LoaderFunction, redirect } from "@remix-run/node";
-import { json, Link, useLoaderData, useNavigate } from "@remix-run/react";
+import { json, useLoaderData, useNavigate } from "@remix-run/react";
 import { CalendarDaysIcon, ListChecksIcon, SettingsIcon } from "lucide-react";
 import { toTodo, type RawTodo } from "@/utils/api/todo";
 import { Button } from "terra-design-system/react";
@@ -12,7 +12,7 @@ import {
   QueryClient,
 } from "@tanstack/react-query";
 import { ToastProvider } from "@/contexts/toast";
-import { stackRouterPush } from "@/utils/helper/app";
+import { routerPush } from "@/utils/helper/app";
 import { IconWithLabel } from "@/components/menubar/IconWithLabel";
 import { AddTodoDrawer } from "@/components/drawer/AddTodoDrawer";
 import { TodoDetailDrawer } from "@/components/drawer/TodoDetailDrawer";
@@ -132,28 +132,32 @@ function TodoCalendarPage() {
       <TodoCalendarView className="h-[calc(100%_-_72px)]" />
       <Menubar>
         <MenubarItem>
-          <Link to={"/"} prefetch="render">
-            <Button className="w-full h-full my-auto" variant="ghost">
-              <IconWithLabel labelText="오늘의 할 일">
-                <ListChecksIcon size={24} />
-              </IconWithLabel>
-            </Button>
-          </Link>
-        </MenubarItem>
-        <MenubarItem>
-          <Link to={"/calendar"} prefetch="render">
-            <Button className="w-full h-full my-auto" variant="ghost">
-              <IconWithLabel labelText="이달의 할 일">
-                <CalendarDaysIcon size={24} />
-              </IconWithLabel>
-            </Button>
-          </Link>
+          <Button
+            className="w-full h-full my-auto"
+            variant="ghost"
+            onClick={() => routerPush(navigate, "/")}
+          >
+            <IconWithLabel labelText="오늘의 할 일">
+              <ListChecksIcon size={24} />
+            </IconWithLabel>
+          </Button>
         </MenubarItem>
         <MenubarItem>
           <Button
             className="w-full h-full my-auto"
             variant="ghost"
-            onClick={() => stackRouterPush(navigate, "/setting")}
+            onClick={() => routerPush(navigate, "/calendar")}
+          >
+            <IconWithLabel labelText="이달의 할 일">
+              <CalendarDaysIcon size={24} />
+            </IconWithLabel>
+          </Button>
+        </MenubarItem>
+        <MenubarItem>
+          <Button
+            className="w-full h-full my-auto"
+            variant="ghost"
+            onClick={() => routerPush(navigate, "/setting")}
           >
             <IconWithLabel labelText="설정">
               <SettingsIcon size={24} />

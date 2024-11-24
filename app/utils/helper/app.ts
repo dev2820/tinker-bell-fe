@@ -10,7 +10,7 @@ const sendRouterEvent = (path: string): void => {
   );
 };
 
-export const stackRouterBack = (navigate: NavigateFunction) => {
+export const routerBack = (navigate: NavigateFunction) => {
   if (isApp()) {
     sendRouterEvent("back");
   } else {
@@ -18,7 +18,7 @@ export const stackRouterBack = (navigate: NavigateFunction) => {
   }
 };
 
-export const stackRouterPush = (navigate: NavigateFunction, url: string) => {
+export const routerPush = (navigate: NavigateFunction, url: string) => {
   if (isApp()) {
     sendRouterEvent(url);
   } else {

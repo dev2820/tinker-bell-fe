@@ -1,4 +1,4 @@
-import { stackRouterBack } from "@/utils/helper/app";
+import { routerBack } from "@/utils/helper/app";
 import { useNavigate } from "@remix-run/react";
 import { MetaFunction } from "@remix-run/node";
 import { ChevronLeftIcon, TriangleAlertIcon } from "lucide-react";
@@ -30,13 +30,13 @@ export default function Experience() {
   const [showGuide, setShowGuide] = useState<boolean>(true);
 
   const handleClickBack = () => {
-    stackRouterBack(navigate);
+    routerBack(navigate);
   };
   const handleClickStart = () => {
     setShowGuide(false);
   };
   const handleClickLogin = () => {
-    stackRouterBack(navigate);
+    routerBack(navigate);
   };
   return (
     <ToastProvider>

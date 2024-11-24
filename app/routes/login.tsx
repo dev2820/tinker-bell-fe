@@ -1,4 +1,4 @@
-import { stackRouterPush } from "@/utils/helper/app";
+import { routerPush } from "@/utils/helper/app";
 import { json, Link, useLoaderData, useNavigate } from "@remix-run/react";
 import { Button } from "terra-design-system/react";
 
@@ -42,7 +42,7 @@ export default function Login() {
           <Button
             className="w-[183px] h-[45px] my-auto"
             variant="outline"
-            onClick={() => stackRouterPush(navigate, "/experience")}
+            onClick={() => routerPush(navigate, "/experience")}
           >
             체험하고 로그인하기
           </Button>
