@@ -86,35 +86,40 @@ export function TodoCalendarView(props: TodoCalendarViewProps) {
           <TodoFilterDialog className={"absolute right-4 -top-1.5"} />
         </div>
       </header>
-      <div className="h-[calc(100%_-_56px)] w-full px-4">
-        <Swiper
-          modules={[Virtual]}
-          className="h-[248px] w-full"
-          slidesPerView={1}
-          onSwiper={setSwiperRef}
-          onSlideChange={handleSlideChange}
-          centeredSlides={true}
-          spaceBetween={0}
-          initialSlide={initialSlideIndex}
-          virtual
-        >
-          {slides.map((slideContent, index) => (
-            <SwiperSlide key={slideContent} virtualIndex={index}>
-              <CalendarGrid
-                className=""
-                year={calcRelativeMonth(
-                  relativeDate,
-                  slideContent
-                ).getFullYear()}
-                month={calcRelativeMonth(relativeDate, slideContent).getMonth()}
-                today={selectedDate}
-                onSelect={handleSelectDate}
-              ></CalendarGrid>
-            </SwiperSlide>
-          ))}
-        </Swiper>
+      <div className="h-[calc(100%_-_56px)] w-full">
+        <div className="px-4">
+          <Swiper
+            modules={[Virtual]}
+            className="h-[248px] w-full"
+            slidesPerView={1}
+            onSwiper={setSwiperRef}
+            onSlideChange={handleSlideChange}
+            centeredSlides={true}
+            spaceBetween={0}
+            initialSlide={initialSlideIndex}
+            virtual
+          >
+            {slides.map((slideContent, index) => (
+              <SwiperSlide key={slideContent} virtualIndex={index}>
+                <CalendarGrid
+                  className=""
+                  year={calcRelativeMonth(
+                    relativeDate,
+                    slideContent
+                  ).getFullYear()}
+                  month={calcRelativeMonth(
+                    relativeDate,
+                    slideContent
+                  ).getMonth()}
+                  today={selectedDate}
+                  onSelect={handleSelectDate}
+                ></CalendarGrid>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </div>
         <section className="h-[calc(100%_-_248px)] pt-4">
-          <h3 className="h-[24px]">
+          <h3 className="h-[24px] px-4">
             {formatKoreanDate(selectedDate, "yyyy년 MM월 dd일")}{" "}
             {isSameDay(selectedDate, new Date()) && `(오늘)`}
           </h3>
@@ -204,14 +209,14 @@ function TodoView(props: TodoViewProps) {
   };
   return (
     <div className={cn("overflow-y-auto", className)}>
-      <div className="overflow-y-scroll pb-4">
+      <div className="overflow-y-scroll pb-4 px-4">
         <Reorder.Group
           axis="y"
           as="ul"
           values={orderedTodos}
           onReorder={handleReorder}
           layoutScroll
-          className="px-4 overflow-y-hidden overflow-x-hidden"
+          className="overflow-y-hidden overflow-x-hidden"
         >
           <AnimatePresence>
             {orderedTodos.map((todo) => (
@@ -224,16 +229,14 @@ function TodoView(props: TodoViewProps) {
             ))}
           </AnimatePresence>
         </Reorder.Group>
-        <div className="px-4">
-          <Button
-            className="w-full mb-2"
-            theme="primary"
-            size="lg"
-            onClick={handleClickAddTodo}
-          >
-            + 할 일 추가하기
-          </Button>
-        </div>
+        <Button
+          className="w-full mb-2"
+          theme="primary"
+          size="lg"
+          onClick={handleClickAddTodo}
+        >
+          + 할 일 추가하기
+        </Button>
       </div>
     </div>
   );

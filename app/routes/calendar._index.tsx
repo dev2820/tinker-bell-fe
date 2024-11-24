@@ -135,7 +135,7 @@ function TodoCalendarPage() {
           <Button
             className="w-full h-full my-auto"
             variant="ghost"
-            onClick={() => stackRouterPush(navigate, "/")}
+            onClick={() => navigate("/")}
           >
             <IconWithLabel labelText="오늘의 할 일">
               <ListChecksIcon size={24} />
@@ -146,7 +146,7 @@ function TodoCalendarPage() {
           <Button
             className="w-full h-full my-auto"
             variant="ghost"
-            onClick={() => stackRouterPush(navigate, "/calendar")}
+            onClick={() => navigate("/calendar")}
           >
             <IconWithLabel labelText="이달의 할 일">
               <CalendarDaysIcon size={24} />
