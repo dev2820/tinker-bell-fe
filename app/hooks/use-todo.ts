@@ -150,7 +150,7 @@ export const useTodo = (currentDate: Date) => {
       orderList: todos.map((todo, index) => ({ id: todo.id, order: index })),
     });
   };
-  const debouncedReorderTodos = useDebounce(reorderTodos, 500);
+  const debouncedReorderTodos = useDebounce(reorderTodos, 1000);
   return {
     todos,
     updateTodoById,
