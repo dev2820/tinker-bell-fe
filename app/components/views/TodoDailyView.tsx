@@ -55,7 +55,9 @@ export function TodoDailyView(props: TodoDailyViewProps) {
   const addTodoDrawer = useAddTodoDrawerStore();
 
   const { toaster, showToast } = useToast();
-
+  /**
+   * FIXME: view쪽으로 로직 옮길 것
+   */
   const handleClickTodoItem = (todoId: number) => {
     if (!todos) {
       return;

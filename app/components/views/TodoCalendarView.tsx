@@ -1,17 +1,35 @@
 import { cn } from "@/lib/utils";
-import { calcRelativeMonth, formatKoreanDate } from "@/utils/date-time";
+import {
+  calcRelativeMonth,
+  formatKoreanDate,
+  isSameDay,
+} from "@/utils/date-time";
 import { range } from "@/utils/range";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
-import { ComponentProps, useMemo, useState } from "react";
+import {
+  MouseEvent,
+  ChangeEvent,
+  ComponentProps,
+  useMemo,
+  useState,
+  useEffect,
+} from "react";
 import { Virtual } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Swiper as SwiperType } from "swiper/types";
-import { Toast } from "terra-design-system/react";
+import { Button, Toast } from "terra-design-system/react";
 import { useToast } from "@/contexts/toast";
 import "swiper/css";
 import "swiper/css/virtual";
 import { TodoFilterDialog } from "@/components/dialog/TodoFilterDialog";
 import { CalendarGrid } from "../calendar/CalendarGrid";
+import { AnimatePresence, Reorder } from "framer-motion";
+import { TodoDraggableItem } from "../todo/TodoDraggableItem";
+import { Todo } from "@/types/todo";
+import { useSettingStore } from "@/stores/setting";
+import { useTodo } from "@/hooks/use-todo";
+import { useAddTodoDrawerStore } from "@/stores/add-todo-drawer";
+import { useTodoDetailDrawerStore } from "@/stores/todo-detail-drawer";
 
 const slides = range(-500, 500, 1);
 const initialSlideIndex = slides.length / 2;
@@ -21,7 +39,7 @@ export function TodoCalendarView(props: TodoCalendarViewProps) {
   const { className, ...rest } = props;
   const [currentSlideIndex, setCurrentSlideIndex] =
     useState<number>(initialSlideIndex);
-
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const relativeDate = useMemo(
     () => calcRelativeMonth(new Date(), slides[currentSlideIndex]),
     [currentSlideIndex]
@@ -48,9 +66,13 @@ export function TodoCalendarView(props: TodoCalendarViewProps) {
     swiperRef.slideNext(0);
   };
 
+  const handleSelectDate = (dateStr: string) => {
+    setSelectedDate(new Date(dateStr));
+  };
+
   return (
     <div className={cn(className)} {...rest}>
-      <h2 className="h-[56px] text-center pt-4">
+      <header className="h-[56px] text-center pt-4">
         <div className="relative flex flex-row place-items-center justify-center gap-3">
           <button onClick={handleGotoPrevMonth}>
             <ChevronLeftIcon size={28} strokeWidth={1} />
@@ -63,11 +85,11 @@ export function TodoCalendarView(props: TodoCalendarViewProps) {
           </button>
           <TodoFilterDialog className={"absolute right-4 -top-1.5"} />
         </div>
-      </h2>
+      </header>
       <div className="h-[calc(100%_-_56px)] w-full px-4">
         <Swiper
           modules={[Virtual]}
-          className="h-full w-full"
+          className="h-[248px] w-full"
           slidesPerView={1}
           onSwiper={setSwiperRef}
           onSlideChange={handleSlideChange}
@@ -78,19 +100,29 @@ export function TodoCalendarView(props: TodoCalendarViewProps) {
         >
           {slides.map((slideContent, index) => (
             <SwiperSlide key={slideContent} virtualIndex={index}>
-              <CalendarView
-                currentYear={calcRelativeMonth(
+              <CalendarGrid
+                className=""
+                year={calcRelativeMonth(
                   relativeDate,
                   slideContent
                 ).getFullYear()}
-                currentMonth={calcRelativeMonth(
-                  relativeDate,
-                  slideContent
-                ).getMonth()}
-              ></CalendarView>
+                month={calcRelativeMonth(relativeDate, slideContent).getMonth()}
+                today={selectedDate}
+                onSelect={handleSelectDate}
+              ></CalendarGrid>
             </SwiperSlide>
           ))}
         </Swiper>
+        <section className="h-[calc(100%_-_248px)] pt-4">
+          <h3 className="h-[24px]">
+            {formatKoreanDate(selectedDate, "yyyy년 MM월 dd일")}{" "}
+            {isSameDay(selectedDate, new Date()) && `(오늘)`}
+          </h3>
+          <TodoView
+            className="h-[calc(100%_-_24px)]"
+            currentDate={selectedDate}
+          />
+        </section>
         <Toast.Toaster toaster={toaster}>
           {(toast) => (
             <Toast.Root
@@ -113,23 +145,96 @@ export function TodoCalendarView(props: TodoCalendarViewProps) {
   );
 }
 
-function CalendarView({
-  currentYear,
-  currentMonth,
-}: {
-  currentYear: number;
-  currentMonth: number;
-}) {
-  const handleSelectDate = (dateStr: string) => {
-    console.log(dateStr);
+type TodoViewProps = {
+  className?: string;
+  currentDate: Date;
+};
+function TodoView(props: TodoViewProps) {
+  const { currentDate, className } = props;
+  const { filterOption } = useSettingStore();
+  const { todos, toggleTodoById, debouncedReorderTodos } = useTodo(currentDate);
+  const addTodoDrawer = useAddTodoDrawerStore();
+  const todoDetailDrawer = useTodoDetailDrawerStore();
+  const [orderedTodos, setOrderedTodos] = useState<Todo[]>(
+    todos?.filter((todo) =>
+      filterOption === "all"
+        ? true
+        : filterOption === "completed"
+        ? todo.isCompleted
+        : !todo.isCompleted
+    ) ?? []
+  );
+
+  useEffect(() => {
+    setOrderedTodos(
+      todos?.filter((todo) =>
+        filterOption === "all"
+          ? true
+          : filterOption === "completed"
+          ? todo.isCompleted
+          : !todo.isCompleted
+      ) ?? []
+    );
+  }, [filterOption, todos]);
+
+  const handleChangeComplete = (e: ChangeEvent<HTMLElement>) => {
+    const $target = e.currentTarget;
+    const todoId = Number($target.dataset["todoId"]);
+
+    toggleTodoById(todoId);
+  };
+  const handleClickTodoItem = (e: MouseEvent<HTMLElement>) => {
+    const $target = e.currentTarget;
+    const todoId = Number($target.dataset["todoId"]);
+
+    const todo = todos?.find((todo) => todo.id === todoId);
+    if (todo) {
+      todoDetailDrawer.changeCurrentTodo(todo);
+    }
+    todoDetailDrawer.onOpen();
+  };
+
+  const handleReorder = (newOrder: Todo[]) => {
+    setOrderedTodos(newOrder);
+    debouncedReorderTodos(newOrder);
+  };
+
+  const handleClickAddTodo = () => {
+    addTodoDrawer.onOpen();
   };
   return (
-    <CalendarGrid
-      className=""
-      year={currentYear}
-      month={currentMonth}
-      today={new Date()}
-      onSelect={handleSelectDate}
-    ></CalendarGrid>
+    <div className={cn("overflow-y-auto", className)}>
+      <div className="overflow-y-scroll pb-4">
+        <Reorder.Group
+          axis="y"
+          as="ul"
+          values={orderedTodos}
+          onReorder={handleReorder}
+          layoutScroll
+          className="px-4 overflow-y-hidden overflow-x-hidden"
+        >
+          <AnimatePresence>
+            {orderedTodos.map((todo) => (
+              <TodoDraggableItem
+                key={todo.id}
+                todo={todo}
+                onChangeComplete={handleChangeComplete}
+                onClickTodo={handleClickTodoItem}
+              />
+            ))}
+          </AnimatePresence>
+        </Reorder.Group>
+        <div className="px-4">
+          <Button
+            className="w-full mb-2"
+            theme="primary"
+            size="lg"
+            onClick={handleClickAddTodo}
+          >
+            + 할 일 추가하기
+          </Button>
+        </div>
+      </div>
+    </div>
   );
 }
