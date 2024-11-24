@@ -1,5 +1,4 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { isTargetDateTodo } from "@/utils/helper/todo";
 import * as todoAPI from "@/utils/api/todo";
 import { useCallback, useMemo } from "react";
 import { formatDate } from "date-fns";
@@ -21,10 +20,8 @@ export const useTodo = (currentDate: Date) => {
         throw res.error;
       }
       const todos = res.value;
-      /**
-       * TODO: server단에서 필터링하도록 수정
-       */
-      return todos.filter((todo) => isTargetDateTodo(todo, currentDate));
+
+      return todos;
     },
   });
   const updateMutation = useMutation({
