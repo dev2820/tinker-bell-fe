@@ -40,7 +40,7 @@ export default function Experience() {
   };
   return (
     <ToastProvider>
-      <div className="min-h-screen relative">
+      <div className="h-screen relative">
         {showGuide && (
           <Guide
             onClickBack={handleClickBack}
@@ -72,7 +72,7 @@ function Guide({
    */
 
   return (
-    <main className="h-screen w-full">
+    <main className="h-screen w-full overflow-hidden">
       <header className="relative h-header px-4">
         <IconButton
           variant="ghost"
@@ -82,8 +82,8 @@ function Guide({
           <ChevronLeftIcon size={24} />
         </IconButton>
       </header>
-      <div className="h-[calc(100%_-_112px)] w-full px-4">
-        <h2 className="text-2xl pt-24 mb-4">
+      <div className="h-[calc(100%_-_136px)] w-full px-4">
+        <h2 className="text-2xl pt-24 pb-4">
           <TriangleAlertIcon size={24} className="inline-block text-warning" />{" "}
           체험하기에선 작업이 저장되지 않습니다
         </h2>

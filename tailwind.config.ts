@@ -21,7 +21,7 @@ export default {
       },
       height: {
         header: "64px",
-        footer: "56px",
+        footer: "72px",
         menubar: "72px",
       },
       colors: {
