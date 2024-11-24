@@ -40,13 +40,11 @@ export default function Login() {
             />
           </Link>
           <Button
-            className="w-full h-full my-auto"
-            variant="ghost"
+            className="w-[183px] h-[45px] my-auto"
+            variant="outline"
             onClick={() => stackRouterPush(navigate, "/experience")}
           >
-            <Button variant="outline" className="h-[45px] w-[183px]">
-              체험하고 로그인하기
-            </Button>
+            체험하고 로그인하기
           </Button>
         </div>
       </div>
