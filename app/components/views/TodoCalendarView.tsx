@@ -40,6 +40,7 @@ export function TodoCalendarView(props: TodoCalendarViewProps) {
   const { className, ...rest } = props;
   const [currentSlideIndex, setCurrentSlideIndex] =
     useState<number>(initialSlideIndex);
+  const baseDate = new Date();
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const relativeDate = useMemo(() => {
     const d = new Date();
@@ -118,14 +119,8 @@ export function TodoCalendarView(props: TodoCalendarViewProps) {
               <SwiperSlide key={slideContent} virtualIndex={index}>
                 <CalendarGrid
                   className=""
-                  year={calcRelativeMonth(
-                    relativeDate,
-                    slideContent
-                  ).getFullYear()}
-                  month={calcRelativeMonth(
-                    relativeDate,
-                    slideContent
-                  ).getMonth()}
+                  year={calcRelativeMonth(baseDate, slideContent).getFullYear()}
+                  month={calcRelativeMonth(baseDate, slideContent).getMonth()}
                   today={selectedDate}
                   onSelect={handleSelectDate}
                 ></CalendarGrid>
