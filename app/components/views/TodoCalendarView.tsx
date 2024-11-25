@@ -30,6 +30,7 @@ import { useSettingStore } from "@/stores/setting";
 import { useTodo } from "@/hooks/use-todo";
 import { useAddTodoDrawerStore } from "@/stores/add-todo-drawer";
 import { useTodoDetailDrawerStore } from "@/stores/todo-detail-drawer";
+import { addMonths, getMonth, getYear, isSameMonth, subMonths } from "date-fns";
 
 const slides = range(-500, 500, 1);
 const initialSlideIndex = slides.length / 2;
@@ -40,10 +41,12 @@ export function TodoCalendarView(props: TodoCalendarViewProps) {
   const [currentSlideIndex, setCurrentSlideIndex] =
     useState<number>(initialSlideIndex);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const relativeDate = useMemo(
-    () => calcRelativeMonth(new Date(), slides[currentSlideIndex]),
-    [currentSlideIndex]
-  );
+  const relativeDate = useMemo(() => {
+    const d = new Date();
+    const year = getYear(d);
+    const month = getMonth(d);
+    return calcRelativeMonth(new Date(year, month), slides[currentSlideIndex]);
+  }, [currentSlideIndex]);
   const [swiperRef, setSwiperRef] = useState<SwiperType | null>(null);
 
   const { toaster } = useToast();
@@ -67,9 +70,21 @@ export function TodoCalendarView(props: TodoCalendarViewProps) {
   };
 
   const handleSelectDate = (dateStr: string) => {
+    const selectedDate = new Date(dateStr);
+    /**
+     * 선택한게 다음달이면 slide를 하나 이동
+     */
+    const nextMonthDate = addMonths(relativeDate, 1);
+    const prevMonthDate = subMonths(relativeDate, 1);
+    if (isSameMonth(selectedDate, nextMonthDate)) {
+      swiperRef?.slideNext(200);
+    }
+    if (isSameMonth(selectedDate, prevMonthDate)) {
+      swiperRef?.slidePrev(200);
+    }
     setSelectedDate(new Date(dateStr));
   };
-
+  console.log(relativeDate, slides[currentSlideIndex]);
   return (
     <div className={cn(className)} {...rest}>
       <header className="h-[56px] text-center pt-4">

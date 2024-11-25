@@ -28,7 +28,6 @@ export const CalendarGrid = ({
 
   const daysInMonth = getDaysInMonth(year, month);
   const startDay = getStartDay(year, month);
-
   const days: [number, number, number][] = [];
 
   // 이전 월의 날짜들
