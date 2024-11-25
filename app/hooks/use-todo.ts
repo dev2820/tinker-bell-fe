@@ -6,9 +6,12 @@ import { Todo } from "@/types/todo";
 import { isNil } from "@/utils/type-guard";
 import { useDebounce } from "./use-debounce";
 
+const makeQueryKey = (date: Date) => {
+  return formatDate(date, "yyyy-MM-dd");
+};
 export const useTodo = (currentDate: Date) => {
   const todoQueryKey = useMemo(() => {
-    return formatDate(currentDate, "yyyy-MM-dd");
+    return makeQueryKey(currentDate);
   }, [currentDate]);
 
   const queryClient = useQueryClient();

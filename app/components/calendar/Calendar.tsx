@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { CalendarHeader } from "./CalendarHeader";
 import { CalendarGrid } from "./CalendarGrid";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Virtual } from "swiper/modules";
 import { Swiper as SwiperType } from "swiper/types";
 import { range } from "@/utils/range";
+import { getMonth, getYear } from "date-fns";
+import { calcRelativeMonth } from "@/utils/date-time";
 
 const slides = range(-500, 500, 1);
 const initialSlideIndex = slides.length / 2;
@@ -16,30 +18,32 @@ const Calendar = ({
   today: Date;
   onSelect?: (dateStr: string) => void;
 }) => {
-  const [currentDate, setCurrentDate] = useState(
-    new Date(today.getFullYear(), today.getMonth())
-  );
+  const [currentSlideIndex, setCurrentSlideIndex] =
+    useState<number>(initialSlideIndex);
+  const currentDate = useMemo(() => {
+    const year = getYear(today);
+    const month = getMonth(today);
+    return calcRelativeMonth(new Date(year, month), slides[currentSlideIndex]);
+  }, [currentSlideIndex, today]);
+  const [swiperRef, setSwiperRef] = useState<SwiperType | null>(null);
 
   const handleMonthChange = (delta: number) => {
-    const newDate = new Date(
-      currentDate.getFullYear(),
-      currentDate.getMonth() + delta,
-      1
-    );
-    setCurrentDate(newDate);
+    if (delta > 0) {
+      swiperRef?.slideNext(0);
+    }
+    if (delta < 0) {
+      swiperRef?.slidePrev(0);
+    }
   };
 
   const handleSelectDate = (dateStr: string) => {
+    swiperRef?.slideTo(initialSlideIndex, 0);
     onSelect?.(dateStr);
+    setCurrentSlideIndex(initialSlideIndex);
   };
 
   const handleSlideChange = (swiper: SwiperType) => {
-    const newDate = new Date(
-      today.getFullYear(),
-      today.getMonth() + slides[swiper.activeIndex],
-      1
-    );
-    setCurrentDate(newDate);
+    setCurrentSlideIndex(swiper.activeIndex);
   };
 
   return (
@@ -56,6 +60,7 @@ const Calendar = ({
         onSlideChange={handleSlideChange}
         centeredSlides={true}
         spaceBetween={0}
+        onSwiper={setSwiperRef}
         initialSlide={initialSlideIndex}
         virtual
       >
@@ -64,12 +69,12 @@ const Calendar = ({
             <CalendarGrid
               className="w-full h-full"
               year={new Date(
-                currentDate.getFullYear(),
-                currentDate.getMonth() + slideContent
+                today.getFullYear(),
+                today.getMonth() + slideContent
               ).getFullYear()}
               month={new Date(
-                currentDate.getFullYear(),
-                currentDate.getMonth() + slideContent
+                today.getFullYear(),
+                today.getMonth() + slideContent
               ).getMonth()}
               today={today}
               onSelect={handleSelectDate}

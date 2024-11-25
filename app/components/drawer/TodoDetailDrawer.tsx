@@ -72,6 +72,7 @@ export function TodoDetailDrawer() {
   };
 
   const handleClickUpdateDateConfirm = () => {
+    console.log("change to", calendarDate);
     const changedTodo = changeDateOfTodo(currentTodo, calendarDate);
     if (currentTodo) {
       changeCurrentTodo(changedTodo);
