@@ -1,5 +1,4 @@
-import { MouseEvent } from "react";
-import { CalendarCell } from "./CalendarCell";
+import { ComponentProps, MouseEvent, ReactElement } from "react";
 import { cn } from "@/lib/utils";
 import { isSaturday, isSunday } from "date-fns";
 
@@ -9,6 +8,16 @@ interface CalendarGridProps {
   today: Date;
   onSelect: (dateStr: string) => void;
   className: string;
+  renderCalendarCell: (
+    calendarProps: {
+      day: number;
+      month: number;
+      isCurrentMonth: boolean;
+      isSaturday: boolean;
+      isSunday: boolean;
+      isToday: boolean;
+    } & ComponentProps<"button">
+  ) => ReactElement;
 }
 
 export const CalendarGrid = ({
@@ -16,6 +25,7 @@ export const CalendarGrid = ({
   month,
   today,
   onSelect,
+  renderCalendarCell,
   className,
 }: CalendarGridProps) => {
   const getDaysInMonth = (year: number, month: number) => {
@@ -72,23 +82,37 @@ export const CalendarGrid = ({
           {dayOfWeek}
         </span>
       ))}
-      {days.map(([year, month, day], index) => (
-        <CalendarCell
-          key={index}
-          day={day}
-          data-day={day}
-          data-month={month}
-          isCurrentMonth={index >= startDay && index < startDay + daysInMonth}
-          isSaturday={isSaturday(new Date(year, month, day))}
-          isSunday={isSunday(new Date(year, month, day))}
-          onClick={handleClickCell}
-          isToday={
-            today.getDate() === day &&
-            today.getMonth() === month &&
-            today.getFullYear() === year
-          }
-        />
-      ))}
+      {days.map(
+        ([year, month, day], index) =>
+          renderCalendarCell({
+            day,
+            month,
+            isCurrentMonth: index >= startDay && index < startDay + daysInMonth,
+            isSaturday: isSaturday(new Date(year, month, day)),
+            isSunday: isSunday(new Date(year, month, day)),
+            isToday:
+              today.getDate() === day &&
+              today.getMonth() === month &&
+              today.getFullYear() === year,
+            onClick: handleClickCell,
+            key: index,
+          })
+        // <CalendarCell
+        //   key={index}
+        //   day={day}
+        //   data-day={day}
+        //   data-month={month}
+        //   isCurrentMonth={index >= startDay && index < startDay + daysInMonth}
+        //   isSaturday={isSaturday(new Date(year, month, day))}
+        //   isSunday={isSunday(new Date(year, month, day))}
+        //   onClick={handleClickCell}
+        //   isToday={
+        //     today.getDate() === day &&
+        //     today.getMonth() === month &&
+        //     today.getFullYear() === year
+        //   }
+        // />
+      )}
     </div>
   );
 };

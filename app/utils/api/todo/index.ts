@@ -2,6 +2,7 @@ import { Failed, Success } from "@/types/monad";
 import { Todo } from "@/types/todo";
 import { authAPI } from "..";
 import Cookies from "js-cookie";
+import { lastDayOfMonth } from "date-fns";
 
 export type RawTodo = {
   id: number;
@@ -11,6 +12,30 @@ export type RawTodo = {
   order: number;
 };
 
+export async function fetchMonthTodos(year: number, month: number) {
+  const startDate = new Date(year, month);
+  const endDate = lastDayOfMonth(startDate);
+  try {
+    const result = await authAPI
+      .get(`todos?from=${toDateStr(startDate)}&to=${toDateStr(endDate)}`, {
+        headers: {
+          Authorization: `Bearer ${Cookies.get("accessToken")}`,
+        },
+      })
+      .json<RawTodo[]>();
+    return {
+      isFailed: false,
+      value: result.map((rawTodo) => toTodo(rawTodo)),
+      error: null,
+    } as Success<Todo[]>;
+  } catch (err) {
+    return {
+      isFailed: true,
+      value: null,
+      error: err as Error,
+    } as Failed<Error>;
+  }
+}
 export async function fetchTodos(date: Date) {
   try {
     const result = await authAPI

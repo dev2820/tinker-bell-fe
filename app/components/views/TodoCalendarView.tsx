@@ -31,6 +31,8 @@ import { useTodo } from "@/hooks/use-todo";
 import { useAddTodoDrawerStore } from "@/stores/add-todo-drawer";
 import { useTodoDetailDrawerStore } from "@/stores/todo-detail-drawer";
 import { addMonths, getMonth, getYear, isSameMonth, subMonths } from "date-fns";
+import { useMonthTodo } from "@/hooks/use-month-todo";
+import { CalendarCellWithLabel } from "../calendar/CalendarCellWithLabel";
 
 const slides = range(-500, 500, 1);
 const initialSlideIndex = slides.length / 2;
@@ -49,7 +51,17 @@ export function TodoCalendarView(props: TodoCalendarViewProps) {
     return calcRelativeMonth(new Date(year, month), slides[currentSlideIndex]);
   }, [currentSlideIndex]);
   const [swiperRef, setSwiperRef] = useState<SwiperType | null>(null);
+  const { todos: monthTodos } = useMonthTodo(
+    relativeDate.getFullYear(),
+    relativeDate.getMonth()
+  );
+  const totalTodoMap = monthTodos?.reduce((map, todo) => {
+    const key = `${todo.date.month}-${todo.date.day}`;
+    const [prevDone, prevTotal] = map.get(key) ?? [0, 0];
+    map.set(key, [prevDone + (todo.isCompleted ? 1 : 0), prevTotal + 1]);
 
+    return map;
+  }, new Map<string, [number, number]>());
   const { toaster } = useToast();
 
   const handleSlideChange = (swiper: SwiperType) => {
@@ -85,7 +97,6 @@ export function TodoCalendarView(props: TodoCalendarViewProps) {
     }
     setSelectedDate(new Date(dateStr));
   };
-  console.log(relativeDate, slides[currentSlideIndex]);
   return (
     <div className={cn(className)} {...rest}>
       <header className="h-[56px] text-center pt-4">
@@ -106,7 +117,7 @@ export function TodoCalendarView(props: TodoCalendarViewProps) {
         <div className="px-4">
           <Swiper
             modules={[Virtual]}
-            className="h-[248px] w-full"
+            className="h-[296px] w-full"
             slidesPerView={1}
             onSwiper={setSwiperRef}
             onSlideChange={handleSlideChange}
@@ -123,13 +134,32 @@ export function TodoCalendarView(props: TodoCalendarViewProps) {
                   month={calcRelativeMonth(baseDate, slideContent).getMonth()}
                   today={selectedDate}
                   onSelect={handleSelectDate}
+                  renderCalendarCell={({
+                    key,
+                    day,
+                    month,
+                    isCurrentMonth,
+                    ...rest
+                  }) => (
+                    <CalendarCellWithLabel
+                      day={day}
+                      isCurrentMonth={isCurrentMonth}
+                      {...rest}
+                      key={key}
+                      labelText={totalTodoMap
+                        ?.get(`${month + 1}-${day}`)
+                        ?.join("/")}
+                      data-day={day}
+                      data-month={month}
+                    />
+                  )}
                 ></CalendarGrid>
               </SwiperSlide>
             ))}
           </Swiper>
         </div>
-        <section className="h-[calc(100%_-_248px)] pt-4">
-          <h3 className="h-[24px] px-4">
+        <section className="h-[calc(100%_-_296px)] pt-4">
+          <h3 className="h-[24px] px-4 text-lg">
             {formatKoreanDate(selectedDate, "yyyy년 MM월 dd일")}{" "}
             {isSameDay(selectedDate, new Date()) && `(오늘)`}
           </h3>

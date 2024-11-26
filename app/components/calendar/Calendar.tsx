@@ -7,6 +7,7 @@ import { Swiper as SwiperType } from "swiper/types";
 import { range } from "@/utils/range";
 import { getMonth, getYear } from "date-fns";
 import { calcRelativeMonth } from "@/utils/date-time";
+import { CalendarCell } from "./CalendarCell";
 
 const slides = range(-500, 500, 1);
 const initialSlideIndex = slides.length / 2;
@@ -78,6 +79,9 @@ const Calendar = ({
               ).getMonth()}
               today={today}
               onSelect={handleSelectDate}
+              renderCalendarCell={({ key, ...rest }) => (
+                <CalendarCell {...rest} key={key} />
+              )}
             />
           </SwiperSlide>
         ))}
