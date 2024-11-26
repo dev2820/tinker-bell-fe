@@ -1,9 +1,13 @@
 import { cx } from "@/utils/cx";
+import { forwardRef } from "react";
 import TextareaAutosize, {
   type TextareaAutosizeProps,
 } from "react-textarea-autosize";
 
-export function TodoTitleTextarea(props: TextareaAutosizeProps) {
+export const TodoTitleTextarea = forwardRef<
+  HTMLTextAreaElement,
+  TextareaAutosizeProps
+>(function (props: TextareaAutosizeProps, ref) {
   const { className, ...rest } = props;
 
   return (
@@ -12,9 +16,11 @@ export function TodoTitleTextarea(props: TextareaAutosizeProps) {
         "focus:outline-none bg-white text-black text-lg",
         className
       )}
+      ref={ref}
       minRows={2}
       maxRows={3}
       {...rest}
     />
   );
-}
+});
+TodoTitleTextarea.displayName = "TodoTitleTextarea";

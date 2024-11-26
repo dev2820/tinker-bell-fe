@@ -72,7 +72,6 @@ export function TodoDetailDrawer() {
   };
 
   const handleClickUpdateDateConfirm = () => {
-    console.log("change to", calendarDate);
     const changedTodo = changeDateOfTodo(currentTodo, calendarDate);
     if (currentTodo) {
       changeCurrentTodo(changedTodo);
@@ -124,7 +123,6 @@ export function TodoDetailDrawer() {
               <section className="flex flex-row place-items-center gap-3 px-4">
                 <CalendarIcon size={24} />
                 <Dialog.Root>
-                  {/* <Input type="date" onChange={handleUpdateDate} /> */}
                   {`${currentTodo.date.year}-${currentTodo.date.month
                     .toString()
                     .padStart(2, "0")}-${currentTodo.date.day

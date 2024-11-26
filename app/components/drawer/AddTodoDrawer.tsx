@@ -9,6 +9,7 @@ export function AddTodoDrawer() {
   const addTodoDrawer = useAddTodoDrawerStore();
   const { currentDate } = useCurrentDateStore();
   const [title, setTitle] = useState<string>("");
+
   const { createTodo } = useTodo(currentDate);
 
   const handleCloseCreateTodo = () => {
@@ -17,13 +18,21 @@ export function AddTodoDrawer() {
   };
 
   const handleChangeTitle = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    if (e.currentTarget.value === "\n") {
+      setTitle("");
+      return;
+    }
     setTitle(e.currentTarget.value);
   };
   const handleKeydownTitle = async (e: KeyboardEvent<HTMLTextAreaElement>) => {
+    setTitle(e.currentTarget.value);
     if (e.nativeEvent.isComposing) {
       return;
     }
     if (e.key === "Enter") {
+      if (title.length === 0) {
+        return;
+      }
       createTodo({
         title: title,
         date: {
