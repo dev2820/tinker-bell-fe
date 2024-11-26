@@ -54,6 +54,9 @@ export const useTodo = (currentDate: Date) => {
       queryClient.invalidateQueries({
         queryKey: ["todos", todoQueryKey],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["todos", formatDate(currentDate, "yyyy-MM")],
+      });
     },
     onError: (error) => {
       console.error("Error adding item:", error);
@@ -68,6 +71,9 @@ export const useTodo = (currentDate: Date) => {
       }
       queryClient.invalidateQueries({
         queryKey: ["todos", todoQueryKey],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["todos", formatDate(currentDate, "yyyy-MM")],
       });
     },
     onError: (error) => {

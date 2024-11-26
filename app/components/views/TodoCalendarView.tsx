@@ -33,6 +33,7 @@ import { useTodoDetailDrawerStore } from "@/stores/todo-detail-drawer";
 import { addMonths, getMonth, getYear, isSameMonth, subMonths } from "date-fns";
 import { useMonthTodo } from "@/hooks/use-month-todo";
 import { CalendarCellWithLabel } from "../calendar/CalendarCellWithLabel";
+import { useCurrentDateStore } from "@/stores/current-date";
 
 const slides = range(-500, 500, 1);
 const initialSlideIndex = slides.length / 2;
@@ -44,6 +45,7 @@ export function TodoCalendarView(props: TodoCalendarViewProps) {
     useState<number>(initialSlideIndex);
   const baseDate = new Date();
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const currentDateStore = useCurrentDateStore();
   const relativeDate = useMemo(() => {
     const d = new Date();
     const year = getYear(d);
@@ -96,6 +98,7 @@ export function TodoCalendarView(props: TodoCalendarViewProps) {
       swiperRef?.slidePrev(200);
     }
     setSelectedDate(new Date(dateStr));
+    currentDateStore.changeCurrentDate(new Date(dateStr));
   };
   return (
     <div className={cn(className)} {...rest}>

@@ -79,8 +79,14 @@ const Calendar = ({
               ).getMonth()}
               today={today}
               onSelect={handleSelectDate}
-              renderCalendarCell={({ key, ...rest }) => (
-                <CalendarCell {...rest} key={key} />
+              renderCalendarCell={({ key, day, month, ...rest }) => (
+                <CalendarCell
+                  {...rest}
+                  data-day={day}
+                  day={day}
+                  data-month={month}
+                  key={key}
+                />
               )}
             />
           </SwiperSlide>
