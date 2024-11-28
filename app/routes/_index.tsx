@@ -20,6 +20,7 @@ import { TodoDetailDrawer } from "@/components/drawer/TodoDetailDrawer";
 import { toCookieStorage, toRawCookie } from "@/utils/cookie";
 import { Menubar } from "@/components/menubar/Menubar";
 import { MenubarItem } from "@/components/menubar/MenubarItem";
+import { cn } from "@/lib/utils";
 
 export const meta: MetaFunction = () => {
   return [
@@ -133,7 +134,7 @@ function TodoPage() {
       <Menubar>
         <MenubarItem>
           <Button
-            className="w-full h-full my-auto"
+            className={cn("w-full h-full my-auto", "bg-gray-100")}
             variant="ghost"
             onClick={() => routerPush(navigate, "/")}
           >
@@ -144,7 +145,7 @@ function TodoPage() {
         </MenubarItem>
         <MenubarItem>
           <Button
-            className="w-full h-full my-auto"
+            className={cn("w-full h-full my-auto")}
             variant="ghost"
             onClick={() => routerPush(navigate, "/calendar")}
           >

@@ -20,6 +20,7 @@ import { toCookieStorage, toRawCookie } from "@/utils/cookie";
 import { Menubar } from "@/components/menubar/Menubar";
 import { TodoCalendarView } from "@/components/views/TodoCalendarView";
 import { MenubarItem } from "@/components/menubar/MenubarItem";
+import { cn } from "@/lib/utils";
 
 export const meta: MetaFunction = () => {
   return [
@@ -144,7 +145,7 @@ function TodoCalendarPage() {
         </MenubarItem>
         <MenubarItem>
           <Button
-            className="w-full h-full my-auto"
+            className={cn("w-full h-full my-auto", "bg-gray-100")}
             variant="ghost"
             onClick={() => routerPush(navigate, "/calendar")}
           >
