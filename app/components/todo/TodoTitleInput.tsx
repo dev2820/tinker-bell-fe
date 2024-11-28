@@ -13,7 +13,7 @@ export const TodoTitleTextarea = forwardRef<
   return (
     <TextareaAutosize
       className={cx(
-        "focus:outline-none bg-white text-black text-lg",
+        "resize-none focus:outline-none bg-white text-black text-lg",
         className
       )}
       ref={ref}
