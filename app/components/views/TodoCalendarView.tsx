@@ -28,7 +28,7 @@ import { useDailyTodos } from "@/hooks/use-daily-todos";
 import { useAddTodoDrawerStore } from "@/stores/add-todo-drawer";
 import { useTodoDetailDrawerStore } from "@/stores/todo-detail-drawer";
 import { addMonths, getMonth, getYear, isSameMonth, subMonths } from "date-fns";
-import { useMonthTodo } from "@/hooks/use-month-todo";
+import { useMonthlyTodos } from "@/hooks/use-monthly-todos";
 import { CalendarCellWithLabel } from "../calendar/CalendarCellWithLabel";
 import { useCurrentDateStore } from "@/stores/current-date";
 
@@ -50,17 +50,20 @@ export function TodoCalendarView(props: TodoCalendarViewProps) {
     return calcRelativeMonth(new Date(year, month), slides[currentSlideIndex]);
   }, [currentSlideIndex]);
   const [swiperRef, setSwiperRef] = useState<SwiperType | null>(null);
-  const { todos: monthTodos } = useMonthTodo(
+  const { incompletedTodos, completedTodos } = useMonthlyTodos(
     relativeDate.getFullYear(),
     relativeDate.getMonth()
   );
-  const totalTodoMap = monthTodos?.reduce((map, todo) => {
-    const key = `${todo.date.month}-${todo.date.day}`;
-    const [prevDone, prevTotal] = map.get(key) ?? [0, 0];
-    map.set(key, [prevDone + (todo.isCompleted ? 1 : 0), prevTotal + 1]);
+  const totalTodoMap = [...incompletedTodos, ...completedTodos]?.reduce(
+    (map, todo) => {
+      const key = `${todo.date.month}-${todo.date.day}`;
+      const [prevDone, prevTotal] = map.get(key) ?? [0, 0];
+      map.set(key, [prevDone + (todo.isCompleted ? 1 : 0), prevTotal + 1]);
 
-    return map;
-  }, new Map<string, [number, number]>());
+      return map;
+    },
+    new Map<string, [number, number]>()
+  );
   const { toaster } = useToast();
 
   const handleSlideChange = (swiper: SwiperType) => {
@@ -250,6 +253,7 @@ function TodoView(props: TodoViewProps) {
             ))}
           </AnimatePresence>
         </Reorder.Group>
+        <hr className="w-[calc(100%_-_32px)] mx-auto my-4" />
         <Reorder.Group
           axis="y"
           as="ul"

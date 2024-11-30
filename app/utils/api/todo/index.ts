@@ -16,26 +16,17 @@ export type RawTodo = {
 export async function fetchMonthTodos(year: number, month: number) {
   const startDate = new Date(year, month);
   const endDate = lastDayOfMonth(startDate);
-  try {
-    const result = await authAPI
-      .get(`todos?from=${toDateStr(startDate)}&to=${toDateStr(endDate)}`, {
-        headers: {
-          Authorization: `Bearer ${Cookies.get("accessToken")}`,
-        },
-      })
-      .json<RawTodo[]>();
-    return {
-      isFailed: false,
-      value: result.map((rawTodo) => toTodo(rawTodo)),
-      error: null,
-    } as Success<Todo[]>;
-  } catch (err) {
-    return {
-      isFailed: true,
-      value: null,
-      error: err as Error,
-    } as Failed<Error>;
-  }
+  return await authAPI
+    .get(`todos?from=${toDateStr(startDate)}&to=${toDateStr(endDate)}`, {
+      headers: {
+        Authorization: `Bearer ${Cookies.get("accessToken")}`,
+      },
+    })
+    .json<RawTodo[]>()
+    .then((rawTodo) => ({
+      incompletedTodoList: rawTodo.filter((todo) => !todo.isCompleted),
+      completedTodoList: rawTodo.filter((todo) => todo.isCompleted),
+    }));
 }
 
 /**
