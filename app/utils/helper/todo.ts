@@ -1,4 +1,5 @@
 import { Todo } from "@/types/todo";
+import { RawTodo } from "../api/todo";
 
 export const isTargetDateTodo = (todo: Todo, targetDate: Date) => {
   return (
@@ -55,4 +56,42 @@ export const changeDateOfTodo = (todo: Todo, date: Date) => {
 
 export const getDateFromTodo = (todo: Todo) => {
   return new Date(todo.date.year, todo.date.month - 1, todo.date.day);
+};
+
+export const isSameDateTodo = (todo1: Todo, todo2: Todo) => {
+  if (todo1.date.day !== todo2.date.day) return false;
+  if (todo1.date.month !== todo2.date.month) return false;
+  if (todo1.date.year !== todo2.date.year) return false;
+  return true;
+};
+
+export const isSameTodo = (todo1: Todo, todo2: Todo) => {
+  if (todo1.id !== todo2.id) return false;
+  if (todo1.isCompleted !== todo2.isCompleted) return false;
+  if (!isSameDateTodo(todo1, todo2)) return false;
+  if (todo1.order !== todo2.order) return false;
+  if (todo1.title !== todo2.title) return false;
+
+  return true;
+};
+
+export const isThatDateTodo = (todo: Todo, date: Date) => {
+  if (todo.date.year !== date.getFullYear()) return false;
+  if (todo.date.month !== date.getMonth() + 1) return false;
+  if (todo.date.day !== date.getDate()) return false;
+
+  return true;
+};
+
+export const toTodo = (rawTodo: RawTodo): Todo => {
+  const date = new Date(rawTodo.date);
+
+  return {
+    ...rawTodo,
+    date: {
+      year: date.getFullYear(),
+      month: date.getMonth() + 1,
+      day: date.getDate(),
+    },
+  };
 };

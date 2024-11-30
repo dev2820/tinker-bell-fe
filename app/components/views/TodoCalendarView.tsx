@@ -12,7 +12,6 @@ import {
   ComponentProps,
   useMemo,
   useState,
-  useEffect,
 } from "react";
 import { Virtual } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -25,9 +24,7 @@ import { TodoFilterDialog } from "@/components/dialog/TodoFilterDialog";
 import { CalendarGrid } from "../calendar/CalendarGrid";
 import { AnimatePresence, Reorder } from "framer-motion";
 import { TodoDraggableItem } from "../todo/TodoDraggableItem";
-import { Todo } from "@/types/todo";
-import { useSettingStore } from "@/stores/setting";
-import { useTodo } from "@/hooks/use-todo";
+import { useDailyTodos } from "@/hooks/use-daily-todos";
 import { useAddTodoDrawerStore } from "@/stores/add-todo-drawer";
 import { useTodoDetailDrawerStore } from "@/stores/todo-detail-drawer";
 import { addMonths, getMonth, getYear, isSameMonth, subMonths } from "date-fns";
@@ -199,31 +196,15 @@ type TodoViewProps = {
 };
 function TodoView(props: TodoViewProps) {
   const { currentDate, className } = props;
-  const { filterOption } = useSettingStore();
-  const { todos, toggleTodoById, debouncedReorderTodos } = useTodo(currentDate);
+  const {
+    completedTodos,
+    incompletedTodos,
+    toggleTodoById,
+    reorderCompletedTodos,
+    reorderIncompletedTodos,
+  } = useDailyTodos(currentDate);
   const addTodoDrawer = useAddTodoDrawerStore();
   const todoDetailDrawer = useTodoDetailDrawerStore();
-  const [orderedTodos, setOrderedTodos] = useState<Todo[]>(
-    todos?.filter((todo) =>
-      filterOption === "all"
-        ? true
-        : filterOption === "completed"
-        ? todo.isCompleted
-        : !todo.isCompleted
-    ) ?? []
-  );
-
-  useEffect(() => {
-    setOrderedTodos(
-      todos?.filter((todo) =>
-        filterOption === "all"
-          ? true
-          : filterOption === "completed"
-          ? todo.isCompleted
-          : !todo.isCompleted
-      ) ?? []
-    );
-  }, [filterOption, todos]);
 
   const handleChangeComplete = (e: ChangeEvent<HTMLElement>) => {
     const $target = e.currentTarget;
@@ -235,16 +216,13 @@ function TodoView(props: TodoViewProps) {
     const $target = e.currentTarget;
     const todoId = Number($target.dataset["todoId"]);
 
-    const todo = todos?.find((todo) => todo.id === todoId);
+    const todo = [...incompletedTodos, ...completedTodos]?.find(
+      (todo) => todo.id === todoId
+    );
     if (todo) {
       todoDetailDrawer.changeCurrentTodo(todo);
     }
     todoDetailDrawer.onOpen();
-  };
-
-  const handleReorder = (newOrder: Todo[]) => {
-    setOrderedTodos(newOrder);
-    debouncedReorderTodos(newOrder);
   };
 
   const handleClickAddTodo = () => {
@@ -256,13 +234,32 @@ function TodoView(props: TodoViewProps) {
         <Reorder.Group
           axis="y"
           as="ul"
-          values={orderedTodos}
-          onReorder={handleReorder}
+          values={incompletedTodos}
+          onReorder={reorderIncompletedTodos}
           layoutScroll
           className="overflow-y-hidden overflow-x-hidden"
         >
           <AnimatePresence>
-            {orderedTodos.map((todo) => (
+            {incompletedTodos.map((todo) => (
+              <TodoDraggableItem
+                key={todo.id}
+                todo={todo}
+                onChangeComplete={handleChangeComplete}
+                onClickTodo={handleClickTodoItem}
+              />
+            ))}
+          </AnimatePresence>
+        </Reorder.Group>
+        <Reorder.Group
+          axis="y"
+          as="ul"
+          values={completedTodos}
+          onReorder={reorderCompletedTodos}
+          layoutScroll
+          className="overflow-y-hidden overflow-x-hidden"
+        >
+          <AnimatePresence>
+            {completedTodos.map((todo) => (
               <TodoDraggableItem
                 key={todo.id}
                 todo={todo}

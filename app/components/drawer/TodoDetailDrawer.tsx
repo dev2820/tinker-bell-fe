@@ -7,7 +7,7 @@ import {
 } from "terra-design-system/react";
 import { TodoTitleTextarea } from "../todo/TodoTitleInput";
 import { ChangeEvent, useState } from "react";
-import { useTodo } from "@/hooks/use-todo";
+import { useDailyTodos } from "@/hooks/use-daily-todos";
 import { useTodoDetailDrawerStore } from "@/stores/todo-detail-drawer";
 import { CalendarIcon, Trash2Icon } from "lucide-react";
 import Calendar from "../calendar/Calendar";
@@ -25,9 +25,8 @@ export function TodoDetailDrawer() {
     useTodoDetailDrawerStore();
   const { currentDate } = useCurrentDateStore();
   const [calendarDate, setCalendarDate] = useState<Date>(currentDate);
-  const { deleteTodoById, debouncedUpdateTodoById, updateTodoById } = useTodo(
-    getDateFromTodo(currentTodo)
-  );
+  const { deleteTodoById, debouncedUpdateTodoById, updateTodoById } =
+    useDailyTodos(getDateFromTodo(currentTodo));
   const { showToast } = useToast();
   const handleClickDeleteCurrentTodo = () => {
     // show todo details

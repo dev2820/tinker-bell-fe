@@ -1,5 +1,4 @@
 import { cn } from "@/lib/utils";
-import { useSettingStore } from "@/stores/setting";
 import {
   calcRelativeDate,
   formatDate,
@@ -14,7 +13,6 @@ import {
   ComponentProps,
   useMemo,
   useState,
-  useEffect,
 } from "react";
 import { Virtual } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -22,7 +20,6 @@ import { Swiper as SwiperType } from "swiper/types";
 import { Toast, Button } from "terra-design-system/react";
 import { TodoDraggableItem } from "../todo/TodoDraggableItem";
 import { vibrateShort } from "@/utils/device/vibrate";
-import { useTodo } from "@/hooks/use-todo";
 import { useToast } from "@/contexts/toast";
 import { Todo } from "@/types/todo";
 import "swiper/css";
@@ -32,6 +29,7 @@ import { useAddTodoDrawerStore } from "@/stores/add-todo-drawer";
 import { useCurrentDateStore } from "@/stores/current-date";
 import { TodoFilterDialog } from "@/components/dialog/TodoFilterDialog";
 import { TodoLoadMore } from "../todo/TodoLoadMore";
+import { useDailyTodos } from "@/hooks/use-daily-todos";
 
 const slides = range(-500, 500, 1);
 const initialSlideIndex = slides.length / 2;
@@ -50,7 +48,8 @@ export function TodoDailyView(props: TodoDailyViewProps) {
   );
   const [swiperRef, setSwiperRef] = useState<SwiperType | null>(null);
 
-  const { todos, toggleTodoById } = useTodo(relativeDate);
+  const { completedTodos, incompletedTodos, toggleTodoById } =
+    useDailyTodos(relativeDate);
   const detailDrawer = useTodoDetailDrawerStore();
   const addTodoDrawer = useAddTodoDrawerStore();
 
@@ -59,10 +58,9 @@ export function TodoDailyView(props: TodoDailyViewProps) {
    * FIXME: view쪽으로 로직 옮길 것
    */
   const handleClickTodoItem = (todoId: number) => {
-    if (!todos) {
-      return;
-    }
-    const todo = todos.find((todo) => todo.id === todoId);
+    const todo = [...completedTodos, ...incompletedTodos].find(
+      (todo) => todo.id === todoId
+    );
     if (todo) {
       detailDrawer.changeCurrentTodo(todo);
     }
@@ -103,10 +101,9 @@ export function TodoDailyView(props: TodoDailyViewProps) {
   };
 
   const handleChangeTodoComplete = (todoId: number) => {
-    if (!todos) {
-      return null;
-    }
-    const targetTodo = todos.find((todo) => todo.id === todoId);
+    const targetTodo = [...completedTodos, ...incompletedTodos].find(
+      (todo) => todo.id === todoId
+    );
     if (!targetTodo) {
       return null;
     }
@@ -203,30 +200,12 @@ type TodoViewProps = {
 };
 function TodoView(props: TodoViewProps) {
   const { currentDate, onClickTodoCheck, onClickTodo, onClickAddTodo } = props;
-  const { filterOption } = useSettingStore();
-  const { todos, debouncedReorderTodos } = useTodo(currentDate);
-
-  const [orderedTodos, setOrderedTodos] = useState<Todo[]>(
-    todos?.filter((todo) =>
-      filterOption === "all"
-        ? true
-        : filterOption === "completed"
-        ? todo.isCompleted
-        : !todo.isCompleted
-    ) ?? []
-  );
-
-  useEffect(() => {
-    setOrderedTodos(
-      todos?.filter((todo) =>
-        filterOption === "all"
-          ? true
-          : filterOption === "completed"
-          ? todo.isCompleted
-          : !todo.isCompleted
-      ) ?? []
-    );
-  }, [filterOption, todos]);
+  const {
+    completedTodos,
+    incompletedTodos,
+    reorderIncompletedTodos,
+    reorderCompletedTodos,
+  } = useDailyTodos(currentDate);
 
   const handleChangeComplete = (e: ChangeEvent<HTMLElement>) => {
     const $target = e.currentTarget;
@@ -241,23 +220,39 @@ function TodoView(props: TodoViewProps) {
     onClickTodo(todoId);
   };
 
-  const handleReorder = (newOrder: Todo[]) => {
-    setOrderedTodos(newOrder);
-    debouncedReorderTodos(newOrder);
-  };
   return (
     <div className="h-full overflow-y-auto">
       <div className="overflow-y-scroll pb-4">
         <Reorder.Group
           axis="y"
           as="ul"
-          values={orderedTodos}
-          onReorder={handleReorder}
+          values={incompletedTodos}
+          onReorder={reorderIncompletedTodos}
           layoutScroll
           className="px-4 overflow-y-hidden overflow-x-hidden"
         >
           <AnimatePresence>
-            {orderedTodos.map((todo) => (
+            {incompletedTodos.map((todo) => (
+              <TodoDraggableItem
+                key={todo.id}
+                todo={todo}
+                onChangeComplete={handleChangeComplete}
+                onClickTodo={handleClickTodoItem}
+              />
+            ))}
+          </AnimatePresence>
+        </Reorder.Group>
+        <hr className="w-[calc(100%_-_32px)] mx-auto my-4" />
+        <Reorder.Group
+          axis="y"
+          as="ul"
+          values={completedTodos}
+          onReorder={reorderCompletedTodos}
+          layoutScroll
+          className="px-4 overflow-y-hidden overflow-x-hidden"
+        >
+          <AnimatePresence>
+            {completedTodos.map((todo) => (
               <TodoDraggableItem
                 key={todo.id}
                 todo={todo}

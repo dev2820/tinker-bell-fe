@@ -3,6 +3,7 @@ import { Todo } from "@/types/todo";
 import { authAPI } from "..";
 import Cookies from "js-cookie";
 import { lastDayOfMonth } from "date-fns";
+import { KyResponse } from "ky";
 
 export type RawTodo = {
   id: number;
@@ -36,27 +37,32 @@ export async function fetchMonthTodos(year: number, month: number) {
     } as Failed<Error>;
   }
 }
-export async function fetchTodos(date: Date) {
-  try {
-    const result = await authAPI
-      .get(`todos?from=${toDateStr(date)}&to=${toDateStr(date)}`, {
-        headers: {
-          Authorization: `Bearer ${Cookies.get("accessToken")}`,
-        },
-      })
-      .json<RawTodo[]>();
-    return {
-      isFailed: false,
-      value: result.map((rawTodo) => toTodo(rawTodo)),
-      error: null,
-    } as Success<Todo[]>;
-  } catch (err) {
-    return {
-      isFailed: true,
-      value: null,
-      error: err as Error,
-    } as Failed<Error>;
-  }
+
+/**
+ * @see https://api.ticketbell.store/swagger-ui/index.html#/todo-controller/getTodo
+ */
+export async function fetchTodosByDate(date: Date) {
+  return await authAPI
+    .get(`todos?from=${toDateStr(date)}&to=${toDateStr(date)}`, {
+      headers: {
+        Authorization: `Bearer ${Cookies.get("accessToken")}`,
+      },
+    })
+    .json<RawTodo[]>()
+    .then((rawTodo) => ({
+      incompletedTodoList: rawTodo.filter((todo) => !todo.isCompleted),
+      completedTodoList: rawTodo.filter((todo) => todo.isCompleted),
+    }));
+  // return await authAPI
+  //   .get(`todos?from=${toDateStr(date)}&to=${toDateStr(date)}`, {
+  //     headers: {
+  //       Authorization: `Bearer ${Cookies.get("accessToken")}`,
+  //     },
+  //   })
+  //   .json<{
+  //     completedTodoList: RawTodo[];
+  //     incompletedTodoList: RawTodo[];
+  //   }>();
 }
 
 type FetchTodoPayload = Pick<Todo, "id">;
@@ -87,112 +93,61 @@ export async function fetchTodo(payload: FetchTodoPayload) {
 type DeleteTodoPayload = Pick<Todo, "id">;
 export async function deleteTodo(payload: DeleteTodoPayload) {
   const { id } = payload;
-  try {
-    await authAPI.delete(`todos/${id}`, {
-      headers: {
-        Authorization: `Bearer ${Cookies.get("accessToken")}`,
-      },
-    });
-
-    return {
-      isFailed: false,
-      value: true,
-      error: null,
-    } as Success<boolean>;
-  } catch (err) {
-    return {
-      isFailed: true,
-      value: null,
-      error: err as Error,
-    } as Failed<Error>;
-  }
+  return await authAPI.delete(`todos/${id}`, {
+    headers: {
+      Authorization: `Bearer ${Cookies.get("accessToken")}`,
+    },
+  });
 }
 
 type CreateTodoPayload = Omit<Todo, "id" | "isCompleted">;
 export async function createTodo(payload: CreateTodoPayload) {
   const { title, date } = payload;
   const isoDate = toISODate(date);
-  try {
-    const result = await authAPI
-      .post(`todos`, {
-        body: JSON.stringify({
-          title: title,
-          date: isoDate,
-        }),
-        headers: {
-          Authorization: `Bearer ${Cookies.get("accessToken")}`,
-        },
-      })
-      .json<RawTodo>();
-
-    return {
-      isFailed: false,
-      value: toTodo(result),
-      error: null,
-    } as Success<Todo>;
-  } catch (err) {
-    return {
-      isFailed: true,
-      value: null,
-      error: err as Error,
-    } as Failed<Error>;
-  }
-}
-
-type UpdateTodoPayload = Partial<Omit<Todo, "id">> & Pick<Todo, "id">;
-export async function updateTodo(payload: UpdateTodoPayload) {
-  const { id, title, date, isCompleted } = payload;
-  try {
-    await authAPI.put(`todos/${id}`, {
+  const result = await authAPI
+    .post(`todos`, {
       body: JSON.stringify({
         title: title,
-        date: date && toISODate(date),
-        isCompleted: isCompleted,
+        date: isoDate,
       }),
       headers: {
         Authorization: `Bearer ${Cookies.get("accessToken")}`,
       },
-    });
+    })
+    .json<RawTodo>();
 
-    return {
-      isFailed: false,
-      value: true,
-      error: null,
-    } as Success<boolean>;
-  } catch (err) {
-    return {
-      isFailed: true,
-      value: null,
-      error: err as Error,
-    } as Failed<Error>;
-  }
+  return toTodo(result);
+}
+
+type UpdateTodoPayload = Partial<Omit<Todo, "id">> & Pick<Todo, "id">;
+export async function updateTodo(
+  payload: UpdateTodoPayload
+): Promise<KyResponse> {
+  const { id, title, date, isCompleted } = payload;
+
+  return authAPI.put(`todos/${id}`, {
+    body: JSON.stringify({
+      title: title,
+      date: date && toISODate(date),
+      isCompleted: isCompleted,
+    }),
+    headers: {
+      Authorization: `Bearer ${Cookies.get("accessToken")}`,
+    },
+  });
 }
 
 type UpdateTodoCompletePayload = Pick<Todo, "id" | "isCompleted">;
 export async function updateTodoComplete(payload: UpdateTodoCompletePayload) {
   const { id, ...rest } = payload;
-  try {
-    await authAPI.patch(`todos/completion/${id}`, {
-      body: JSON.stringify({
-        ...rest,
-      }),
-      headers: {
-        Authorization: `Bearer ${Cookies.get("accessToken")}`,
-      },
-    });
-
-    return {
-      isFailed: false,
-      value: true,
-      error: null,
-    } as Success<boolean>;
-  } catch (err) {
-    return {
-      isFailed: true,
-      value: null,
-      error: err as Error,
-    } as Failed<Error>;
-  }
+  return await authAPI.patch(`todos/completion/${id}`, {
+    body: JSON.stringify({
+      ...rest,
+    }),
+    headers: {
+      Authorization: `Bearer ${Cookies.get("accessToken")}`,
+    },
+  });
 }
 
 type UpdateTodoOrderPayload = {
@@ -200,28 +155,14 @@ type UpdateTodoOrderPayload = {
 };
 export async function updateTodoOrder(payload: UpdateTodoOrderPayload) {
   const { orderList } = payload;
-  try {
-    await authAPI.put(`todos/orders`, {
-      body: JSON.stringify({
-        orderList: orderList,
-      }),
-      headers: {
-        Authorization: `Bearer ${Cookies.get("accessToken")}`,
-      },
-    });
-
-    return {
-      isFailed: false,
-      value: true,
-      error: null,
-    } as Success<boolean>;
-  } catch (err) {
-    return {
-      isFailed: true,
-      value: null,
-      error: err as Error,
-    } as Failed<Error>;
-  }
+  return await authAPI.put(`todos/orders`, {
+    body: JSON.stringify({
+      orderList: orderList,
+    }),
+    headers: {
+      Authorization: `Bearer ${Cookies.get("accessToken")}`,
+    },
+  });
 }
 
 export const toTodo = (rawTodo: RawTodo): Todo => {

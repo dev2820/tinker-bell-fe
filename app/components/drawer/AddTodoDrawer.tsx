@@ -2,7 +2,7 @@ import { Button, Drawer, Portal } from "terra-design-system/react";
 import { TodoTitleTextarea } from "../todo/TodoTitleInput";
 import { useAddTodoDrawerStore } from "@/stores/add-todo-drawer";
 import { KeyboardEvent, ChangeEvent, useState } from "react";
-import { useTodo } from "@/hooks/use-todo";
+import { useDailyTodos } from "@/hooks/use-daily-todos";
 import { useCurrentDateStore } from "@/stores/current-date";
 
 export function AddTodoDrawer() {
@@ -10,7 +10,7 @@ export function AddTodoDrawer() {
   const { currentDate } = useCurrentDateStore();
   const [title, setTitle] = useState<string>("");
 
-  const { createTodo } = useTodo(currentDate);
+  const { createTodo } = useDailyTodos(currentDate);
 
   const handleCloseCreateTodo = () => {
     addTodoDrawer.onClose();
