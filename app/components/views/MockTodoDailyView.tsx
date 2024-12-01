@@ -1,5 +1,4 @@
 import { cn } from "@/lib/utils";
-import { useSettingStore } from "@/stores/setting";
 import {
   calcRelativeDate,
   formatDate,
@@ -28,9 +27,9 @@ import "swiper/css/virtual";
 import { useTodoDetailDrawerStore } from "@/stores/todo-detail-drawer";
 import { useAddTodoDrawerStore } from "@/stores/add-todo-drawer";
 import { useCurrentDateStore } from "@/stores/current-date";
-// import { TodoFilterDialog } from "@/components/dialog/TodoFilterDialog";
 import { TodoLoadMore } from "../todo/TodoLoadMore";
 import { useMockTodo } from "@/hooks/use-mock-todo";
+import { partition } from "@/utils/partition";
 const slides = range(-500, 500, 1);
 const initialSlideIndex = slides.length / 2;
 
@@ -138,7 +137,6 @@ export function MockTodoDailyView(props: MockTodoDailyViewProps) {
           <button onClick={handleGotoNextDate}>
             <ChevronRightIcon size={28} strokeWidth={1} />
           </button>
-          {/* <TodoFilterDialog className={"absolute right-4 -top-1.5"} /> */}
         </div>
       </h2>
       <div className="h-[calc(100%_-_72px)] w-full">
@@ -200,16 +198,9 @@ type TodoViewProps = {
 function TodoView(props: TodoViewProps) {
   const { currentDate, onClickTodoCheck, onClickTodo, onClickAddTodo } = props;
   const { todos, reorderTodos } = useMockTodo(currentDate);
-  /**
-   * TODO: order api가 생기면 todo 상태를 따로 저장할 필요 없어짐
-   */
-  const { filterOption } = useSettingStore();
-  const filteredTodos = todos.filter((todo) =>
-    filterOption === "all"
-      ? true
-      : filterOption === "completed"
-      ? todo.isCompleted
-      : !todo.isCompleted
+  const [incompletedTodos, completedTodos] = partition(
+    todos,
+    (todo) => !todo.isCompleted
   );
 
   const handleChangeComplete = (e: ChangeEvent<HTMLElement>) => {
@@ -235,13 +226,33 @@ function TodoView(props: TodoViewProps) {
         <Reorder.Group
           axis="y"
           as="ul"
-          values={filteredTodos}
+          values={incompletedTodos}
           onReorder={handleChangeOrder}
           layoutScroll
           className="px-4 overflow-y-hidden overflow-x-hidden"
         >
           <AnimatePresence>
-            {filteredTodos.map((todo) => (
+            {incompletedTodos.map((todo) => (
+              <TodoDraggableItem
+                key={todo.id}
+                todo={todo}
+                onChangeComplete={handleChangeComplete}
+                onClickTodo={handleClickTodoItem}
+              />
+            ))}
+          </AnimatePresence>
+        </Reorder.Group>
+        <hr className="w-[calc(100%_-_32px)] mx-auto my-4" />
+        <Reorder.Group
+          axis="y"
+          as="ul"
+          values={completedTodos}
+          onReorder={handleChangeOrder}
+          layoutScroll
+          className="px-4 overflow-y-hidden overflow-x-hidden"
+        >
+          <AnimatePresence>
+            {completedTodos.map((todo) => (
               <TodoDraggableItem
                 key={todo.id}
                 todo={todo}

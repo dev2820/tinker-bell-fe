@@ -20,7 +20,6 @@ import { Button, Toast } from "terra-design-system/react";
 import { useToast } from "@/contexts/toast";
 import "swiper/css";
 import "swiper/css/virtual";
-// import { TodoFilterDialog } from "@/components/dialog/TodoFilterDialog";
 import { CalendarGrid } from "../calendar/CalendarGrid";
 import { AnimatePresence, Reorder } from "framer-motion";
 import { TodoDraggableItem } from "../todo/TodoDraggableItem";
@@ -113,7 +112,6 @@ export function TodoCalendarView(props: TodoCalendarViewProps) {
           <button onClick={handleGotoNextMonth}>
             <ChevronRightIcon size={28} strokeWidth={1} />
           </button>
-          {/* <TodoFilterDialog className={"absolute right-4 -top-1.5"} /> */}
         </div>
       </header>
       <div className="h-[calc(100%_-_56px)] w-full">

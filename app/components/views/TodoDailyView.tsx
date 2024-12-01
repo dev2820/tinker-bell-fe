@@ -27,7 +27,6 @@ import "swiper/css/virtual";
 import { useTodoDetailDrawerStore } from "@/stores/todo-detail-drawer";
 import { useAddTodoDrawerStore } from "@/stores/add-todo-drawer";
 import { useCurrentDateStore } from "@/stores/current-date";
-// import { TodoFilterDialog } from "@/components/dialog/TodoFilterDialog";
 import { TodoLoadMore } from "../todo/TodoLoadMore";
 import { useDailyTodos } from "@/hooks/use-daily-todos";
 
@@ -139,7 +138,6 @@ export function TodoDailyView(props: TodoDailyViewProps) {
           <button onClick={handleGotoNextDate}>
             <ChevronRightIcon size={28} strokeWidth={1} />
           </button>
-          {/* <TodoFilterDialog className={"absolute right-4 -top-1.5"} /> */}
         </div>
       </h2>
       <div className="h-[calc(100%_-_72px)] w-full">
