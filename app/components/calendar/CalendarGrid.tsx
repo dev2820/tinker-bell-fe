@@ -1,33 +1,14 @@
-import { ComponentProps, MouseEvent, ReactElement } from "react";
 import { cn } from "@/lib/utils";
-import { isSaturday, isSunday } from "date-fns";
 
-interface CalendarGridProps {
+type CalendarGridProps = {
   year: number;
   month: number;
-  today: Date;
-  onSelect: (dateStr: string) => void;
   className: string;
-  renderCalendarCell: (
-    calendarProps: {
-      day: number;
-      month: number;
-      isCurrentMonth: boolean;
-      isSaturday: boolean;
-      isSunday: boolean;
-      isToday: boolean;
-    } & ComponentProps<"button">
-  ) => ReactElement;
-}
+  children: (days: [number, number, number][]) => React.ReactNode;
+};
 
-export const CalendarGrid = ({
-  year,
-  month,
-  today,
-  onSelect,
-  renderCalendarCell,
-  className,
-}: CalendarGridProps) => {
+export const CalendarGrid = (props: CalendarGridProps) => {
+  const { year, month, className, children } = props;
   const getDaysInMonth = (year: number, month: number) => {
     return new Date(year, month + 1, 0).getDate();
   };
@@ -58,22 +39,12 @@ export const CalendarGrid = ({
     days.push([date.getFullYear(), date.getMonth(), date.getDate()]);
   }
 
-  const handleClickCell = (e: MouseEvent<HTMLButtonElement>) => {
-    const day = Number(e.currentTarget.dataset["day"]);
-    const month = Number(e.currentTarget.dataset["month"]);
-    onSelect(
-      `${year}-${(month + 1).toString().padStart(2, "0")}-${day
-        .toString()
-        .padStart(2, "0")}`
-    );
-  };
-
   return (
     <div className={cn("grid grid-cols-7 gap-1 place-items-center", className)}>
       {["일", "월", "화", "수", "목", "금", "토"].map((dayOfWeek) => (
         <span
           className={cn(
-            "w-8 h-8 text-center leading-10 text-green",
+            "w-8 h-8 text-center leading-10",
             dayOfWeek === "일" && "text-red-500",
             dayOfWeek === "토" && "text-blue-500"
           )}
@@ -82,37 +53,7 @@ export const CalendarGrid = ({
           {dayOfWeek}
         </span>
       ))}
-      {days.map(
-        ([year, month, day], index) =>
-          renderCalendarCell({
-            day,
-            month,
-            isCurrentMonth: index >= startDay && index < startDay + daysInMonth,
-            isSaturday: isSaturday(new Date(year, month, day)),
-            isSunday: isSunday(new Date(year, month, day)),
-            isToday:
-              today.getDate() === day &&
-              today.getMonth() === month &&
-              today.getFullYear() === year,
-            onClick: handleClickCell,
-            key: index,
-          })
-        // <CalendarCell
-        //   key={index}
-        //   day={day}
-        //   data-day={day}
-        //   data-month={month}
-        //   isCurrentMonth={index >= startDay && index < startDay + daysInMonth}
-        //   isSaturday={isSaturday(new Date(year, month, day))}
-        //   isSunday={isSunday(new Date(year, month, day))}
-        //   onClick={handleClickCell}
-        //   isToday={
-        //     today.getDate() === day &&
-        //     today.getMonth() === month &&
-        //     today.getFullYear() === year
-        //   }
-        // />
-      )}
+      {children(days)}
     </div>
   );
 };

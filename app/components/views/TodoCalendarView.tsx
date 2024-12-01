@@ -1,57 +1,31 @@
 import { cn } from "@/lib/utils";
-import {
-  calcRelativeMonth,
-  formatKoreanDate,
-  isSameDay,
-} from "@/utils/date-time";
-import { range } from "@/utils/range";
-import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
-import {
-  MouseEvent,
-  ChangeEvent,
-  ComponentProps,
-  useMemo,
-  useState,
-} from "react";
-import { Virtual } from "swiper/modules";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Swiper as SwiperType } from "swiper/types";
+import { formatKoreanDate, isSameDay } from "@/utils/date-time";
+import { MouseEvent, ChangeEvent, ComponentProps, useState } from "react";
 import { Button, Toast } from "terra-design-system/react";
 import { useToast } from "@/contexts/toast";
-import "swiper/css";
-import "swiper/css/virtual";
 import { CalendarGrid } from "../calendar/CalendarGrid";
 import { AnimatePresence, Reorder } from "framer-motion";
 import { TodoDraggableItem } from "../todo/TodoDraggableItem";
 import { useDailyTodos } from "@/hooks/use-daily-todos";
 import { useAddTodoDrawerStore } from "@/stores/add-todo-drawer";
 import { useTodoDetailDrawerStore } from "@/stores/todo-detail-drawer";
-import { addMonths, getMonth, getYear, isSameMonth, subMonths } from "date-fns";
 import { useMonthlyTodos } from "@/hooks/use-monthly-todos";
 import { CalendarCellWithLabel } from "../calendar/CalendarCellWithLabel";
 import { useCurrentDateStore } from "@/stores/current-date";
-
-const slides = range(-500, 500, 1);
-const initialSlideIndex = slides.length / 2;
+import { CalendarRoot } from "../calendar/CalendarRoot";
+import { CalendarContainer } from "../calendar/CalendarContainer";
+import { CalendarHeader } from "../calendar/CalendarHeader";
 
 type TodoCalendarViewProps = ComponentProps<"div">;
 export function TodoCalendarView(props: TodoCalendarViewProps) {
   const { className, ...rest } = props;
-  const [currentSlideIndex, setCurrentSlideIndex] =
-    useState<number>(initialSlideIndex);
-  const baseDate = new Date();
+  const [baseDate] = useState<Date>(new Date());
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const currentDateStore = useCurrentDateStore();
-  const relativeDate = useMemo(() => {
-    const d = new Date();
-    const year = getYear(d);
-    const month = getMonth(d);
-    return calcRelativeMonth(new Date(year, month), slides[currentSlideIndex]);
-  }, [currentSlideIndex]);
-  const [swiperRef, setSwiperRef] = useState<SwiperType | null>(null);
+  const [shownDate, setShownDate] = useState<Date>(baseDate);
   const { incompletedTodos, completedTodos } = useMonthlyTodos(
-    relativeDate.getFullYear(),
-    relativeDate.getMonth()
+    shownDate.getFullYear(),
+    shownDate.getMonth()
   );
   const totalTodoMap = [...incompletedTodos, ...completedTodos]?.reduce(
     (map, todo) => {
@@ -65,101 +39,55 @@ export function TodoCalendarView(props: TodoCalendarViewProps) {
   );
   const { toaster } = useToast();
 
-  const handleSlideChange = (swiper: SwiperType) => {
-    setCurrentSlideIndex(swiper.activeIndex);
+  const handleSelectDate = (newDate: Date) => {
+    setSelectedDate(newDate);
+    currentDateStore.changeCurrentDate(newDate);
   };
-
-  const handleGotoPrevMonth = () => {
-    if (!swiperRef) {
-      return;
-    }
-    swiperRef.slidePrev(0);
-  };
-
-  const handleGotoNextMonth = () => {
-    if (!swiperRef) {
-      return;
-    }
-    swiperRef.slideNext(0);
-  };
-
-  const handleSelectDate = (dateStr: string) => {
-    const selectedDate = new Date(dateStr);
-    /**
-     * 선택한게 다음달이면 slide를 하나 이동
-     */
-    const nextMonthDate = addMonths(relativeDate, 1);
-    const prevMonthDate = subMonths(relativeDate, 1);
-    if (isSameMonth(selectedDate, nextMonthDate)) {
-      swiperRef?.slideNext(200);
-    }
-    if (isSameMonth(selectedDate, prevMonthDate)) {
-      swiperRef?.slidePrev(200);
-    }
-    setSelectedDate(new Date(dateStr));
-    currentDateStore.changeCurrentDate(new Date(dateStr));
+  const handleChangeShownDate = (year: number, month: number) => {
+    //
+    setShownDate(new Date(year, month));
   };
   return (
     <div className={cn(className)} {...rest}>
-      <header className="h-[56px] text-center pt-4">
-        <div className="relative flex flex-row place-items-center justify-center gap-3">
-          <button onClick={handleGotoPrevMonth}>
-            <ChevronLeftIcon size={28} strokeWidth={1} />
-          </button>
-          <time className="block w-24">
-            {formatKoreanDate(relativeDate, "yyyy년 MM월")}
-          </time>
-          <button onClick={handleGotoNextMonth}>
-            <ChevronRightIcon size={28} strokeWidth={1} />
-          </button>
-        </div>
-      </header>
       <div className="h-[calc(100%_-_56px)] w-full">
-        <div className="px-4">
-          <Swiper
-            modules={[Virtual]}
-            className="h-[296px] w-full"
-            slidesPerView={1}
-            onSwiper={setSwiperRef}
-            onSlideChange={handleSlideChange}
-            centeredSlides={true}
-            spaceBetween={0}
-            initialSlide={initialSlideIndex}
-            virtual
-          >
-            {slides.map((slideContent, index) => (
-              <SwiperSlide key={slideContent} virtualIndex={index}>
-                <CalendarGrid
-                  className=""
-                  year={calcRelativeMonth(baseDate, slideContent).getFullYear()}
-                  month={calcRelativeMonth(baseDate, slideContent).getMonth()}
-                  today={selectedDate}
-                  onSelect={handleSelectDate}
-                  renderCalendarCell={({
-                    key,
-                    day,
-                    month,
-                    isCurrentMonth,
-                    ...rest
-                  }) => (
-                    <CalendarCellWithLabel
-                      day={day}
-                      isCurrentMonth={isCurrentMonth}
-                      {...rest}
-                      key={key}
-                      labelText={totalTodoMap
-                        ?.get(`${month + 1}-${day}`)
-                        ?.join("/")}
-                      data-day={day}
-                      data-month={month}
-                    />
-                  )}
-                ></CalendarGrid>
-              </SwiperSlide>
-            ))}
-          </Swiper>
-        </div>
-        <section className="h-[calc(100%_-_296px)] pt-4">
+        <CalendarRoot
+          baseDate={baseDate}
+          onSelectDate={handleSelectDate}
+          onChangeShownDate={handleChangeShownDate}
+        >
+          <CalendarHeader />
+          <CalendarContainer className="px-4">
+            {(year, month) => (
+              <CalendarGrid className="" year={year} month={month}>
+                {(days) => (
+                  <>
+                    {days.map(([year, month, day]) => (
+                      <CalendarCellWithLabel
+                        key={`${year}-${month}-${day}`}
+                        year={year}
+                        month={month}
+                        day={day}
+                        className={cn(
+                          "w-full h-10",
+                          isSameDay(new Date(year, month, day), selectedDate) &&
+                            "bg-gray-200"
+                        )}
+                        data-year={year}
+                        data-month={month}
+                        data-day={day}
+                        isOutOfMonth={month !== shownDate.getMonth()}
+                        labelText={totalTodoMap
+                          ?.get(`${month + 1}-${day}`)
+                          ?.join("/")}
+                      />
+                    ))}
+                  </>
+                )}
+              </CalendarGrid>
+            )}
+          </CalendarContainer>
+        </CalendarRoot>
+        <section className="h-[calc(100%_-_324px)] pt-4">
           <h3 className="h-[24px] px-4 text-lg">
             {formatKoreanDate(selectedDate, "yyyy년 MM월 dd일")}{" "}
             {isSameDay(selectedDate, new Date()) && `(오늘)`}

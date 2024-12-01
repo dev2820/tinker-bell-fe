@@ -10,7 +10,6 @@ import { ChangeEvent, useState } from "react";
 import { useDailyTodos } from "@/hooks/use-daily-todos";
 import { useTodoDetailDrawerStore } from "@/stores/todo-detail-drawer";
 import { CalendarIcon, Trash2Icon } from "lucide-react";
-import Calendar from "../calendar/Calendar";
 import {
   changeDateOfTodo,
   delayNextDay,
@@ -19,12 +18,20 @@ import {
 } from "@/utils/helper/todo";
 import { useToast } from "@/contexts/toast";
 import { useCurrentDateStore } from "@/stores/current-date";
+import { cn } from "@/lib/utils";
+import { isSameDay } from "date-fns";
+import { CalendarCellWithLabel } from "../calendar/CalendarCellWithLabel";
+import { CalendarContainer } from "../calendar/CalendarContainer";
+import { CalendarGrid } from "../calendar/CalendarGrid";
+import { CalendarHeader } from "../calendar/CalendarHeader";
+import { CalendarRoot } from "../calendar/CalendarRoot";
 
 export function TodoDetailDrawer() {
   const { currentTodo, changeCurrentTodo, onClose, isOpen } =
     useTodoDetailDrawerStore();
   const { currentDate } = useCurrentDateStore();
-  const [calendarDate, setCalendarDate] = useState<Date>(currentDate);
+  const [selectedDate, setSelectedDate] = useState<Date>(currentDate);
+  const [shownDate, setShownDate] = useState<Date>(currentDate);
   const { deleteTodoById, debouncedUpdateTodoById, updateTodoById } =
     useDailyTodos(getDateFromTodo(currentTodo));
   const { showToast } = useToast();
@@ -65,13 +72,12 @@ export function TodoDetailDrawer() {
     onClose();
   };
 
-  const handleUpdateCalendarDate = (dateStr: string) => {
-    const newDate = new Date(dateStr);
-    setCalendarDate(newDate);
+  const handleSelectDate = (newDate: Date) => {
+    setSelectedDate(newDate);
   };
 
   const handleClickUpdateDateConfirm = () => {
-    const changedTodo = changeDateOfTodo(currentTodo, calendarDate);
+    const changedTodo = changeDateOfTodo(currentTodo, selectedDate);
     if (currentTodo) {
       changeCurrentTodo(changedTodo);
       updateTodoById(changedTodo.id, { date: changedTodo.date });
@@ -80,7 +86,11 @@ export function TodoDetailDrawer() {
   };
 
   const handleClickCalendarIcon = () => {
-    setCalendarDate(getDateFromTodo(currentTodo));
+    setSelectedDate(getDateFromTodo(currentTodo));
+  };
+
+  const handleChangeShownDate = (year: number, month: number) => {
+    setShownDate(new Date(year, month));
   };
 
   return (
@@ -138,11 +148,49 @@ export function TodoDetailDrawer() {
                       <Dialog.Title className="text-center flex-none px-4">
                         날짜 변경
                       </Dialog.Title>
-                      <Dialog.Description className="flex-1 px-4">
-                        <Calendar
-                          today={calendarDate}
-                          onSelect={handleUpdateCalendarDate}
-                        />
+                      <Dialog.Description className="flex-1">
+                        <CalendarRoot
+                          baseDate={currentDate}
+                          onSelectDate={handleSelectDate}
+                          onChangeShownDate={handleChangeShownDate}
+                        >
+                          <CalendarHeader />
+                          <CalendarContainer className="px-4">
+                            {(year, month) => (
+                              <CalendarGrid
+                                className=""
+                                year={year}
+                                month={month}
+                              >
+                                {(days) => (
+                                  <>
+                                    {days.map(([year, month, day]) => (
+                                      <CalendarCellWithLabel
+                                        key={`${year}-${month}-${day}`}
+                                        year={year}
+                                        month={month}
+                                        day={day}
+                                        className={cn(
+                                          "w-full h-10",
+                                          isSameDay(
+                                            new Date(year, month, day),
+                                            selectedDate
+                                          ) && "bg-gray-200"
+                                        )}
+                                        data-year={year}
+                                        data-month={month}
+                                        data-day={day}
+                                        isOutOfMonth={
+                                          month !== shownDate.getMonth()
+                                        }
+                                      />
+                                    ))}
+                                  </>
+                                )}
+                              </CalendarGrid>
+                            )}
+                          </CalendarContainer>
+                        </CalendarRoot>
                       </Dialog.Description>
                       <div className="flex flex-row-reverse flex-none px-4 gap-3">
                         <Dialog.CloseTrigger asChild>

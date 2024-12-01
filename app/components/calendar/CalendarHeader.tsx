@@ -1,17 +1,14 @@
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { Button } from "terra-design-system/react";
+import { useCalendar } from "./CalendarRoot";
+import { ComponentProps } from "react";
+import { cn } from "@/lib/utils";
 
-interface CalendarHeaderProps {
-  year: number;
-  month: number;
-  onMonthChange: (delta: number) => void;
-}
+type CalendarHeaderProps = Omit<ComponentProps<"div">, "children">;
 
-export const CalendarHeader = ({
-  year,
-  month,
-  onMonthChange,
-}: CalendarHeaderProps) => {
+export const CalendarHeader = (props: CalendarHeaderProps) => {
+  const { className, ...rest } = props;
+  const { shownDate, swiperRef } = useCalendar();
   const monthNames = [
     "1월",
     "2월",
@@ -27,21 +24,35 @@ export const CalendarHeader = ({
     "12월",
   ];
 
+  const handleClickPrevMonth = () => {
+    swiperRef?.slidePrev(0);
+  };
+  const handleClickNextMonth = () => {
+    swiperRef?.slideNext(0);
+  };
+
   return (
-    <div className="flex items-center justify-between mb-4 gap-2">
+    <div
+      className={cn(
+        "flex items-center justify-start gap-2 py-4 px-6",
+        className
+      )}
+      {...rest}
+    >
       <span className="text-lg font-semibold">
-        {year}년 {monthNames[month]}
+        {shownDate.getFullYear()}년 {monthNames[shownDate.getMonth()]}
       </span>
-      <div className="flex-1"></div>
       <Button
-        onClick={() => onMonthChange(-1)}
+        onClick={handleClickPrevMonth}
+        variant="ghost"
         size="sm"
         className="text-lg font-bold text-gray-700 hover:text-gray-900"
       >
         <ChevronLeftIcon size={16} />
       </Button>
       <Button
-        onClick={() => onMonthChange(1)}
+        onClick={handleClickNextMonth}
+        variant="ghost"
         size="sm"
         className="text-lg font-bold text-gray-700 hover:text-gray-900"
       >
