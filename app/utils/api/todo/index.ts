@@ -22,11 +22,10 @@ export async function fetchMonthTodos(year: number, month: number) {
         Authorization: `Bearer ${Cookies.get("accessToken")}`,
       },
     })
-    .json<RawTodo[]>()
-    .then((rawTodo) => ({
-      incompletedTodoList: rawTodo.filter((todo) => !todo.isCompleted),
-      completedTodoList: rawTodo.filter((todo) => todo.isCompleted),
-    }));
+    .json<{
+      completedTodoList: RawTodo[];
+      incompletedTodoList: RawTodo[];
+    }>();
 }
 
 /**
@@ -39,21 +38,10 @@ export async function fetchTodosByDate(date: Date) {
         Authorization: `Bearer ${Cookies.get("accessToken")}`,
       },
     })
-    .json<RawTodo[]>()
-    .then((rawTodo) => ({
-      incompletedTodoList: rawTodo.filter((todo) => !todo.isCompleted),
-      completedTodoList: rawTodo.filter((todo) => todo.isCompleted),
-    }));
-  // return await authAPI
-  //   .get(`todos?from=${toDateStr(date)}&to=${toDateStr(date)}`, {
-  //     headers: {
-  //       Authorization: `Bearer ${Cookies.get("accessToken")}`,
-  //     },
-  //   })
-  //   .json<{
-  //     completedTodoList: RawTodo[];
-  //     incompletedTodoList: RawTodo[];
-  //   }>();
+    .json<{
+      completedTodoList: RawTodo[];
+      incompletedTodoList: RawTodo[];
+    }>();
 }
 
 type FetchTodoPayload = Pick<Todo, "id">;
