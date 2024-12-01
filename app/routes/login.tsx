@@ -44,7 +44,7 @@ export default function Login() {
             variant="outline"
             onClick={() => routerPush(navigate, "/experience")}
           >
-            체험하고 로그인하기
+            로그인 없이 체험하기
           </Button>
         </div>
       </div>
