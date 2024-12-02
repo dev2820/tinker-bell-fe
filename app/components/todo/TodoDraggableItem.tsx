@@ -1,4 +1,9 @@
-import { ChangeEventHandler, MouseEventHandler, useState } from "react";
+import {
+  ChangeEvent,
+  ChangeEventHandler,
+  MouseEventHandler,
+  useState,
+} from "react";
 import { Todo } from "@/types/todo";
 import { cx } from "@/utils/cx";
 import { CheckIcon, EqualIcon } from "lucide-react";
@@ -16,6 +21,10 @@ export function TodoDraggableItem(props: TodoItemProps) {
   const controls = useDragControls();
   const [isDragging, setIsDragging] = useState(false);
 
+  const handleChangeComplete = (e: ChangeEvent<HTMLInputElement>) => {
+    onChangeComplete?.(e);
+    vibrateShort();
+  };
   const handleDragStart = () => {
     setIsDragging(true);
     vibrateShort();
@@ -55,7 +64,7 @@ export function TodoDraggableItem(props: TodoItemProps) {
             className={cx("peer hidden")}
             data-todo-id={todo.id}
             defaultChecked={todo.isCompleted}
-            onChange={onChangeComplete}
+            onChange={handleChangeComplete}
           />
           <div className={cx(todoCheckboxStyle({ size: "md" }))}>
             <CheckIcon
