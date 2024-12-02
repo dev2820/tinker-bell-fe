@@ -116,6 +116,16 @@ export default {
             opacity: "0",
           },
         },
+        ripple: {
+          from: {
+            opacity: "1",
+            transform: "scale(0)",
+          },
+          to: {
+            opacity: "0",
+            transform: "scale(10)",
+          },
+        },
       },
       screen: {
         "no-hover": { raw: "(hover: none)" },
@@ -131,6 +141,7 @@ export default {
         "accordion-up": "accordion-up 0.2s ease-out",
         "fade-in": "fade-in 0.3s ease-in",
         "fade-out": "fade-out 0.3s ease-out",
+        ripple: "ripple 1s ease-out",
       },
     },
     variants: {

@@ -24,6 +24,7 @@ export function TodoDraggableItem(props: TodoItemProps) {
     setIsDragging(false);
     vibrateShort();
   };
+
   return (
     <Reorder.Item
       value={todo}
