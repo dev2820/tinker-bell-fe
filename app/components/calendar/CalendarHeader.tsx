@@ -34,7 +34,7 @@ export const CalendarHeader = (props: CalendarHeaderProps) => {
   return (
     <div
       className={cn(
-        "flex items-center justify-start gap-2 py-4 px-6",
+        "flex items-center justify-center gap-2 py-4 px-6",
         className
       )}
       {...rest}
@@ -47,7 +47,7 @@ export const CalendarHeader = (props: CalendarHeaderProps) => {
       >
         <ChevronLeftIcon size={16} />
       </Button>
-      <span className="text-lg font-semibold w-32 text-center text-nowrap">
+      <span className="text-lg font-semibold w-30 text-center text-nowrap">
         {shownDate.getFullYear()}년 {monthNames[shownDate.getMonth()]}
       </span>
       <Button
