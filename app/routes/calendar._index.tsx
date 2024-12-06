@@ -7,6 +7,7 @@ import {
   ListChecksIcon,
   PlusIcon,
   SettingsIcon,
+  User2Icon,
 } from "lucide-react";
 import { toTodo, type RawTodo } from "@/utils/api/todo";
 import { Button } from "terra-design-system/react";
@@ -183,6 +184,17 @@ function TodoCalendarPage() {
             >
               <IconWithLabel labelText="설정">
                 <SettingsIcon size={24} />
+              </IconWithLabel>
+            </Button>
+          </TabItem>
+          <TabItem>
+            <Button
+              className="w-full h-full my-auto"
+              variant="ghost"
+              onClick={() => alert("곧 들어갈 기능이에요")}
+            >
+              <IconWithLabel labelText="프로필">
+                <User2Icon size={24} />
               </IconWithLabel>
             </Button>
           </TabItem>
