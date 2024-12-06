@@ -138,7 +138,7 @@ function TodoPage() {
             variant="ghost"
             onClick={() => routerPush(navigate, "/")}
           >
-            <IconWithLabel labelText="오늘의 할 일">
+            <IconWithLabel labelText="홈">
               <ListChecksIcon size={24} />
             </IconWithLabel>
           </Button>
@@ -149,7 +149,7 @@ function TodoPage() {
             variant="ghost"
             onClick={() => routerPush(navigate, "/calendar")}
           >
-            <IconWithLabel labelText="이달의 할 일">
+            <IconWithLabel labelText="달력">
               <CalendarDaysIcon size={24} />
             </IconWithLabel>
           </Button>
