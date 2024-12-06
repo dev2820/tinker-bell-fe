@@ -4,6 +4,7 @@ import { useAddTodoDrawerStore } from "@/stores/add-todo-drawer";
 import { KeyboardEvent, ChangeEvent, useState } from "react";
 import { useDailyTodos } from "@/hooks/use-daily-todos";
 import { useCurrentDateStore } from "@/stores/current-date";
+import { SendHorizonalIcon } from "lucide-react";
 
 export function AddTodoDrawer() {
   const addTodoDrawer = useAddTodoDrawerStore();
@@ -88,14 +89,18 @@ export function AddTodoDrawer() {
             <Drawer.Body></Drawer.Body>
             <Drawer.Footer>
               <Button
-                variant="outline"
+                variant="ghost"
                 className="mr-3"
                 onClick={handleCloseCreateTodo}
               >
                 닫기
               </Button>
-              <Button theme="primary" onClick={handleClickCreateTodo}>
-                확인
+              <Button
+                variant="ghost"
+                theme="primary"
+                onClick={handleClickCreateTodo}
+              >
+                <SendHorizonalIcon size={24} />
               </Button>
             </Drawer.Footer>
           </Drawer.Content>
