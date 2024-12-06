@@ -39,9 +39,6 @@ export const CalendarHeader = (props: CalendarHeaderProps) => {
       )}
       {...rest}
     >
-      <span className="text-lg font-semibold">
-        {shownDate.getFullYear()}년 {monthNames[shownDate.getMonth()]}
-      </span>
       <Button
         onClick={handleClickPrevMonth}
         variant="ghost"
@@ -50,6 +47,9 @@ export const CalendarHeader = (props: CalendarHeaderProps) => {
       >
         <ChevronLeftIcon size={16} />
       </Button>
+      <span className="text-lg font-semibold w-28 text-center">
+        {shownDate.getFullYear()}년 {monthNames[shownDate.getMonth()]}
+      </span>
       <Button
         onClick={handleClickNextMonth}
         variant="ghost"
