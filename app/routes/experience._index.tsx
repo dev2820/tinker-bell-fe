@@ -8,7 +8,7 @@ import { ToastProvider } from "@/contexts/toast";
 import { MockTodoDailyView } from "@/components/views/MockTodoDailyView";
 import { MockAddTodoDrawer } from "@/components/drawer/MockAddTodoDrawer";
 import { MockTodoDetailDrawer } from "@/components/drawer/MockTodoDetailDrawer";
-import { Menubar } from "@/components/menubar/Menubar";
+import { Tabbar } from "@/components/tabbar/Tabbar";
 
 export const meta: MetaFunction = () => {
   return [
@@ -115,7 +115,7 @@ function ExperienceView() {
   return (
     <main className="flex flex-col w-full h-screen items-stretch">
       <MockTodoDailyView className="h-[calc(100%_-_72px)]" />
-      <Menubar className="h-menubar">
+      <Tabbar className="h-menubar">
         <Button
           className="w-full h-full my-auto"
           variant="ghost"
@@ -123,7 +123,7 @@ function ExperienceView() {
         >
           로그인하기
         </Button>
-      </Menubar>
+      </Tabbar>
       <MockAddTodoDrawer />
       <MockTodoDetailDrawer />
     </main>

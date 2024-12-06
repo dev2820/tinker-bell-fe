@@ -13,13 +13,13 @@ import {
 } from "@tanstack/react-query";
 import { ToastProvider } from "@/contexts/toast";
 import { routerPush } from "@/utils/helper/app";
-import { IconWithLabel } from "@/components/menubar/IconWithLabel";
+import { IconWithLabel } from "@/components/tabbar/IconWithLabel";
 import { TodoDailyView } from "@/components/views/TodoDailyView";
 import { AddTodoDrawer } from "@/components/drawer/AddTodoDrawer";
 import { TodoDetailDrawer } from "@/components/drawer/TodoDetailDrawer";
 import { toCookieStorage, toRawCookie } from "@/utils/cookie";
-import { Menubar } from "@/components/menubar/Menubar";
-import { MenubarItem } from "@/components/menubar/MenubarItem";
+import { Tabbar } from "@/components/tabbar/Tabbar";
+import { TabItem } from "@/components/tabbar/TabItem";
 import { cn } from "@/lib/utils";
 
 export const meta: MetaFunction = () => {
@@ -131,8 +131,8 @@ function TodoPage() {
   return (
     <main className="flex flex-col w-full h-screen items-stretch">
       <TodoDailyView className="h-[calc(100%_-_72px)]" />
-      <Menubar>
-        <MenubarItem>
+      <Tabbar>
+        <TabItem>
           <Button
             className={cn("w-full h-full my-auto", "bg-gray-100")}
             variant="ghost"
@@ -142,8 +142,8 @@ function TodoPage() {
               <ListChecksIcon size={24} />
             </IconWithLabel>
           </Button>
-        </MenubarItem>
-        <MenubarItem>
+        </TabItem>
+        <TabItem>
           <Button
             className={cn("w-full h-full my-auto")}
             variant="ghost"
@@ -153,8 +153,8 @@ function TodoPage() {
               <CalendarDaysIcon size={24} />
             </IconWithLabel>
           </Button>
-        </MenubarItem>
-        <MenubarItem>
+        </TabItem>
+        <TabItem>
           <Button
             className="w-full h-full my-auto"
             variant="ghost"
@@ -164,8 +164,8 @@ function TodoPage() {
               <SettingsIcon size={24} />
             </IconWithLabel>
           </Button>
-        </MenubarItem>
-      </Menubar>
+        </TabItem>
+      </Tabbar>
       <AddTodoDrawer />
       <TodoDetailDrawer />
     </main>

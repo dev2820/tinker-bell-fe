@@ -1,8 +1,8 @@
 import { cn } from "@/lib/utils";
 import { ComponentProps } from "react";
 
-type MenubarProps = ComponentProps<"menu">;
-export function Menubar(props: MenubarProps) {
+type TabbarProps = ComponentProps<"menu">;
+export function Tabbar(props: TabbarProps) {
   const { className, children, ...rest } = props;
   return (
     <menu

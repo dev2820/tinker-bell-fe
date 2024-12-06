@@ -1,8 +1,8 @@
 import { cn } from "@/lib/utils";
 import { ComponentProps } from "react";
 
-type MenubarItemProps = ComponentProps<"li">;
-export function MenubarItem(props: MenubarItemProps) {
+type TabItemProps = ComponentProps<"li">;
+export function TabItem(props: TabItemProps) {
   const { className, children, ...rest } = props;
 
   return (
