@@ -47,7 +47,7 @@ export const CalendarHeader = (props: CalendarHeaderProps) => {
       >
         <ChevronLeftIcon size={16} />
       </Button>
-      <span className="text-lg font-semibold w-28 text-center">
+      <span className="text-lg font-semibold w-32 text-center text-nowrap">
         {shownDate.getFullYear()}년 {monthNames[shownDate.getMonth()]}
       </span>
       <Button
