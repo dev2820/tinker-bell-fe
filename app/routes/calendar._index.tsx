@@ -2,7 +2,12 @@ import { authAPI, isHTTPError } from "@/utils/api";
 import type { MetaFunction } from "@remix-run/node";
 import { LoaderFunction, redirect } from "@remix-run/node";
 import { json, useLoaderData, useNavigate } from "@remix-run/react";
-import { CalendarDaysIcon, ListChecksIcon, SettingsIcon } from "lucide-react";
+import {
+  CalendarDaysIcon,
+  ListChecksIcon,
+  PlusIcon,
+  SettingsIcon,
+} from "lucide-react";
 import { toTodo, type RawTodo } from "@/utils/api/todo";
 import { Button } from "terra-design-system/react";
 
@@ -21,6 +26,8 @@ import { Tabbar } from "@/components/tabbar/Tabbar";
 import { TodoCalendarView } from "@/components/views/TodoCalendarView";
 import { TabItem } from "@/components/tabbar/TabItem";
 import { cn } from "@/lib/utils";
+import { RoundButton } from "@/components/ui/RoundButton";
+import { useAddTodoDrawerStore } from "@/stores/add-todo-drawer";
 
 export const meta: MetaFunction = () => {
   return [
@@ -127,44 +134,59 @@ export default function Index() {
 
 function TodoCalendarPage() {
   const navigate = useNavigate();
-
+  const addTodoDrawer = useAddTodoDrawerStore();
+  const handleClickPlusTodo = () => {
+    addTodoDrawer.onOpen();
+  };
   return (
-    <main className="flex flex-col w-full h-screen items-stretch">
+    <main className="flex flex-col w-full h-screen items-stretch overflow-hidden">
       <TodoCalendarView className="h-[calc(100%_-_72px)]" />
       <Tabbar>
-        <TabItem>
-          <Button
-            className="w-full h-full my-auto"
-            variant="ghost"
-            onClick={() => routerPush(navigate, "/")}
+        <div className="flex-1 flex flex-row gap-2">
+          <TabItem>
+            <Button
+              className={cn("w-full h-full my-auto")}
+              variant="ghost"
+              onClick={() => routerPush(navigate, "/")}
+            >
+              <IconWithLabel labelText="홈">
+                <ListChecksIcon size={24} />
+              </IconWithLabel>
+            </Button>
+          </TabItem>
+          <TabItem>
+            <Button
+              className={cn("w-full h-full my-auto bg-gray-100")}
+              variant="ghost"
+              onClick={() => routerPush(navigate, "/calendar")}
+            >
+              <IconWithLabel labelText="달력">
+                <CalendarDaysIcon size={24} />
+              </IconWithLabel>
+            </Button>
+          </TabItem>
+        </div>
+        <div className="flex-none">
+          <RoundButton
+            className="-translate-y-10"
+            onClick={handleClickPlusTodo}
           >
-            <IconWithLabel labelText="오늘의 할 일">
-              <ListChecksIcon size={24} />
-            </IconWithLabel>
-          </Button>
-        </TabItem>
-        <TabItem>
-          <Button
-            className={cn("w-full h-full my-auto", "bg-gray-100")}
-            variant="ghost"
-            onClick={() => routerPush(navigate, "/calendar")}
-          >
-            <IconWithLabel labelText="이달의 할 일">
-              <CalendarDaysIcon size={24} />
-            </IconWithLabel>
-          </Button>
-        </TabItem>
-        <TabItem>
-          <Button
-            className="w-full h-full my-auto"
-            variant="ghost"
-            onClick={() => routerPush(navigate, "/setting")}
-          >
-            <IconWithLabel labelText="설정">
-              <SettingsIcon size={24} />
-            </IconWithLabel>
-          </Button>
-        </TabItem>
+            <PlusIcon size={32} />
+          </RoundButton>
+        </div>
+        <div className="flex-1 flex flex-row gap-2">
+          <TabItem>
+            <Button
+              className="w-full h-full my-auto"
+              variant="ghost"
+              onClick={() => routerPush(navigate, "/setting")}
+            >
+              <IconWithLabel labelText="설정">
+                <SettingsIcon size={24} />
+              </IconWithLabel>
+            </Button>
+          </TabItem>
+        </div>
       </Tabbar>
       <AddTodoDrawer />
       <TodoDetailDrawer />

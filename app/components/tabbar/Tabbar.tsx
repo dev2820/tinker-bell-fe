@@ -7,7 +7,7 @@ export function Tabbar(props: TabbarProps) {
   return (
     <menu
       className={cn(
-        "h-menubar z-10 border-t border-gray-200 rounded-t-xl flex flex-row gap-2 place-items-stretch justify-stretch p-2",
+        "h-menubar z-10 border-t border-gray-200 rounded-t-xl flex flex-row place-items-stretch justify-stretch p-2",
         className
       )}
       {...rest}

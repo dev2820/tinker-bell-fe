@@ -1,13 +1,12 @@
 import { cn } from "@/lib/utils";
 import { formatKoreanDate, isSameDay } from "@/utils/date-time";
 import { MouseEvent, ChangeEvent, ComponentProps, useState } from "react";
-import { Button, Toast } from "terra-design-system/react";
+import { Toast } from "terra-design-system/react";
 import { useToast } from "@/contexts/toast";
 import { CalendarGrid } from "../calendar/CalendarGrid";
 import { AnimatePresence, Reorder } from "framer-motion";
 import { TodoDraggableItem } from "../todo/TodoDraggableItem";
 import { useDailyTodos } from "@/hooks/use-daily-todos";
-import { useAddTodoDrawerStore } from "@/stores/add-todo-drawer";
 import { useTodoDetailDrawerStore } from "@/stores/todo-detail-drawer";
 import { useMonthlyTodos } from "@/hooks/use-monthly-todos";
 import { CalendarCellWithLabel } from "../calendar/CalendarCellWithLabel";
@@ -88,7 +87,7 @@ export function TodoCalendarView(props: TodoCalendarViewProps) {
           </CalendarContainer>
         </CalendarRoot>
         <section className="h-[calc(100%_-_324px)] pt-4">
-          <h3 className="h-[24px] px-4 text-lg">
+          <h3 className="h-[40px] px-4 pb-4 text-lg">
             {formatKoreanDate(selectedDate, "yyyy년 MM월 dd일")}{" "}
             {isSameDay(selectedDate, new Date()) && `(오늘)`}
           </h3>
@@ -132,7 +131,6 @@ function TodoView(props: TodoViewProps) {
     reorderCompletedTodos,
     reorderIncompletedTodos,
   } = useDailyTodos(currentDate);
-  const addTodoDrawer = useAddTodoDrawerStore();
   const todoDetailDrawer = useTodoDetailDrawerStore();
 
   const handleChangeComplete = (e: ChangeEvent<HTMLElement>) => {
@@ -154,12 +152,9 @@ function TodoView(props: TodoViewProps) {
     todoDetailDrawer.onOpen();
   };
 
-  const handleClickAddTodo = () => {
-    addTodoDrawer.onOpen();
-  };
   return (
     <div className={cn("overflow-y-auto", className)}>
-      <div className="overflow-y-scroll pb-4 px-4">
+      <div className="overflow-y-scroll pb-8 px-4">
         <Reorder.Group
           axis="y"
           as="ul"
@@ -199,14 +194,6 @@ function TodoView(props: TodoViewProps) {
             ))}
           </AnimatePresence>
         </Reorder.Group>
-        <Button
-          className="w-full mb-2"
-          theme="primary"
-          size="lg"
-          onClick={handleClickAddTodo}
-        >
-          + 할 일 추가하기
-        </Button>
       </div>
     </div>
   );

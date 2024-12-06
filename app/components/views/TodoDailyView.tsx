@@ -17,7 +17,7 @@ import {
 import { Virtual } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Swiper as SwiperType } from "swiper/types";
-import { Toast, Button } from "terra-design-system/react";
+import { Toast } from "terra-design-system/react";
 import { TodoDraggableItem } from "../todo/TodoDraggableItem";
 import { vibrateShort } from "@/utils/device/vibrate";
 import { useToast } from "@/contexts/toast";
@@ -25,7 +25,6 @@ import { Todo } from "@/types/todo";
 import "swiper/css";
 import "swiper/css/virtual";
 import { useTodoDetailDrawerStore } from "@/stores/todo-detail-drawer";
-import { useAddTodoDrawerStore } from "@/stores/add-todo-drawer";
 import { useCurrentDateStore } from "@/stores/current-date";
 import { TodoLoadMore } from "../todo/TodoLoadMore";
 import { useDailyTodos } from "@/hooks/use-daily-todos";
@@ -50,7 +49,6 @@ export function TodoDailyView(props: TodoDailyViewProps) {
   const { completedTodos, incompletedTodos, toggleTodoById } =
     useDailyTodos(relativeDate);
   const detailDrawer = useTodoDetailDrawerStore();
-  const addTodoDrawer = useAddTodoDrawerStore();
 
   const { toaster, showToast } = useToast();
   /**
@@ -120,7 +118,7 @@ export function TodoDailyView(props: TodoDailyViewProps) {
   };
 
   return (
-    <div className={cn(className)} {...rest}>
+    <div className={cn("pb-4", className)} {...rest}>
       <h2 className="h-[72px] text-center pt-4">
         <small className="block">
           {formatKoreanDate(relativeDate, "yyyy년 MM월 dd일")}
@@ -162,7 +160,6 @@ export function TodoDailyView(props: TodoDailyViewProps) {
                   currentDate={calcRelativeDate(baseDate, slideContent)}
                   onClickTodoCheck={handleChangeTodoComplete}
                   onClickTodo={handleClickTodoItem}
-                  onClickAddTodo={addTodoDrawer.onOpen}
                 ></TodoView>
               )}
             </SwiperSlide>
@@ -194,10 +191,9 @@ type TodoViewProps = {
   currentDate: Date;
   onClickTodoCheck: (id: Todo["id"]) => void;
   onClickTodo: (id: Todo["id"]) => void;
-  onClickAddTodo: () => void;
 };
 function TodoView(props: TodoViewProps) {
-  const { currentDate, onClickTodoCheck, onClickTodo, onClickAddTodo } = props;
+  const { currentDate, onClickTodoCheck, onClickTodo } = props;
   const {
     completedTodos,
     incompletedTodos,
@@ -260,16 +256,6 @@ function TodoView(props: TodoViewProps) {
             ))}
           </AnimatePresence>
         </Reorder.Group>
-        <div className="px-4">
-          <Button
-            className="w-full mb-2"
-            theme="primary"
-            size="lg"
-            onClick={onClickAddTodo}
-          >
-            + 할 일 추가하기
-          </Button>
-        </div>
       </div>
     </div>
   );
