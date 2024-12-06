@@ -7,6 +7,7 @@ import {
   ListChecksIcon,
   PlusIcon,
   SettingsIcon,
+  TriangleAlertIcon,
   User2Icon,
 } from "lucide-react";
 import { toTodo, type RawTodo } from "@/utils/api/todo";
@@ -29,6 +30,8 @@ import { TabItem } from "@/components/tabbar/TabItem";
 import { cn } from "@/lib/utils";
 import { RoundButton } from "@/components/ui/RoundButton";
 import { useAddTodoDrawerStore } from "@/stores/add-todo-drawer";
+import { useAlertStore } from "@/stores/alert-dialog";
+import { AlertDialog } from "@/components/Dialog/AlertDialog";
 
 export const meta: MetaFunction = () => {
   return [
@@ -136,8 +139,22 @@ export default function Index() {
 function TodoCalendarPage() {
   const navigate = useNavigate();
   const addTodoDrawer = useAddTodoDrawerStore();
+  const alertDialog = useAlertStore();
+
   const handleClickPlusTodo = () => {
     addTodoDrawer.onOpen();
+  };
+
+  const handleClickProfile = () => {
+    alertDialog.showAlert({
+      title: (
+        <span className="flex flex-row gap-2 place-items-center text-error">
+          <TriangleAlertIcon size={24} />
+          준비중인 기능입니다
+        </span>
+      ),
+      description: "아직 준비중인 기능이에요. 조금만 기다려주세요",
+    });
   };
   return (
     <main className="flex flex-col w-full h-screen items-stretch overflow-hidden">
@@ -191,7 +208,7 @@ function TodoCalendarPage() {
             <Button
               className="w-full h-full my-auto"
               variant="ghost"
-              onClick={() => alert("곧 들어갈 기능이에요")}
+              onClick={handleClickProfile}
             >
               <IconWithLabel labelText="프로필">
                 <User2Icon size={24} />
@@ -202,6 +219,7 @@ function TodoCalendarPage() {
       </Tabbar>
       <AddTodoDrawer />
       <TodoDetailDrawer />
+      <AlertDialog />
     </main>
   );
 }
