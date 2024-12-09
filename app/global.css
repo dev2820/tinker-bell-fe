@@ -133,6 +133,10 @@ body {
   user-select: none;
 }
 
+body {
+  overscroll-behavior: none;
+}
+
 @layer base {
   * {
     @apply border-border;
