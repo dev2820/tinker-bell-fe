@@ -5,25 +5,16 @@ import {
   formatKoreanDate,
 } from "@/utils/date-time";
 import { range } from "@/utils/range";
-import { AnimatePresence, Reorder } from "framer-motion";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
-import {
-  MouseEvent,
-  ChangeEvent,
-  ComponentProps,
-  useMemo,
-  useState,
-} from "react";
+import { ComponentProps, useMemo, useState } from "react";
 import { Virtual } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Swiper as SwiperType } from "swiper/types";
-import { TodoDraggableItem } from "../todo/TodoDraggableItem";
 import "swiper/css";
 import "swiper/css/virtual";
-import { useTodoDetailDrawerStore } from "@/stores/todo-detail-drawer";
 import { useCurrentDateStore } from "@/stores/current-date";
 import { TodoLoadMore } from "../todo/TodoLoadMore";
-import { useDailyTodos } from "@/hooks/use-daily-todos";
+import { DailyTodoList } from "../todo/DailyTodoList";
 
 const slides = range(-500, 500, 1);
 const initialSlideIndex = slides.length / 2;
@@ -115,93 +106,13 @@ export function TodoDailyView(props: TodoDailyViewProps) {
                 <TodoLoadMore onClickLoadMore={handleClickLoadMore} />
               )}
               {[slides[0], slides.at(-1)].every((s) => s !== slideContent) && (
-                <TodoView
+                <DailyTodoList
                   currentDate={calcRelativeDate(baseDate, slideContent)}
-                ></TodoView>
+                ></DailyTodoList>
               )}
             </SwiperSlide>
           ))}
         </Swiper>
-      </div>
-    </div>
-  );
-}
-
-type TodoViewProps = {
-  currentDate: Date;
-};
-function TodoView(props: TodoViewProps) {
-  const { currentDate } = props;
-  const {
-    completedTodos,
-    incompletedTodos,
-    toggleTodoById,
-    reorderIncompletedTodos,
-    reorderCompletedTodos,
-  } = useDailyTodos(currentDate);
-  const todoDetailDrawer = useTodoDetailDrawerStore();
-
-  const handleChangeComplete = (e: ChangeEvent<HTMLElement>) => {
-    const $target = e.currentTarget;
-    const todoId = Number($target.dataset["todoId"]);
-
-    toggleTodoById(todoId);
-  };
-  const handleClickTodoItem = (e: MouseEvent<HTMLElement>) => {
-    const $target = e.currentTarget;
-    const todoId = Number($target.dataset["todoId"]);
-
-    const todo = [...incompletedTodos, ...completedTodos]?.find(
-      (todo) => todo.id === todoId
-    );
-    if (todo) {
-      todoDetailDrawer.changeCurrentTodo(todo);
-    }
-    todoDetailDrawer.onOpen();
-  };
-
-  return (
-    <div className="h-full overflow-y-auto">
-      <div className="overflow-y-scroll pb-4">
-        <Reorder.Group
-          axis="y"
-          as="ul"
-          values={incompletedTodos}
-          onReorder={reorderIncompletedTodos}
-          layoutScroll
-          className="px-4 overflow-y-hidden overflow-x-hidden"
-        >
-          <AnimatePresence>
-            {incompletedTodos.map((todo) => (
-              <TodoDraggableItem
-                key={todo.id}
-                todo={todo}
-                onChangeComplete={handleChangeComplete}
-                onClickTodo={handleClickTodoItem}
-              />
-            ))}
-          </AnimatePresence>
-        </Reorder.Group>
-        <hr className="w-[calc(100%_-_32px)] mx-auto my-4" />
-        <Reorder.Group
-          axis="y"
-          as="ul"
-          values={completedTodos}
-          onReorder={reorderCompletedTodos}
-          layoutScroll
-          className="px-4 overflow-y-hidden overflow-x-hidden"
-        >
-          <AnimatePresence>
-            {completedTodos.map((todo) => (
-              <TodoDraggableItem
-                key={todo.id}
-                todo={todo}
-                onChangeComplete={handleChangeComplete}
-                onClickTodo={handleClickTodoItem}
-              />
-            ))}
-          </AnimatePresence>
-        </Reorder.Group>
       </div>
     </div>
   );
