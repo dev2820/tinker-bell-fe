@@ -196,12 +196,12 @@ function TodoPage() {
         <div className="flex-1 flex flex-row gap-2">
           <TabItem>
             <Button
-              className="w-full h-full my-auto"
+              className="w-full h-full my-auto opacity-30"
               variant="ghost"
-              onClick={() => routerPush(navigate, "/setting")}
+              onClick={handleClickProfile}
             >
-              <IconWithLabel labelText="설정">
-                <SettingsIcon size={24} />
+              <IconWithLabel labelText="프로필">
+                <User2Icon size={24} />
               </IconWithLabel>
             </Button>
           </TabItem>
@@ -209,10 +209,10 @@ function TodoPage() {
             <Button
               className="w-full h-full my-auto"
               variant="ghost"
-              onClick={handleClickProfile}
+              onClick={() => routerPush(navigate, "/setting")}
             >
-              <IconWithLabel labelText="프로필">
-                <User2Icon size={24} />
+              <IconWithLabel labelText="설정">
+                <SettingsIcon size={24} />
               </IconWithLabel>
             </Button>
           </TabItem>
