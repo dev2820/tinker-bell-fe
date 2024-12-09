@@ -107,6 +107,7 @@ export function TodoDailyView(props: TodoDailyViewProps) {
               )}
               {[slides[0], slides.at(-1)].every((s) => s !== slideContent) && (
                 <DailyTodoList
+                  className="h-full"
                   currentDate={calcRelativeDate(baseDate, slideContent)}
                 ></DailyTodoList>
               )}

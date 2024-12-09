@@ -54,9 +54,21 @@ export function DailyTodoList(props: DailyTodoListProps) {
     todoDetailDrawer.onOpen();
   };
 
+  const nothingTodo =
+    incompletedTodos.length === 0 && completedTodos.length === 0;
+
+  if (nothingTodo) {
+    return (
+      <div className={cn("flex flex-col justify-center", className)}>
+        <p className="text-center text-lg text-gray-300">
+          +버튼을 눌러 할 일을 추가해주세요
+        </p>
+      </div>
+    );
+  }
   return (
     <div className={cn("overflow-y-auto", className)}>
-      <div className="overflow-y-scroll pb-8 px-4">
+      <div className="overflow-y-scroll pb-8">
         <Reorder.Group
           axis="y"
           as="ul"
@@ -70,13 +82,14 @@ export function DailyTodoList(props: DailyTodoListProps) {
               <TodoDraggableItem
                 key={todo.id}
                 todo={todo}
+                className="w-[calc(100%_-_32px)] mx-auto"
                 onChangeComplete={handleChangeComplete}
                 onClickTodo={handleClickTodoItem}
               />
             ))}
           </AnimatePresence>
         </Reorder.Group>
-        <hr className="w-[calc(100%_-_32px)] mx-auto my-4" />
+        {!nothingTodo && <hr className="w-[calc(100%_-_32px)] mx-auto my-4" />}
         <Reorder.Group
           axis="y"
           as="ul"
@@ -90,6 +103,7 @@ export function DailyTodoList(props: DailyTodoListProps) {
               <TodoDraggableItem
                 key={todo.id}
                 todo={todo}
+                className="w-[calc(100%_-_32px)] mx-auto"
                 onChangeComplete={handleChangeComplete}
                 onClickTodo={handleClickTodoItem}
               />

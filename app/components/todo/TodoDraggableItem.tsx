@@ -13,11 +13,12 @@ import { vibrateShort } from "@/utils/device/vibrate";
 
 export type TodoItemProps = {
   todo: Todo;
+  className?: string;
   onChangeComplete?: ChangeEventHandler<HTMLDivElement>;
   onClickTodo?: MouseEventHandler<HTMLButtonElement>;
 };
 export function TodoDraggableItem(props: TodoItemProps) {
-  const { todo, onChangeComplete, onClickTodo } = props;
+  const { todo, className, onChangeComplete, onClickTodo } = props;
   const controls = useDragControls();
   const [isDragging, setIsDragging] = useState(false);
 
@@ -41,7 +42,7 @@ export function TodoDraggableItem(props: TodoItemProps) {
       dragControls={controls}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
-      whileDrag={{ scale: 1.05 }}
+      whileDrag={{ scale: 1.02 }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -51,7 +52,8 @@ export function TodoDraggableItem(props: TodoItemProps) {
         className={cx(
           "todo",
           "gap-2 flex flex-row min-h-12 border border-gray-200 bg-white rounded-lg px-4 my-2 items-start pb-[11px]",
-          isDragging ? "shadow-md" : ""
+          isDragging ? "shadow-md" : "",
+          className
         )}
       >
         <label
