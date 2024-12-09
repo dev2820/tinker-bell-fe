@@ -279,9 +279,15 @@ export const useDailyTodos = (currentDate: Date) => {
     debouncedReorderTodos(todos);
   };
 
+  const findTodoById = (id: Todo["id"]) => {
+    const todos = data ? data.flat(1) : [];
+    return todos.find((todo) => todo.id === id);
+  };
+
   return {
     incompletedTodos: data?.[0] ?? [],
     completedTodos: data?.[1] ?? [],
+    findTodoById,
     updateTodoById,
     debouncedUpdateTodoById,
     toggleTodoById,

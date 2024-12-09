@@ -14,6 +14,9 @@ import { useCurrentDateStore } from "@/stores/current-date";
 import { CalendarRoot } from "../calendar/CalendarRoot";
 import { CalendarContainer } from "../calendar/CalendarContainer";
 import { CalendarHeader } from "../calendar/CalendarHeader";
+import { vibrateShort } from "@/utils/device/vibrate";
+import "swiper/css";
+import "swiper/css/virtual";
 
 type TodoCalendarViewProps = ComponentProps<"div">;
 export function TodoCalendarView(props: TodoCalendarViewProps) {
@@ -127,17 +130,29 @@ function TodoView(props: TodoViewProps) {
   const {
     completedTodos,
     incompletedTodos,
+    findTodoById,
     toggleTodoById,
     reorderCompletedTodos,
     reorderIncompletedTodos,
   } = useDailyTodos(currentDate);
+  const { toaster, showToast } = useToast();
+
   const todoDetailDrawer = useTodoDetailDrawerStore();
 
   const handleChangeComplete = (e: ChangeEvent<HTMLElement>) => {
     const $target = e.currentTarget;
     const todoId = Number($target.dataset["todoId"]);
-
+    const todo = findTodoById(todoId);
+    if (!todo) {
+      return;
+    }
+    if (todo.isCompleted) {
+      showToast({
+        description: `작업 완료! 🥳`,
+      });
+    }
     toggleTodoById(todoId);
+    vibrateShort();
   };
   const handleClickTodoItem = (e: MouseEvent<HTMLElement>) => {
     const $target = e.currentTarget;
@@ -194,6 +209,23 @@ function TodoView(props: TodoViewProps) {
             ))}
           </AnimatePresence>
         </Reorder.Group>
+        <Toast.Toaster toaster={toaster}>
+          {(toast) => (
+            <Toast.Root
+              key={toast.id}
+              className="bg-neutral-800 py-3 w-full min-w-[calc(100vw_-_32px)]"
+            >
+              <Toast.Description className="text-white">
+                {toast.description}
+              </Toast.Description>
+              <Toast.CloseTrigger asChild className="top-1.5">
+                <button className="text-md text-primary rounded-md px-2 py-1">
+                  확인
+                </button>
+              </Toast.CloseTrigger>
+            </Toast.Root>
+          )}
+        </Toast.Toaster>
       </div>
     </div>
   );

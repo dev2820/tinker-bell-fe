@@ -17,11 +17,7 @@ import {
 import { Virtual } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Swiper as SwiperType } from "swiper/types";
-import { Toast } from "terra-design-system/react";
 import { TodoDraggableItem } from "../todo/TodoDraggableItem";
-import { vibrateShort } from "@/utils/device/vibrate";
-import { useToast } from "@/contexts/toast";
-import { Todo } from "@/types/todo";
 import "swiper/css";
 import "swiper/css/virtual";
 import { useTodoDetailDrawerStore } from "@/stores/todo-detail-drawer";
@@ -46,23 +42,6 @@ export function TodoDailyView(props: TodoDailyViewProps) {
   );
   const [swiperRef, setSwiperRef] = useState<SwiperType | null>(null);
 
-  const { completedTodos, incompletedTodos, toggleTodoById } =
-    useDailyTodos(relativeDate);
-  const detailDrawer = useTodoDetailDrawerStore();
-
-  const { toaster, showToast } = useToast();
-  /**
-   * FIXME: view쪽으로 로직 옮길 것
-   */
-  const handleClickTodoItem = (todoId: number) => {
-    const todo = [...completedTodos, ...incompletedTodos].find(
-      (todo) => todo.id === todoId
-    );
-    if (todo) {
-      detailDrawer.changeCurrentTodo(todo);
-    }
-    detailDrawer.onOpen();
-  };
   const handleSlideChange = (swiper: SwiperType) => {
     setCurrentSlideIndex(swiper.activeIndex);
     changeCurrentDate(calcRelativeDate(baseDate, slides[swiper.activeIndex]));
@@ -95,26 +74,6 @@ export function TodoDailyView(props: TodoDailyViewProps) {
     changeCurrentDate(
       calcRelativeDate(baseDate, slides[currentSlideIndex + 1])
     );
-  };
-
-  const handleChangeTodoComplete = (todoId: number) => {
-    const targetTodo = [...completedTodos, ...incompletedTodos].find(
-      (todo) => todo.id === todoId
-    );
-    if (!targetTodo) {
-      return null;
-    }
-
-    toggleTodoById(targetTodo.id);
-    if (!targetTodo.isCompleted) {
-      /**
-       * TODO: undo action 만들기
-       */
-      showToast({
-        description: `작업 완료! 🥳`,
-      });
-    }
-    vibrateShort();
   };
 
   return (
@@ -158,30 +117,11 @@ export function TodoDailyView(props: TodoDailyViewProps) {
               {[slides[0], slides.at(-1)].every((s) => s !== slideContent) && (
                 <TodoView
                   currentDate={calcRelativeDate(baseDate, slideContent)}
-                  onClickTodoCheck={handleChangeTodoComplete}
-                  onClickTodo={handleClickTodoItem}
                 ></TodoView>
               )}
             </SwiperSlide>
           ))}
         </Swiper>
-        <Toast.Toaster toaster={toaster}>
-          {(toast) => (
-            <Toast.Root
-              key={toast.id}
-              className="bg-neutral-800 py-3 w-full min-w-[calc(100vw_-_32px)]"
-            >
-              <Toast.Description className="text-white">
-                {toast.description}
-              </Toast.Description>
-              <Toast.CloseTrigger asChild className="top-1.5">
-                <button className="text-md text-primary rounded-md px-2 py-1">
-                  확인
-                </button>
-              </Toast.CloseTrigger>
-            </Toast.Root>
-          )}
-        </Toast.Toaster>
       </div>
     </div>
   );
@@ -189,29 +129,35 @@ export function TodoDailyView(props: TodoDailyViewProps) {
 
 type TodoViewProps = {
   currentDate: Date;
-  onClickTodoCheck: (id: Todo["id"]) => void;
-  onClickTodo: (id: Todo["id"]) => void;
 };
 function TodoView(props: TodoViewProps) {
-  const { currentDate, onClickTodoCheck, onClickTodo } = props;
+  const { currentDate } = props;
   const {
     completedTodos,
     incompletedTodos,
+    toggleTodoById,
     reorderIncompletedTodos,
     reorderCompletedTodos,
   } = useDailyTodos(currentDate);
+  const todoDetailDrawer = useTodoDetailDrawerStore();
 
   const handleChangeComplete = (e: ChangeEvent<HTMLElement>) => {
     const $target = e.currentTarget;
     const todoId = Number($target.dataset["todoId"]);
 
-    onClickTodoCheck(todoId);
+    toggleTodoById(todoId);
   };
   const handleClickTodoItem = (e: MouseEvent<HTMLElement>) => {
     const $target = e.currentTarget;
     const todoId = Number($target.dataset["todoId"]);
 
-    onClickTodo(todoId);
+    const todo = [...incompletedTodos, ...completedTodos]?.find(
+      (todo) => todo.id === todoId
+    );
+    if (todo) {
+      todoDetailDrawer.changeCurrentTodo(todo);
+    }
+    todoDetailDrawer.onOpen();
   };
 
   return (
