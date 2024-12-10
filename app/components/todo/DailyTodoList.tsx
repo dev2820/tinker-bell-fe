@@ -3,7 +3,7 @@ import { useDailyTodos } from "@/hooks/use-daily-todos";
 import { cn } from "@/lib/utils";
 import { useTodoDetailDrawerStore } from "@/stores/todo-detail-drawer";
 import { vibrateShort } from "@/utils/device/vibrate";
-import { Toast } from "terra-design-system/react";
+import { Skeleton, Toast } from "terra-design-system/react";
 import { Reorder, AnimatePresence } from "framer-motion";
 import { ChangeEvent, MouseEvent } from "react";
 import { TodoDraggableItem } from "./TodoDraggableItem";
@@ -15,6 +15,7 @@ type DailyTodoListProps = {
 export function DailyTodoList(props: DailyTodoListProps) {
   const { currentDate, className } = props;
   const {
+    isLoading,
     completedTodos,
     incompletedTodos,
     findTodoById,
@@ -57,6 +58,18 @@ export function DailyTodoList(props: DailyTodoListProps) {
   const nothingTodo =
     incompletedTodos.length === 0 && completedTodos.length === 0;
 
+  if (isLoading) {
+    return (
+      <div className={cn("flex flex-col justify-start gap-2 pt-2", className)}>
+        <Skeleton className="rounded-md w-[calc(100%_-_32px)] mx-auto">
+          <div className="h-10"></div>
+        </Skeleton>
+        <Skeleton className="rounded-md w-[calc(100%_-_32px)] mx-auto">
+          <div className="h-10"></div>
+        </Skeleton>
+      </div>
+    );
+  }
   if (nothingTodo) {
     return (
       <div className={cn("flex flex-col justify-center", className)}>

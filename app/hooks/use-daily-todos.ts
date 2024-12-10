@@ -16,7 +16,7 @@ export const useDailyTodos = (currentDate: Date) => {
   }, [currentDate]);
 
   const queryClient = useQueryClient();
-  const { data } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: todoQueryKey,
     queryFn: async () => {
       try {
@@ -285,6 +285,7 @@ export const useDailyTodos = (currentDate: Date) => {
   };
 
   return {
+    isLoading,
     incompletedTodos: data?.[0] ?? [],
     completedTodos: data?.[1] ?? [],
     findTodoById,
