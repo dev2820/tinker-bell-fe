@@ -1,7 +1,7 @@
 import { authAPI, isHTTPError } from "@/utils/api";
 import type { MetaFunction } from "@remix-run/node";
 import { LoaderFunction, redirect } from "@remix-run/node";
-import { json, useLoaderData, useNavigate } from "@remix-run/react";
+import { json, useNavigate } from "@remix-run/react";
 import {
   SettingsIcon,
   CalendarDaysIcon,
@@ -10,14 +10,8 @@ import {
   User2Icon,
   TriangleAlertIcon,
 } from "lucide-react";
-import { toTodo, type RawTodo } from "@/utils/api/todo";
 import { Button } from "terra-design-system/react";
 
-import {
-  dehydrate,
-  HydrationBoundary,
-  QueryClient,
-} from "@tanstack/react-query";
 import { ToastProvider } from "@/contexts/toast";
 import { routerPush } from "@/utils/helper/app";
 import { IconWithLabel } from "@/components/tabbar/IconWithLabel";
@@ -102,37 +96,14 @@ export const loader: LoaderFunction = async ({ request }) => {
     return redirect("/login");
   }
 
-  const queryClient = new QueryClient();
-
-  await queryClient.prefetchQuery({
-    queryKey: ["todos"],
-    queryFn: async () => {
-      return await authAPI
-        .get<RawTodo[]>("todos", {
-          headers: {
-            authorization: `Bearer ${accessToken}`,
-          },
-        })
-        .json()
-        .then((rawTodos) => {
-          return rawTodos.map((rawTodo) => toTodo(rawTodo));
-        });
-    },
-    initialData: [],
-  });
-
-  return json({ dehydratedState: dehydrate(queryClient), accessToken });
+  return json({});
 };
 
 export default function Index() {
-  const { dehydratedState } = useLoaderData<typeof loader>();
-
   return (
-    <HydrationBoundary state={dehydratedState}>
-      <ToastProvider>
-        <TodoPage />
-      </ToastProvider>
-    </HydrationBoundary>
+    <ToastProvider>
+      <TodoPage />
+    </ToastProvider>
   );
 }
 

@@ -1,7 +1,7 @@
 import { authAPI, isHTTPError } from "@/utils/api";
 import type { MetaFunction } from "@remix-run/node";
 import { LoaderFunction, redirect } from "@remix-run/node";
-import { json, useLoaderData, useNavigate } from "@remix-run/react";
+import { json, useNavigate } from "@remix-run/react";
 import {
   CalendarDaysIcon,
   ListChecksIcon,
@@ -10,14 +10,8 @@ import {
   TriangleAlertIcon,
   User2Icon,
 } from "lucide-react";
-import { toTodo, type RawTodo } from "@/utils/api/todo";
 import { Button } from "terra-design-system/react";
 
-import {
-  dehydrate,
-  HydrationBoundary,
-  QueryClient,
-} from "@tanstack/react-query";
 import { ToastProvider } from "@/contexts/toast";
 import { routerPush } from "@/utils/helper/app";
 import { IconWithLabel } from "@/components/tabbar/IconWithLabel";
@@ -51,14 +45,6 @@ export const loader: LoaderFunction = async ({ request }) => {
   const rawCookie = request.headers.get("Cookie") ?? "";
   const cookie = toCookieStorage(rawCookie);
 
-  /**
-   * TODO: accessToken 검사
-   * accessToken 없음 -> refreshToken 삭제 후 로그인으로 (이상한 케이스)
-   * accessToken 만료 -> refreshToken으로 accessToken 업데이트
-   * refreshToken 만료 -> 로그인페이지로 이동
-   * accessToken 사용시 refreshToken 업데이트? (고민좀)
-   */
-  // const isLogined = cookie.has("accessToken");
   const accessToken = cookie.get("accessToken");
   const refreshToken = cookie.get("refreshToken");
 
@@ -66,9 +52,6 @@ export const loader: LoaderFunction = async ({ request }) => {
     return redirect("/login");
   }
 
-  /**
-   *
-   */
   try {
     await authAPI.get("token/verify", {
       headers: {
@@ -102,37 +85,14 @@ export const loader: LoaderFunction = async ({ request }) => {
     return redirect("/login");
   }
 
-  const queryClient = new QueryClient();
-
-  await queryClient.prefetchQuery({
-    queryKey: ["todos"],
-    queryFn: async () => {
-      return await authAPI
-        .get<RawTodo[]>("todos", {
-          headers: {
-            authorization: `Bearer ${accessToken}`,
-          },
-        })
-        .json()
-        .then((rawTodos) => {
-          return rawTodos.map((rawTodo) => toTodo(rawTodo));
-        });
-    },
-    initialData: [],
-  });
-
-  return json({ dehydratedState: dehydrate(queryClient), accessToken });
+  return json({});
 };
 
 export default function Index() {
-  const { dehydratedState } = useLoaderData<typeof loader>();
-
   return (
-    <HydrationBoundary state={dehydratedState}>
-      <ToastProvider>
-        <TodoCalendarPage />
-      </ToastProvider>
-    </HydrationBoundary>
+    <ToastProvider>
+      <TodoCalendarPage />
+    </ToastProvider>
   );
 }
 
