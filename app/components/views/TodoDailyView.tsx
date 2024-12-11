@@ -15,6 +15,7 @@ import "swiper/css/virtual";
 import { useCurrentDateStore } from "@/stores/current-date";
 import { TodoLoadMore } from "../todo/TodoLoadMore";
 import { DailyTodoList } from "../todo/DailyTodoList";
+import { DateSelector } from "../DateSelector";
 
 const slides = range(-500, 500, 1);
 const initialSlideIndex = slides.length / 2;
@@ -88,6 +89,7 @@ export function TodoDailyView(props: TodoDailyViewProps) {
           </button>
         </div>
       </h2>
+      <DateSelector currentDate={relativeDate} />
       <div className="h-[calc(100%_-_72px)] w-full">
         <Swiper
           modules={[Virtual]}
