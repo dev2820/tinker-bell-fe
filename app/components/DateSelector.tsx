@@ -11,7 +11,10 @@ type DateSelectorProps = ComponentProps<"div"> & {
   onChangeDate?: (newDate: Date) => void;
 };
 export function DateSelector(props: DateSelectorProps) {
-  const [{ h }, api] = useSpring(() => ({ h: height }));
+  const [{ h }, api] = useSpring(() => ({
+    h: height,
+    config: { tension: 10, friction: 26, mass: 0.3 },
+  }));
 
   const open = ({ canceled }: { canceled: boolean }) => {
     // when cancel is true, it means that the user passed the upwards threshold
