@@ -1,112 +1,203 @@
 import { useDrag } from "@use-gesture/react";
 import { useSpring, animated, config } from "@react-spring/web";
 import { clamp } from "@/utils/clamp";
-import { isSameDay, isThisMonth, lastDayOfMonth, startOfMonth } from "date-fns";
+import { isSameDay, lastDayOfMonth, startOfMonth } from "date-fns";
+import { forwardRef, useMemo, useState } from "react";
+import { calcRelativeDate } from "@/utils/date-time";
+import { Virtual } from "swiper/modules";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { DailyTodoList } from "./todo/DailyTodoList";
+import { TodoLoadMore } from "./todo/TodoLoadMore";
+import { Swiper as SwiperType } from "swiper/types";
+import { range } from "@/utils/range";
+import { cx } from "@/utils/cx";
 
 const CELL_HEIGHT = 48;
 const MAX_HEIGHT = CELL_HEIGHT * 6;
+const slides = range(-500, 500, 1);
+const initialSlideIndex = slides.length / 2;
 
 type DateSelectorProps = {
   currentDate: Date;
   onChangeDate?: (newDate: Date) => void;
+  className?: string;
+  height: number;
 };
-export function DateSelector(props: DateSelectorProps) {
-  const { currentDate, onChangeDate } = props;
+export const DateSelector = forwardRef<HTMLDivElement, DateSelectorProps>(
+  function (props, ref) {
+    const { className, height, currentDate, onChangeDate } = props;
+    const daysInCalendar = getCalendarDays(currentDate);
+    const thisWeek = getWeek(daysInCalendar, currentDate);
 
-  const daysInCalendar = getCalendarDays(currentDate);
-  const thisWeek = getWeek(daysInCalendar, currentDate);
-  const [{ h }, api] = useSpring(() => ({
-    h: MAX_HEIGHT,
-    config: { tension: 10, friction: 26, mass: 0.3 },
-  }));
-  const opacity = h.to((v) => {
-    return (v - CELL_HEIGHT) / (MAX_HEIGHT - CELL_HEIGHT);
-  });
-  const transitionY = h.to((v) => {
-    const startY = -thisWeek * CELL_HEIGHT;
-    const progress = (v - CELL_HEIGHT) / (MAX_HEIGHT - CELL_HEIGHT);
-    const y = startY * (1 - progress);
-    // thisWeek이 1이면
-    return y;
-  });
-  const open = ({ canceled }: { canceled: boolean }) => {
-    api.start({
+    const [{ h }, api] = useSpring(() => ({
       h: CELL_HEIGHT,
-      immediate: false,
-      config: canceled ? config.wobbly : config.stiff,
+      config: { tension: 10, friction: 26, mass: 0.3 },
+    }));
+    const todoListHeight = h.to((v) => Math.max(height - v, 0));
+    const progress = h.to((v) =>
+      clamp((v - CELL_HEIGHT) / (MAX_HEIGHT - CELL_HEIGHT), 0, 1)
+    );
+    const transitionY = progress.to((v) => {
+      const startY = -thisWeek * CELL_HEIGHT;
+      const y = startY * (1 - v);
+      return y;
     });
-  };
-  const close = (velocity = 0) => {
-    api.start({
-      h: MAX_HEIGHT,
-      immediate: false,
-      config: { ...config.stiff, velocity },
-    });
-  };
+    const open = ({ canceled }: { canceled: boolean }) => {
+      api.start({
+        h: CELL_HEIGHT,
+        immediate: false,
+        config: canceled ? config.wobbly : config.stiff,
+      });
+    };
+    const close = (velocity = 0) => {
+      api.start({
+        h: MAX_HEIGHT,
+        immediate: false,
+        config: { ...config.stiff, velocity },
+      });
+    };
 
-  const bind = useDrag(
-    ({
-      last,
-      velocity: [, vh],
-      direction: [, dh],
-      offset: [, oh],
-      cancel,
-      canceled,
-    }) => {
-      if (oh < -70) cancel();
+    const bind = useDrag(
+      ({
+        last,
+        velocity: [, vh],
+        direction: [, dh],
+        offset: [, oh],
+        cancel,
+        canceled,
+      }) => {
+        if (oh < -70) cancel();
 
-      if (last) {
-        oh > MAX_HEIGHT * 0.5 || (vh > 0.5 && dh > 0)
-          ? close(vh)
-          : open({ canceled });
-      } else {
-        api.start({
-          h: clamp(oh, CELL_HEIGHT, MAX_HEIGHT),
-          immediate: true,
-        });
+        if (last) {
+          oh > MAX_HEIGHT * 0.5 || (vh > 0.5 && dh > 0)
+            ? close(vh)
+            : open({ canceled });
+        } else {
+          api.start({
+            h: clamp(oh, CELL_HEIGHT, MAX_HEIGHT),
+            immediate: true,
+          });
+        }
+      },
+      {
+        from: () => [0, h.get()],
+        filterTaps: true,
+        bounds: { top: 0 },
+        rubberband: true,
       }
-    },
-    {
-      from: () => [0, h.get()],
-      filterTaps: true,
-      bounds: { top: 0 },
-      rubberband: true,
-    }
-  );
+    );
+    const [swiperRef, setSwiperRef] = useState<SwiperType | null>(null);
+    const [baseDate, setBaseDate] = useState<Date>(currentDate);
+    const [currentSlideIndex, setCurrentSlideIndex] =
+      useState<number>(initialSlideIndex);
 
-  return (
-    <animated.div
-      {...bind()}
-      style={{
-        height: h,
-        touchAction: "none",
-        overflow: "hidden",
-        borderWidth: 1,
-      }}
-    >
-      <animated.div
-        style={{ y: transitionY }}
-        className="grid grid-cols-7 place-items-center"
+    const relativeDate = useMemo(
+      () => calcRelativeDate(baseDate, slides[currentSlideIndex]),
+      [baseDate, currentSlideIndex]
+    );
+    const handleSlideChange = (swiper: SwiperType) => {
+      setCurrentSlideIndex(swiper.activeIndex);
+      onChangeDate?.(calcRelativeDate(baseDate, slides[swiper.activeIndex]));
+    };
+    const handleClickDate = (date: Date) => {
+      setBaseDate(date);
+      onChangeDate?.(date);
+    };
+
+    const handleClickLoadMore = () => {
+      if (!swiperRef) {
+        return;
+      }
+
+      setBaseDate(relativeDate);
+      swiperRef.slideTo(initialSlideIndex, 0);
+    };
+
+    return (
+      <div
+        ref={ref}
+        className={cx("", className)}
+        style={{ height: `${height}px` }}
       >
-        {daysInCalendar.map((date) => (
+        <animated.div
+          {...bind()}
+          className="relative px-4"
+          style={{
+            height: h,
+            touchAction: "none",
+            overflow: "hidden",
+          }}
+        >
           <animated.div
-            className="h-12"
-            style={{
-              color:
-                date.getMonth() === currentDate.getMonth()
-                  ? "#111111"
-                  : "#cccccc",
-              opacity: getWeek(daysInCalendar, date) === thisWeek ? 1 : opacity,
-            }}
-            key={date.toISOString()}
+            style={{ y: transitionY }}
+            className="grid grid-cols-7 place-items-center"
           >
-            {date.getDate()}
+            {daysInCalendar.map((date) => (
+              <animated.div
+                className="h-12 w-full flex flex-col place-items-center justify-center"
+                style={{
+                  color:
+                    date.getMonth() === currentDate.getMonth()
+                      ? "#111111"
+                      : "#cccccc",
+                  opacity: progress.to((v) => {
+                    return Math.max(
+                      v,
+                      getWeek(daysInCalendar, date) === thisWeek ? 1 : 0
+                    );
+                  }),
+                }}
+                key={date.toISOString()}
+              >
+                <button
+                  className={cx(
+                    "rounded-full h-8 w-8 text-center flex flex-row justify-center place-items-center",
+                    isSameDay(date, currentDate)
+                      ? "bg-primary-subtle"
+                      : "bg-transparent"
+                  )}
+                  onClick={() => handleClickDate(date)}
+                >
+                  {date.getDate()}
+                </button>
+              </animated.div>
+            ))}
           </animated.div>
-        ))}
-      </animated.div>
-    </animated.div>
-  );
-}
+        </animated.div>
+        <animated.div className="w-full" style={{ height: todoListHeight }}>
+          <Swiper
+            modules={[Virtual]}
+            className="h-full w-full"
+            slidesPerView={1}
+            onSwiper={setSwiperRef}
+            onSlideChange={handleSlideChange}
+            centeredSlides={true}
+            spaceBetween={0}
+            initialSlide={initialSlideIndex}
+            virtual
+          >
+            {slides.map((slideContent, index) => (
+              <SwiperSlide key={slideContent} virtualIndex={index}>
+                {[slides[0], slides.at(-1)].some((s) => s === slideContent) && (
+                  <TodoLoadMore onClickLoadMore={handleClickLoadMore} />
+                )}
+                {[slides[0], slides.at(-1)].every(
+                  (s) => s !== slideContent
+                ) && (
+                  <DailyTodoList
+                    className="h-full"
+                    currentDate={calcRelativeDate(baseDate, slideContent)}
+                  ></DailyTodoList>
+                )}
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </animated.div>
+      </div>
+    );
+  }
+);
+DateSelector.displayName = "DateSelector";
 
 const getCalendarDays = (date: Date) => {
   const year = date.getFullYear();
