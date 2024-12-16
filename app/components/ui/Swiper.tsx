@@ -114,7 +114,7 @@ function SwiperContainer(props: SwiperContainerProps) {
   const bind = useDrag(
     ({ last, offset: [ox], distance: [distX], cancel }) => {
       if (last) {
-        if (distX > width * 0.3) {
+        if (distX > width * 0.1) {
           ox > 0 ? next() : prev();
           cancel();
         } else {
