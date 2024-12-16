@@ -73,7 +73,7 @@ export function DailyTodoList(props: DailyTodoListProps) {
   if (nothingTodo) {
     return (
       <div className={cn("flex flex-col justify-center", className)}>
-        <p className="text-center text-lg text-gray-300">
+        <p className="text-center text-lg text-gray-300 py-8">
           +버튼을 눌러 할 일을 추가해주세요
         </p>
       </div>
@@ -102,7 +102,7 @@ export function DailyTodoList(props: DailyTodoListProps) {
             ))}
           </AnimatePresence>
         </Reorder.Group>
-        {!nothingTodo && <hr className="w-[calc(100%_-_32px)] mx-auto my-4" />}
+        {!nothingTodo && <hr className="w-[calc(100%_-_32px)] mx-auto my-8" />}
         <Reorder.Group
           axis="y"
           as="ul"
