@@ -22,10 +22,14 @@ import {
 
 type SwiperContextState = {
   width: number;
+  isDragging: boolean;
+  changeIsDragging: (state: boolean) => void;
 };
 
 const SwiperContext = createContext<SwiperContextState>({
   width: 0,
+  isDragging: false,
+  changeIsDragging: () => {},
 });
 
 type SwiperProps = {
@@ -37,19 +41,20 @@ type SwiperProps = {
 
 export function Swiper(props: SwiperProps) {
   const { children, width, onChange } = props;
+  const [isDragging, setIsDragging] = useState<boolean>(false);
 
-  /**
-   * TODO: Change 반응 만들기
-   */
   const handlePrev = () => {
     onChange(-1);
   };
   const handleNext = () => {
     onChange(+1);
   };
+  const changeIsDragging = (state: boolean) => {
+    setIsDragging(state);
+  };
 
   return (
-    <SwiperContext.Provider value={{ width }}>
+    <SwiperContext.Provider value={{ width, isDragging, changeIsDragging }}>
       <SwiperContainer width={width} onPrev={handlePrev} onNext={handleNext}>
         {children}
       </SwiperContainer>
@@ -64,7 +69,7 @@ type SwiperContainerProps = ComponentProps<"div"> & {
 };
 function SwiperContainer(props: SwiperContainerProps) {
   const { className, children, width, onNext, onPrev, ...rest } = props;
-  const [isDragging, setIsDragging] = useState<boolean>(false);
+  const { isDragging, changeIsDragging } = useContext(SwiperContext);
   /**
    * useDrag 사용
    */
@@ -115,9 +120,9 @@ function SwiperContainer(props: SwiperContainerProps) {
         } else {
           reset();
         }
-        setIsDragging(false);
+        changeIsDragging(false);
       } else {
-        setIsDragging(true);
+        changeIsDragging(true);
         api.start({
           x: clamp(ox, -width, width),
           immediate: true,
@@ -139,8 +144,8 @@ function SwiperContainer(props: SwiperContainerProps) {
       {...rest}
     >
       <animated.div
-        className="relative h-full flex"
         {...bind()}
+        className="relative h-full flex"
         style={{ x: x, width: width * 3, touchAction: "none" }}
       >
         {children}
@@ -157,7 +162,10 @@ export function SwiperItem(props: SwiperItemProps) {
   return (
     <div
       className={cx("inline-block absolute top-0", className)}
-      style={{ width: `${width}px`, left: `${index * width}px` }}
+      style={{
+        width: `${width}px`,
+        left: `${index * width}px`,
+      }}
       {...rest}
     >
       {children}

@@ -10,7 +10,6 @@ import {
   startOfMonth,
 } from "date-fns";
 import { forwardRef, useCallback } from "react";
-import { calcRelativeDate } from "@/utils/date-time";
 import { Swiper, SwiperItem } from "@/components/ui/Swiper";
 import { DailyTodoList } from "./todo/DailyTodoList";
 import { cx } from "@/utils/cx";
@@ -107,6 +106,17 @@ export const DateSelector = forwardRef<HTMLDivElement, DateSelectorProps>(
       },
       [changeCurrentDate]
     );
+    const handleChangeMonth = useCallback(
+      (direct: number) => {
+        changeCurrentDate(
+          addMonths(
+            useCurrentDateStore.getState().currentDate,
+            direct > 0 ? 1 : -1
+          )
+        );
+      },
+      [changeCurrentDate]
+    );
 
     return (
       <div
@@ -155,50 +165,53 @@ export const DateSelector = forwardRef<HTMLDivElement, DateSelectorProps>(
               display: progress.to((v) => (v === 0 ? "none" : "block")),
             }}
           >
-            <div className="grid grid-cols-7 place-items-center w-[calc(100%_-_32px)]">
-              <Swiper onChange={handleChangeWeek} width={width}>
-                {[-1, 0, 1].map((idx) => (
-                  <SwiperItem key={idx} index={idx}>
-                    <div>
-                      {getCalendarDays(addMonths(currentDate, idx)).map(
-                        (date) => (
-                          <div
-                            className="h-12 w-full flex flex-col place-items-center justify-center"
-                            style={{
-                              color:
-                                date.getMonth() ===
-                                addMonths(currentDate, idx).getMonth()
-                                  ? "#111111"
-                                  : "#cccccc",
-                            }}
-                            key={date.toISOString()}
+            <Swiper onChange={handleChangeMonth} width={width}>
+              {[-1, 0, 1].map((idx) => (
+                <SwiperItem key={idx} index={idx}>
+                  <div className="grid grid-cols-7 place-items-center">
+                    {getCalendarDays(addMonths(currentDate, idx)).map(
+                      (date) => (
+                        <div
+                          className="h-12 w-full flex flex-col place-items-center justify-center"
+                          style={{
+                            color:
+                              date.getMonth() ===
+                              addMonths(currentDate, idx).getMonth()
+                                ? "#111111"
+                                : "#cccccc",
+                          }}
+                          key={date.toISOString()}
+                        >
+                          <button
+                            className={cx(
+                              "rounded-full h-8 w-8 text-center flex flex-row justify-center place-items-center",
+                              isSameDay(date, currentDate)
+                                ? "bg-primary-subtle"
+                                : "bg-transparent"
+                            )}
+                            onClick={() => handleClickDate(date)}
                           >
-                            <button
-                              className={cx(
-                                "rounded-full h-8 w-8 text-center flex flex-row justify-center place-items-center",
-                                isSameDay(date, addMonths(currentDate, idx))
-                                  ? "bg-primary-subtle"
-                                  : "bg-transparent"
-                              )}
-                              onClick={() => handleClickDate(date)}
-                            >
-                              {date.getDate()}
-                            </button>
-                          </div>
-                        )
-                      )}
-                    </div>
-                  </SwiperItem>
-                ))}
-              </Swiper>
-            </div>
+                            {date.getDate()}
+                          </button>
+                        </div>
+                      )
+                    )}
+                  </div>
+                </SwiperItem>
+              ))}
+            </Swiper>
           </animated.div>
         </animated.div>
-        <animated.div className="w-full" style={{ height: todoListHeight }}>
-          <DailyTodoList
-            className="h-full"
-            currentDate={calcRelativeDate(currentDate, 0)}
-          ></DailyTodoList>
+        <animated.div
+          className="w-full flex flex-col justify-center place-items-center overflow-y-auto overflow-x-hidden"
+          style={{ height: todoListHeight }}
+        >
+          <div className="w-[calc(100%_-_32px)] h-full">
+            <DailyTodoList
+              className="w-full"
+              currentDate={currentDate}
+            ></DailyTodoList>
+          </div>
         </animated.div>
       </div>
     );
