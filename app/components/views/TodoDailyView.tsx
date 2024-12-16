@@ -1,8 +1,6 @@
 import { cn } from "@/lib/utils";
 import { formatDate, formatKoreanDate } from "@/utils/date-time";
-import { ComponentProps, useRef } from "react";
-import "swiper/css";
-import "swiper/css/virtual";
+import { ComponentProps } from "react";
 import { useCurrentDateStore } from "@/stores/current-date";
 import { DateSelector } from "../DateSelector";
 import { useWindowSize } from "@/hooks/use-window-size";
@@ -11,9 +9,8 @@ import { ClientOnly } from "remix-utils/client-only";
 type TodoDailyViewProps = ComponentProps<"div">;
 export function TodoDailyView(props: TodoDailyViewProps) {
   const { className, ...rest } = props;
-  const { currentDate, changeCurrentDate } = useCurrentDateStore();
-  const dateSelectorRef = useRef<HTMLDivElement>(null);
-  const { height } = useWindowSize();
+  const { currentDate } = useCurrentDateStore();
+  const { width, height } = useWindowSize();
 
   return (
     <div className={cn("pb-4 flex flex-col", className)} {...rest}>
@@ -34,10 +31,8 @@ export function TodoDailyView(props: TodoDailyViewProps) {
         {() => (
           <DateSelector
             className="flex-none"
-            ref={dateSelectorRef}
+            width={width - 32}
             height={height - (72 + 48 + 32)}
-            currentDate={currentDate}
-            onChangeDate={changeCurrentDate}
           />
         )}
       </ClientOnly>

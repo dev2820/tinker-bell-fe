@@ -132,6 +132,9 @@ body {
 * {
   user-select: none;
 }
+::-webkit-scrollbar {
+  display: none;
+}
 
 body {
   overscroll-behavior: none;

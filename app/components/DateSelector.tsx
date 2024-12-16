@@ -1,31 +1,36 @@
 import { useDrag } from "@use-gesture/react";
 import { useSpring, animated, config } from "@react-spring/web";
 import { clamp } from "@/utils/clamp";
-import { isSameDay, lastDayOfMonth, startOfMonth } from "date-fns";
-import { forwardRef, useMemo, useState } from "react";
+import {
+  addDays,
+  addMonths,
+  addWeeks,
+  isSameDay,
+  lastDayOfMonth,
+  startOfMonth,
+} from "date-fns";
+import { forwardRef, useCallback } from "react";
 import { calcRelativeDate } from "@/utils/date-time";
-import { Virtual } from "swiper/modules";
-import { Swiper, SwiperSlide } from "swiper/react";
+import { Swiper, SwiperItem } from "@/components/ui/Swiper";
 import { DailyTodoList } from "./todo/DailyTodoList";
-import { TodoLoadMore } from "./todo/TodoLoadMore";
-import { Swiper as SwiperType } from "swiper/types";
-import { range } from "@/utils/range";
 import { cx } from "@/utils/cx";
+import { useCurrentDateStore } from "@/stores/current-date";
+import { useShallow } from "zustand/shallow";
 
 const CELL_HEIGHT = 48;
 const MAX_HEIGHT = CELL_HEIGHT * 6;
-const slides = range(-500, 500, 1);
-const initialSlideIndex = slides.length / 2;
 
 type DateSelectorProps = {
-  currentDate: Date;
-  onChangeDate?: (newDate: Date) => void;
   className?: string;
   height: number;
+  width: number;
 };
 export const DateSelector = forwardRef<HTMLDivElement, DateSelectorProps>(
   function (props, ref) {
-    const { className, height, currentDate, onChangeDate } = props;
+    const { className, width, height } = props;
+    const { currentDate, changeCurrentDate } = useCurrentDateStore(
+      useShallow((state) => ({ ...state }))
+    );
     const daysInCalendar = getCalendarDays(currentDate);
     const thisWeek = getWeek(daysInCalendar, currentDate);
 
@@ -86,32 +91,22 @@ export const DateSelector = forwardRef<HTMLDivElement, DateSelectorProps>(
         rubberband: true,
       }
     );
-    const [swiperRef, setSwiperRef] = useState<SwiperType | null>(null);
-    const [baseDate, setBaseDate] = useState<Date>(currentDate);
-    const [currentSlideIndex, setCurrentSlideIndex] =
-      useState<number>(initialSlideIndex);
 
-    const relativeDate = useMemo(
-      () => calcRelativeDate(baseDate, slides[currentSlideIndex]),
-      [baseDate, currentSlideIndex]
-    );
-    const handleSlideChange = (swiper: SwiperType) => {
-      setCurrentSlideIndex(swiper.activeIndex);
-      onChangeDate?.(calcRelativeDate(baseDate, slides[swiper.activeIndex]));
-    };
     const handleClickDate = (date: Date) => {
-      setBaseDate(date);
-      onChangeDate?.(date);
+      changeCurrentDate(date);
     };
 
-    const handleClickLoadMore = () => {
-      if (!swiperRef) {
-        return;
-      }
-
-      setBaseDate(relativeDate);
-      swiperRef.slideTo(initialSlideIndex, 0);
-    };
+    const handleChangeWeek = useCallback(
+      (direct: number) => {
+        changeCurrentDate(
+          addWeeks(
+            useCurrentDateStore.getState().currentDate,
+            direct > 0 ? 1 : -1
+          )
+        );
+      },
+      [changeCurrentDate]
+    );
 
     return (
       <div
@@ -128,70 +123,82 @@ export const DateSelector = forwardRef<HTMLDivElement, DateSelectorProps>(
             overflow: "hidden",
           }}
         >
+          {/**
+           * 주단위 표기
+           */}
           <animated.div
-            style={{ y: transitionY }}
-            className="grid grid-cols-7 place-items-center"
+            style={{
+              opacity: progress.to((v) => 1 - v),
+              display: progress.to((v) => (v === 1 ? "none" : "block")),
+            }}
           >
-            {daysInCalendar.map((date) => (
-              <animated.div
-                className="h-12 w-full flex flex-col place-items-center justify-center"
-                style={{
-                  color:
-                    date.getMonth() === currentDate.getMonth()
-                      ? "#111111"
-                      : "#cccccc",
-                  opacity: progress.to((v) => {
-                    return Math.max(
-                      v,
-                      getWeek(daysInCalendar, date) === thisWeek ? 1 : 0
-                    );
-                  }),
-                }}
-                key={date.toISOString()}
-              >
-                <button
-                  className={cx(
-                    "rounded-full h-8 w-8 text-center flex flex-row justify-center place-items-center",
-                    isSameDay(date, currentDate)
-                      ? "bg-primary-subtle"
-                      : "bg-transparent"
-                  )}
-                  onClick={() => handleClickDate(date)}
-                >
-                  {date.getDate()}
-                </button>
-              </animated.div>
-            ))}
+            <Swiper onChange={handleChangeWeek} width={width} className="h-12">
+              {[-1, 0, 1].map((idx) => (
+                <SwiperItem key={idx} index={idx}>
+                  <Weeks
+                    index={idx}
+                    currentDate={currentDate}
+                    onClickDate={handleClickDate}
+                  />
+                </SwiperItem>
+              ))}
+            </Swiper>
+          </animated.div>
+          {/**
+           * 월단위 표기
+           */}
+          <animated.div
+            className="absolute top-0 w-full"
+            style={{
+              opacity: progress,
+              y: transitionY,
+              display: progress.to((v) => (v === 0 ? "none" : "block")),
+            }}
+          >
+            <div className="grid grid-cols-7 place-items-center w-[calc(100%_-_32px)]">
+              <Swiper onChange={handleChangeWeek} width={width}>
+                {[-1, 0, 1].map((idx) => (
+                  <SwiperItem key={idx} index={idx}>
+                    <div>
+                      {getCalendarDays(addMonths(currentDate, idx)).map(
+                        (date) => (
+                          <div
+                            className="h-12 w-full flex flex-col place-items-center justify-center"
+                            style={{
+                              color:
+                                date.getMonth() ===
+                                addMonths(currentDate, idx).getMonth()
+                                  ? "#111111"
+                                  : "#cccccc",
+                            }}
+                            key={date.toISOString()}
+                          >
+                            <button
+                              className={cx(
+                                "rounded-full h-8 w-8 text-center flex flex-row justify-center place-items-center",
+                                isSameDay(date, addMonths(currentDate, idx))
+                                  ? "bg-primary-subtle"
+                                  : "bg-transparent"
+                              )}
+                              onClick={() => handleClickDate(date)}
+                            >
+                              {date.getDate()}
+                            </button>
+                          </div>
+                        )
+                      )}
+                    </div>
+                  </SwiperItem>
+                ))}
+              </Swiper>
+            </div>
           </animated.div>
         </animated.div>
         <animated.div className="w-full" style={{ height: todoListHeight }}>
-          <Swiper
-            modules={[Virtual]}
-            className="h-full w-full"
-            slidesPerView={1}
-            onSwiper={setSwiperRef}
-            onSlideChange={handleSlideChange}
-            centeredSlides={true}
-            spaceBetween={0}
-            initialSlide={initialSlideIndex}
-            virtual
-          >
-            {slides.map((slideContent, index) => (
-              <SwiperSlide key={slideContent} virtualIndex={index}>
-                {[slides[0], slides.at(-1)].some((s) => s === slideContent) && (
-                  <TodoLoadMore onClickLoadMore={handleClickLoadMore} />
-                )}
-                {[slides[0], slides.at(-1)].every(
-                  (s) => s !== slideContent
-                ) && (
-                  <DailyTodoList
-                    className="h-full"
-                    currentDate={calcRelativeDate(baseDate, slideContent)}
-                  ></DailyTodoList>
-                )}
-              </SwiperSlide>
-            ))}
-          </Swiper>
+          <DailyTodoList
+            className="h-full"
+            currentDate={calcRelativeDate(currentDate, 0)}
+          ></DailyTodoList>
         </animated.div>
       </div>
     );
@@ -226,6 +233,51 @@ const getCalendarDays = (date: Date) => {
   return days;
 };
 
+const getWeekDays = (date: Date) => {
+  const day = date.getDay();
+  const firstDayOfWeek = addDays(date, -day);
+
+  const days: Date[] = [];
+  for (let i = 0; i < 7; i++) {
+    days.push(addDays(firstDayOfWeek, i));
+  }
+
+  return days;
+};
+
 const getWeek = (days: Date[], targetDate: Date) => {
   return Math.floor(days.findIndex((d) => isSameDay(targetDate, d)) / 7);
 };
+
+function Weeks({
+  index,
+  currentDate,
+  onClickDate,
+}: {
+  currentDate: Date;
+  index: number;
+  onClickDate: (date: Date) => void;
+}) {
+  return (
+    <div className="w-full flex flex-row">
+      {getWeekDays(addWeeks(currentDate, index)).map((date) => (
+        <div
+          className="h-12 w-full flex flex-col place-items-center justify-center"
+          key={date.toISOString()}
+        >
+          <button
+            className={cx(
+              "rounded-full h-8 w-8 text-center flex flex-row justify-center place-items-center",
+              isSameDay(date, currentDate)
+                ? "bg-primary-subtle"
+                : "bg-transparent"
+            )}
+            onClick={() => onClickDate(date)}
+          >
+            {date.getDate()}
+          </button>
+        </div>
+      ))}
+    </div>
+  );
+}
