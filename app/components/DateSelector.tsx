@@ -86,6 +86,7 @@ export const DateSelector = forwardRef<HTMLDivElement, DateSelectorProps>(
       {
         from: () => [0, h.get()],
         filterTaps: true,
+        threshold: 20,
         bounds: { top: 0 },
         rubberband: true,
       }
