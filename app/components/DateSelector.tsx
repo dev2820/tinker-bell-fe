@@ -1,16 +1,7 @@
 import { useDrag } from "@use-gesture/react";
 import { useSpring, animated, config } from "@react-spring/web";
 import { clamp } from "@/utils/clamp";
-import {
-  addDays,
-  addMonths,
-  addWeeks,
-  isSameDay,
-  isSaturday,
-  isSunday,
-  lastDayOfMonth,
-  startOfMonth,
-} from "date-fns";
+import { addMonths, addWeeks, isSameDay, isSaturday, isSunday } from "date-fns";
 import { forwardRef, useCallback } from "react";
 import { Swiper, SwiperItem } from "@/components/ui/Swiper";
 import { DailyTodoList } from "./todo/DailyTodoList";
@@ -19,6 +10,7 @@ import { useShallow } from "zustand/shallow";
 import { useMonthlyTodos } from "@/hooks/use-monthly-todos";
 import { useTodos } from "@/hooks/use-todos";
 import { cn } from "@/lib/utils";
+import { getCalendarDays, getWeekDays } from "@/utils/date-time";
 
 const CELL_HEIGHT = 56;
 const MAX_HEIGHT = CELL_HEIGHT * 6;
@@ -199,45 +191,6 @@ export const DateSelector = forwardRef<HTMLDivElement, DateSelectorProps>(
   }
 );
 DateSelector.displayName = "DateSelector";
-
-const getCalendarDays = (date: Date) => {
-  const year = date.getFullYear();
-  const month = date.getMonth();
-  const firstDate = startOfMonth(date);
-  const lastDate = lastDayOfMonth(date);
-
-  const days = [];
-
-  // 지난 달
-  for (let i = firstDate.getDay() - 1; i >= 0; i--) {
-    days.push(new Date(year, month, -i));
-  }
-
-  // 이번 달
-  for (let i = 1; i <= lastDate.getDate(); i++) {
-    days.push(new Date(year, month, i));
-  }
-
-  // 다음 달
-  const nextMonthDays = 42 - days.length; // 42 cells for 6 rows (7 columns)
-  for (let i = 1; i <= nextMonthDays; i++) {
-    days.push(new Date(year, month + 1, i));
-  }
-
-  return days;
-};
-
-const getWeekDays = (date: Date) => {
-  const day = date.getDay();
-  const firstDayOfWeek = addDays(date, -day);
-
-  const days: Date[] = [];
-  for (let i = 0; i < 7; i++) {
-    days.push(addDays(firstDayOfWeek, i));
-  }
-
-  return days;
-};
 
 const getWeek = (days: Date[], targetDate: Date) => {
   return Math.floor(days.findIndex((d) => isSameDay(targetDate, d)) / 7);

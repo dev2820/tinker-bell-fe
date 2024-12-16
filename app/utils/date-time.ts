@@ -1,4 +1,4 @@
-import { format as formatDate } from "date-fns";
+import { format as formatDate, lastDayOfMonth, startOfMonth } from "date-fns";
 import { ko } from "date-fns/locale";
 
 const ONE_DAY = 24 * 60 * 60 * 1000;
@@ -61,4 +61,43 @@ export const calcRelativeMonth = (baseDate: Date, relative: number = 0) => {
     baseDate.getMonth() + relative,
     baseDate.getDate()
   );
+};
+
+export const getWeekDays = (date: Date) => {
+  const day = date.getDay();
+  const firstDayOfWeek = addDays(date, -day);
+
+  const days: Date[] = [];
+  for (let i = 0; i < 7; i++) {
+    days.push(addDays(firstDayOfWeek, i));
+  }
+
+  return days;
+};
+
+export const getCalendarDays = (date: Date) => {
+  const year = date.getFullYear();
+  const month = date.getMonth();
+  const firstDate = startOfMonth(date);
+  const lastDate = lastDayOfMonth(date);
+
+  const days = [];
+
+  // 지난 달
+  for (let i = firstDate.getDay() - 1; i >= 0; i--) {
+    days.push(new Date(year, month, -i));
+  }
+
+  // 이번 달
+  for (let i = 1; i <= lastDate.getDate(); i++) {
+    days.push(new Date(year, month, i));
+  }
+
+  // 다음 달
+  const nextMonthDays = 42 - days.length; // 42 cells for 6 rows (7 columns)
+  for (let i = 1; i <= nextMonthDays; i++) {
+    days.push(new Date(year, month + 1, i));
+  }
+
+  return days;
 };

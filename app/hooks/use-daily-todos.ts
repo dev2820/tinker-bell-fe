@@ -6,6 +6,7 @@ import { Todo } from "@/types/todo";
 import { useDebounce } from "./use-debounce";
 import { isThatDateTodo, toTodo } from "@/utils/helper/todo";
 import { partition } from "@/utils/partition";
+import { getWeekDays } from "@/utils/date-time";
 
 const makeDailyQueryKey = (date: Date) => {
   return ["todo", formatDate(date, "yyyy-MM-dd")];
@@ -40,6 +41,13 @@ export const useDailyTodos = (currentDate: Date) => {
       });
       queryClient.invalidateQueries({
         queryKey: ["todos", formatDate(currentDate, "yyyy-MM")],
+      });
+      const week = getWeekDays(currentDate);
+      queryClient.invalidateQueries({
+        queryKey: [
+          "todos",
+          `${week[0].toISOString()}~${week[week.length - 1].toISOString()}`,
+        ],
       });
     },
     onError: (error) => {
@@ -98,6 +106,13 @@ export const useDailyTodos = (currentDate: Date) => {
       queryClient.invalidateQueries({
         queryKey: ["todos", formatDate(currentDate, "yyyy-MM")],
       });
+      const week = getWeekDays(currentDate);
+      queryClient.invalidateQueries({
+        queryKey: [
+          "todos",
+          `${week[0].toISOString()}~${week[week.length - 1].toISOString()}`,
+        ],
+      });
     },
     onError: (error, _, context) => {
       // 낙관적 업데이트 롤백
@@ -138,6 +153,13 @@ export const useDailyTodos = (currentDate: Date) => {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["todos", formatDate(currentDate, "yyyy-MM")],
+      });
+      const week = getWeekDays(currentDate);
+      queryClient.invalidateQueries({
+        queryKey: [
+          "todos",
+          `${week[0].toISOString()}~${week[week.length - 1].toISOString()}`,
+        ],
       });
     },
     onError: (error, _, context) => {
@@ -184,6 +206,13 @@ export const useDailyTodos = (currentDate: Date) => {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["todos", formatDate(currentDate, "yyyy-MM")],
+      });
+      const week = getWeekDays(currentDate);
+      queryClient.invalidateQueries({
+        queryKey: [
+          "todos",
+          `${week[0].toISOString()}~${week[week.length - 1].toISOString()}`,
+        ],
       });
     },
     onError: (error, _, context) => {
