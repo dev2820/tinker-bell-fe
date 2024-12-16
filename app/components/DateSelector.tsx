@@ -186,7 +186,7 @@ export const DateSelector = forwardRef<HTMLDivElement, DateSelectorProps>(
                             className={cx(
                               "rounded-full h-8 w-8 text-center flex flex-row justify-center place-items-center",
                               isSameDay(date, currentDate)
-                                ? "bg-primary-subtle"
+                                ? "bg-primary text-primary-foreground"
                                 : "bg-transparent"
                             )}
                             onClick={() => handleClickDate(date)}
@@ -280,9 +280,9 @@ function Weeks({
         >
           <button
             className={cx(
-              "rounded-full h-8 w-8 text-center flex flex-row justify-center place-items-center",
+              "rounded-full h-8 w-8 text-center flex flex-row justify-center place-items-center transition-colors duration-300 bg-transparent text-black",
               isSameDay(date, currentDate)
-                ? "bg-primary-subtle"
+                ? "bg-primary text-primary-foreground"
                 : "bg-transparent"
             )}
             onClick={() => onClickDate(date)}
