@@ -77,7 +77,7 @@ export const DateSelector = forwardRef<HTMLDivElement, DateSelectorProps>(
         if (oh < -70) cancel();
 
         if (last) {
-          oh > MAX_HEIGHT * 0.5 || (vh > 0.5 && dh > 0)
+          oh > MAX_HEIGHT * 0.9 || (vh > 0.15 && dh > 0)
             ? close(vh)
             : open({ canceled });
         } else {
