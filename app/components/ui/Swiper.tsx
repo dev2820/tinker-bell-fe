@@ -78,10 +78,10 @@ function SwiperContainer(props: SwiperContainerProps) {
     config: { tension: 10, friction: 26, mass: 0.3 },
     onRest: (result) => {
       if (result.finished) {
-        if (x.get() > width - 50 && !isDragging) {
+        if (x.get() > width - 70 && !isDragging) {
           onPrev();
           api.start({ x: 0, immediate: true });
-        } else if (x.get() < -width + 50 && !isDragging) {
+        } else if (x.get() < -width + 70 && !isDragging) {
           onNext();
           api.start({ x: 0, immediate: true });
         }

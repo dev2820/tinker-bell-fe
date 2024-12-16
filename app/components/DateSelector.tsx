@@ -6,17 +6,21 @@ import {
   addMonths,
   addWeeks,
   isSameDay,
+  isSaturday,
+  isSunday,
   lastDayOfMonth,
   startOfMonth,
 } from "date-fns";
 import { forwardRef, useCallback } from "react";
 import { Swiper, SwiperItem } from "@/components/ui/Swiper";
 import { DailyTodoList } from "./todo/DailyTodoList";
-import { cx } from "@/utils/cx";
 import { useCurrentDateStore } from "@/stores/current-date";
 import { useShallow } from "zustand/shallow";
+import { useMonthlyTodos } from "@/hooks/use-monthly-todos";
+import { useTodos } from "@/hooks/use-todos";
+import { cn } from "@/lib/utils";
 
-const CELL_HEIGHT = 48;
+const CELL_HEIGHT = 56;
 const MAX_HEIGHT = CELL_HEIGHT * 6;
 
 type DateSelectorProps = {
@@ -122,7 +126,7 @@ export const DateSelector = forwardRef<HTMLDivElement, DateSelectorProps>(
     return (
       <div
         ref={ref}
-        className={cx("", className)}
+        className={cn("", className)}
         style={{ height: `${height}px` }}
       >
         <animated.div
@@ -143,7 +147,7 @@ export const DateSelector = forwardRef<HTMLDivElement, DateSelectorProps>(
               display: progress.to((v) => (v === 1 ? "none" : "block")),
             }}
           >
-            <Swiper onChange={handleChangeWeek} width={width} className="h-12">
+            <Swiper onChange={handleChangeWeek} width={width} className="h-16">
               {[-1, 0, 1].map((idx) => (
                 <SwiperItem key={idx} index={idx}>
                   <Weeks
@@ -169,35 +173,11 @@ export const DateSelector = forwardRef<HTMLDivElement, DateSelectorProps>(
             <Swiper onChange={handleChangeMonth} width={width}>
               {[-1, 0, 1].map((idx) => (
                 <SwiperItem key={idx} index={idx}>
-                  <div className="grid grid-cols-7 place-items-center">
-                    {getCalendarDays(addMonths(currentDate, idx)).map(
-                      (date) => (
-                        <div
-                          className="h-12 w-full flex flex-col place-items-center justify-center"
-                          style={{
-                            color:
-                              date.getMonth() ===
-                              addMonths(currentDate, idx).getMonth()
-                                ? "#111111"
-                                : "#cccccc",
-                          }}
-                          key={date.toISOString()}
-                        >
-                          <button
-                            className={cx(
-                              "rounded-full h-8 w-8 text-center flex flex-row justify-center place-items-center",
-                              isSameDay(date, currentDate)
-                                ? "bg-primary text-primary-foreground"
-                                : "bg-transparent"
-                            )}
-                            onClick={() => handleClickDate(date)}
-                          >
-                            {date.getDate()}
-                          </button>
-                        </div>
-                      )
-                    )}
-                  </div>
+                  <Months
+                    currentDate={currentDate}
+                    index={idx}
+                    onClickDate={handleClickDate}
+                  />
                 </SwiperItem>
               ))}
             </Swiper>
@@ -207,7 +187,7 @@ export const DateSelector = forwardRef<HTMLDivElement, DateSelectorProps>(
           className="w-full flex flex-col justify-center place-items-center overflow-y-auto overflow-x-hidden"
           style={{ height: todoListHeight }}
         >
-          <div className="w-[calc(100%_-_32px)] h-full">
+          <div className="w-[calc(100%_-_32px)] h-full pt-4">
             <DailyTodoList
               className="w-full"
               currentDate={currentDate}
@@ -272,16 +252,35 @@ function Weeks({
   index: number;
   onClickDate: (date: Date) => void;
 }) {
+  const weekDays = getWeekDays(addWeeks(currentDate, index));
+  const { incompletedTodos, completedTodos } = useTodos(
+    weekDays[0],
+    weekDays[weekDays.length - 1]
+  );
+
+  const totalTodoMap = [...incompletedTodos, ...completedTodos]?.reduce(
+    (map, todo) => {
+      const key = `${todo.date.month}-${todo.date.day}`;
+      const [prevDone, prevTotal] = map.get(key) ?? [0, 0];
+      map.set(key, [prevDone + (todo.isCompleted ? 1 : 0), prevTotal + 1]);
+
+      return map;
+    },
+    new Map<string, [number, number]>()
+  );
+
   return (
     <div className="w-full flex flex-row">
-      {getWeekDays(addWeeks(currentDate, index)).map((date) => (
+      {weekDays.map((date) => (
         <div
-          className="h-12 w-full flex flex-col place-items-center justify-center"
+          className="relative h-14 w-full flex flex-col place-items-center justify-center"
           key={date.toISOString()}
         >
           <button
-            className={cx(
+            className={cn(
               "rounded-full h-8 w-8 text-center flex flex-row justify-center place-items-center transition-colors duration-300 bg-transparent text-black",
+              isSunday(date) && "text-red-500",
+              isSaturday(date) && "text-blue-500",
               isSameDay(date, currentDate)
                 ? "bg-primary text-primary-foreground"
                 : "bg-transparent"
@@ -290,6 +289,72 @@ function Weeks({
           >
             {date.getDate()}
           </button>
+          <small className="absolute top-11 text-[10px]">
+            {totalTodoMap
+              .get(`${date.getMonth() + 1}-${date.getDate()}`)
+              ?.join("/")}
+          </small>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function Months({
+  index,
+  currentDate,
+  onClickDate,
+}: {
+  currentDate: Date;
+  index: number;
+  onClickDate: (date: Date) => void;
+}) {
+  const { incompletedTodos, completedTodos } = useMonthlyTodos(
+    currentDate.getFullYear(),
+    currentDate.getMonth()
+  );
+  const totalTodoMap = [...incompletedTodos, ...completedTodos]?.reduce(
+    (map, todo) => {
+      const key = `${todo.date.month}-${todo.date.day}`;
+      const [prevDone, prevTotal] = map.get(key) ?? [0, 0];
+      map.set(key, [prevDone + (todo.isCompleted ? 1 : 0), prevTotal + 1]);
+
+      return map;
+    },
+    new Map<string, [number, number]>()
+  );
+
+  return (
+    <div className="grid grid-cols-7 place-items-center">
+      {getCalendarDays(addMonths(currentDate, index)).map((date) => (
+        <div
+          className="relative h-14 w-full flex flex-col place-items-center justify-center"
+          style={{
+            opacity:
+              date.getMonth() === addMonths(currentDate, index).getMonth()
+                ? 1
+                : 0.3,
+          }}
+          key={date.toISOString()}
+        >
+          <button
+            className={cn(
+              "rounded-full h-8 w-8 text-center flex flex-row justify-center place-items-center",
+              isSunday(date) && "text-red-500",
+              isSaturday(date) && "text-blue-500",
+              isSameDay(date, currentDate)
+                ? "bg-primary text-primary-foreground"
+                : "bg-transparent"
+            )}
+            onClick={() => onClickDate(date)}
+          >
+            {date.getDate()}
+          </button>
+          <small className="absolute top-11 text-[10px]">
+            {totalTodoMap
+              .get(`${date.getMonth() + 1}-${date.getDate()}`)
+              ?.join("/")}
+          </small>
         </div>
       ))}
     </div>
