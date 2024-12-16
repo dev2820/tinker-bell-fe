@@ -4,7 +4,6 @@ import { LoaderFunction, redirect } from "@remix-run/node";
 import { json, useNavigate } from "@remix-run/react";
 import {
   SettingsIcon,
-  CalendarDaysIcon,
   ListChecksIcon,
   PlusIcon,
   User2Icon,
@@ -141,17 +140,6 @@ function TodoPage() {
             >
               <IconWithLabel labelText="홈">
                 <ListChecksIcon size={24} />
-              </IconWithLabel>
-            </Button>
-          </TabItem>
-          <TabItem>
-            <Button
-              className={cn("w-full h-full my-auto")}
-              variant="ghost"
-              onClick={() => routerPush(navigate, "/calendar")}
-            >
-              <IconWithLabel labelText="달력">
-                <CalendarDaysIcon size={24} />
               </IconWithLabel>
             </Button>
           </TabItem>

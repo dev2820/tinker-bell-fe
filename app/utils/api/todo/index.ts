@@ -13,6 +13,18 @@ export type RawTodo = {
   order: number;
 };
 
+export async function fetchTodos(startDate: Date, endDate: Date) {
+  return await authAPI
+    .get(`todos?from=${toDateStr(startDate)}&to=${toDateStr(endDate)}`, {
+      headers: {
+        Authorization: `Bearer ${Cookies.get("accessToken")}`,
+      },
+    })
+    .json<{
+      completedTodoList: RawTodo[];
+      incompletedTodoList: RawTodo[];
+    }>();
+}
 export async function fetchMonthTodos(year: number, month: number) {
   const startDate = new Date(year, month);
   const endDate = lastDayOfMonth(startDate);
