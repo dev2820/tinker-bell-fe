@@ -85,6 +85,7 @@ export const DateSelector = forwardRef<HTMLDivElement, DateSelectorProps>(
         threshold: 20,
         bounds: { top: 0 },
         rubberband: true,
+        axis: "lock",
       }
     );
 
