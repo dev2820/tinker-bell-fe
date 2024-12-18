@@ -2,7 +2,7 @@ import { useDrag } from "@use-gesture/react";
 import { useSpring, animated, config } from "@react-spring/web";
 import { clamp } from "@/utils/clamp";
 import { addMonths, addWeeks, isSameDay, isSaturday, isSunday } from "date-fns";
-import { forwardRef, useCallback } from "react";
+import { forwardRef, useCallback, useState } from "react";
 import { Swiper, SwiperItem } from "@/components/ui/Swiper";
 import { DailyTodoList } from "./todo/DailyTodoList";
 import { useCurrentDateStore } from "@/stores/current-date";
@@ -28,7 +28,7 @@ export const DateSelector = forwardRef<HTMLDivElement, DateSelectorProps>(
     );
     const daysInCalendar = getCalendarDays(currentDate);
     const thisWeek = getWeek(daysInCalendar, currentDate);
-
+    const [isDragging, setIsDragging] = useState<boolean>(false);
     const [{ h }, api] = useSpring(() => ({
       h: CELL_HEIGHT,
       config: { tension: 10, friction: 26, mass: 0.3 },
@@ -41,6 +41,10 @@ export const DateSelector = forwardRef<HTMLDivElement, DateSelectorProps>(
       const startY = -thisWeek * CELL_HEIGHT;
       const y = startY * (1 - v);
       return y;
+    });
+    const preventEventInMotion = h.to((v) => {
+      if (v !== CELL_HEIGHT && v !== MAX_HEIGHT && isDragging) return "none";
+      return "auto";
     });
     const open = ({ canceled }: { canceled: boolean }) => {
       api.start({
@@ -66,17 +70,22 @@ export const DateSelector = forwardRef<HTMLDivElement, DateSelectorProps>(
         cancel,
         canceled,
       }) => {
-        if (oh < -70) cancel();
+        if (oh < -70) {
+          cancel();
+          setIsDragging(false);
+        }
 
         if (last) {
           oh > MAX_HEIGHT * 0.9 || (vh > 0.15 && dh > 0)
             ? close(vh)
             : open({ canceled });
+          setIsDragging(false);
         } else {
           api.start({
             h: clamp(oh, CELL_HEIGHT, MAX_HEIGHT),
             immediate: true,
           });
+          setIsDragging(true);
         }
       },
       {
@@ -124,11 +133,12 @@ export const DateSelector = forwardRef<HTMLDivElement, DateSelectorProps>(
       >
         <animated.div
           {...bind()}
-          className="relative px-4"
+          className={cn("relative px-4")}
           style={{
             height: h,
             touchAction: "none",
             overflow: "hidden",
+            pointerEvents: preventEventInMotion,
           }}
         >
           {/**

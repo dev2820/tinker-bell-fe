@@ -8,6 +8,7 @@
  * *useDrag를 이용해야한다.
  */
 
+import { cn } from "@/lib/utils";
 import { clamp } from "@/utils/clamp";
 import { cx } from "@/utils/cx";
 import { useSpring, config, animated } from "@react-spring/web";
@@ -78,16 +79,20 @@ function SwiperContainer(props: SwiperContainerProps) {
     config: { tension: 10, friction: 26, mass: 0.3 },
     onRest: (result) => {
       if (result.finished) {
-        if (x.get() > width - 70 && !isDragging) {
+        if (x.get() === width && !isDragging) {
           onPrev();
           api.start({ x: 0, immediate: true });
-        } else if (x.get() < -width + 70 && !isDragging) {
+        } else if (x.get() === -width && !isDragging) {
           onNext();
           api.start({ x: 0, immediate: true });
         }
       }
     },
   }));
+  const preventEventInMotion = x.to((v) => {
+    if (v !== 0 && isDragging) return "none";
+    return "auto";
+  });
 
   const next = () => {
     api.start({
@@ -145,8 +150,16 @@ function SwiperContainer(props: SwiperContainerProps) {
     >
       <animated.div
         {...bind()}
-        className="relative h-full flex"
-        style={{ x: x, width: width * 3, touchAction: "none" }}
+        className={cn(
+          "relative h-full flex",
+          !isDragging && "pointer-events-none"
+        )}
+        style={{
+          x: x,
+          width: width * 3,
+          touchAction: "none",
+          pointerEvents: preventEventInMotion,
+        }}
       >
         {children}
       </animated.div>
