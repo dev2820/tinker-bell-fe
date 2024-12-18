@@ -13,6 +13,9 @@ import { formatDate } from "date-fns";
 import { formatKoreanDate } from "@/utils/date-time";
 import { useCurrentDateStore } from "@/stores/current-date";
 import { CalendarAppHeader } from "@/components/CalendarAppHeader";
+import { RoundButton } from "@/components/ui/RoundButton";
+import { PlusIcon } from "lucide-react";
+import { useAddTodoDrawerStore } from "@/stores/add-todo-drawer";
 
 export const meta: MetaFunction = () => {
   return [
@@ -96,6 +99,11 @@ export default function Index() {
 
 function TodoPage() {
   const { currentDate } = useCurrentDateStore();
+  const addTodoDrawer = useAddTodoDrawerStore();
+
+  const handleClickPlusTodo = () => {
+    addTodoDrawer.onOpen();
+  };
 
   return (
     <main className="flex flex-col w-full h-screen items-stretch overflow-hidden">
@@ -107,7 +115,12 @@ function TodoPage() {
           {formatKoreanDate(currentDate, "yyyy년 MM월")}
         </time>
       </CalendarAppHeader>
-      <TodoDailyView className="h-[calc(100%_-_64px)]" />
+      <TodoDailyView className="h-[calc(100%_-_136px)]" />
+      <footer className="h-[72px] flex flex-row justify-center">
+        <RoundButton onClick={handleClickPlusTodo}>
+          <PlusIcon size={28} />
+        </RoundButton>
+      </footer>
       <AddTodoDrawer />
       <TodoDetailDrawer />
       <AlertDialog />

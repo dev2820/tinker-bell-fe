@@ -9,7 +9,7 @@ export function RoundButton(props: RoundButtonProps) {
     <Button
       theme="primary"
       className={cn(
-        "rounded-full h-16 w-16 inline-flex justify-center place-items-center shadow-md",
+        "rounded-full h-14 w-14 inline-flex justify-center place-items-center shadow-md",
         className
       )}
       {...rest}

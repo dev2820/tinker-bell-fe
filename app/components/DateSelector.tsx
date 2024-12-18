@@ -177,10 +177,10 @@ export const DateSelector = forwardRef<HTMLDivElement, DateSelectorProps>(
           </animated.div>
         </animated.div>
         <animated.div
-          className="w-full flex flex-col justify-center place-items-center overflow-y-auto overflow-x-hidden"
+          className="pt-4 w-full flex flex-col justify-center place-items-center overflow-y-hidden"
           style={{ height: todoListHeight }}
         >
-          <div className="w-[calc(100%_-_32px)] h-full pt-4">
+          <div className="w-full h-full pt-4 overflow-y-auto">
             <DailyTodoList
               className="w-full"
               currentDate={currentDate}
