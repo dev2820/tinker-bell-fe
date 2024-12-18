@@ -1,30 +1,18 @@
 import { authAPI, isHTTPError } from "@/utils/api";
 import type { MetaFunction } from "@remix-run/node";
 import { LoaderFunction, redirect } from "@remix-run/node";
-import { json, useNavigate } from "@remix-run/react";
-import {
-  SettingsIcon,
-  ListChecksIcon,
-  PlusIcon,
-  User2Icon,
-  TriangleAlertIcon,
-} from "lucide-react";
-import { Button } from "terra-design-system/react";
+import { json } from "@remix-run/react";
 
 import { ToastProvider } from "@/contexts/toast";
-import { routerPush } from "@/utils/helper/app";
-import { IconWithLabel } from "@/components/tabbar/IconWithLabel";
 import { TodoDailyView } from "@/components/views/TodoDailyView";
 import { AddTodoDrawer } from "@/components/drawer/AddTodoDrawer";
 import { TodoDetailDrawer } from "@/components/drawer/TodoDetailDrawer";
 import { toCookieStorage, toRawCookie } from "@/utils/cookie";
-import { Tabbar } from "@/components/tabbar/Tabbar";
-import { TabItem } from "@/components/tabbar/TabItem";
-import { cn } from "@/lib/utils";
-import { RoundButton } from "@/components/ui/RoundButton";
-import { useAddTodoDrawerStore } from "@/stores/add-todo-drawer";
 import { AlertDialog } from "@/components/Dialog/AlertDialog";
-import { useAlertStore } from "@/stores/alert-dialog";
+import { formatDate } from "date-fns";
+import { formatKoreanDate } from "@/utils/date-time";
+import { useCurrentDateStore } from "@/stores/current-date";
+import { CalendarAppHeader } from "@/components/CalendarAppHeader";
 
 export const meta: MetaFunction = () => {
   return [
@@ -107,76 +95,19 @@ export default function Index() {
 }
 
 function TodoPage() {
-  const navigate = useNavigate();
-  const addTodoDrawer = useAddTodoDrawerStore();
-  const alertDialog = useAlertStore();
-
-  const handleClickPlusTodo = () => {
-    addTodoDrawer.onOpen();
-  };
-
-  const handleClickProfile = () => {
-    alertDialog.showAlert({
-      title: (
-        <span className="flex flex-row gap-2 place-items-center text-error">
-          <TriangleAlertIcon size={24} />
-          준비중인 기능입니다
-        </span>
-      ),
-      description: "아직 준비중인 기능이에요. 조금만 기다려주세요",
-    });
-  };
+  const { currentDate } = useCurrentDateStore();
 
   return (
     <main className="flex flex-col w-full h-screen items-stretch overflow-hidden">
-      <TodoDailyView className="h-[calc(100%_-_72px)]" />
-      <Tabbar>
-        <div className="flex-1 flex flex-row gap-2">
-          <TabItem>
-            <Button
-              className={cn("w-full h-full my-auto", "bg-gray-100")}
-              variant="ghost"
-              onClick={() => routerPush(navigate, "/")}
-            >
-              <IconWithLabel labelText="홈">
-                <ListChecksIcon size={24} />
-              </IconWithLabel>
-            </Button>
-          </TabItem>
-        </div>
-        <div className="flex-none">
-          <RoundButton
-            className="-translate-y-10"
-            onClick={handleClickPlusTodo}
-          >
-            <PlusIcon size={32} />
-          </RoundButton>
-        </div>
-        <div className="flex-1 flex flex-row gap-2">
-          <TabItem>
-            <Button
-              className="w-full h-full my-auto opacity-30"
-              variant="ghost"
-              onClick={handleClickProfile}
-            >
-              <IconWithLabel labelText="프로필">
-                <User2Icon size={24} />
-              </IconWithLabel>
-            </Button>
-          </TabItem>
-          <TabItem>
-            <Button
-              className="w-full h-full my-auto"
-              variant="ghost"
-              onClick={() => routerPush(navigate, "/setting")}
-            >
-              <IconWithLabel labelText="설정">
-                <SettingsIcon size={24} />
-              </IconWithLabel>
-            </Button>
-          </TabItem>
-        </div>
-      </Tabbar>
+      <CalendarAppHeader className="h-[64px]">
+        <time
+          dateTime={formatDate(currentDate, "yyyy-MM")}
+          className="font-bold text-lg"
+        >
+          {formatKoreanDate(currentDate, "yyyy년 MM월")}
+        </time>
+      </CalendarAppHeader>
+      <TodoDailyView className="h-[calc(100%_-_64px)]" />
       <AddTodoDrawer />
       <TodoDetailDrawer />
       <AlertDialog />
