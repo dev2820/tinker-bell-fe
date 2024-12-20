@@ -219,7 +219,9 @@ export function TodoDetailDrawer() {
               </section>
             </Drawer.Description>
             <Drawer.Footer>
-              <Button onClick={onClose}>닫기</Button>
+              <Button variant="ghost" onClick={onClose}>
+                닫기
+              </Button>
             </Drawer.Footer>
           </Drawer.Content>
         </Drawer.Positioner>
