@@ -1,33 +1,43 @@
-import { ChangeEventHandler, ComponentProps, MouseEventHandler } from "react";
+import { ChangeEvent, ChangeEventHandler, MouseEventHandler } from "react";
 import { Todo } from "@/types/todo";
 import { cx } from "@/utils/cx";
 import { CheckIcon } from "lucide-react";
 import { cva } from "class-variance-authority";
+import { vibrateShort } from "@/utils/device/vibrate";
 
-export type TodoItemProps = ComponentProps<"div"> & {
+export type TodoItemProps = {
   todo: Todo;
+  className?: string;
   onChangeComplete?: ChangeEventHandler<HTMLDivElement>;
   onClickTodo?: MouseEventHandler<HTMLButtonElement>;
 };
 export function TodoItem(props: TodoItemProps) {
-  const { todo, onChangeComplete, onClickTodo, className, ...rest } = props;
+  const { todo, className, onChangeComplete, onClickTodo } = props;
+
+  const handleChangeComplete = (e: ChangeEvent<HTMLInputElement>) => {
+    onChangeComplete?.(e);
+    vibrateShort();
+  };
 
   return (
     <div
       className={cx(
         "todo",
-        "gap-2 flex flex-row h-12 border border-gray-200 bg-white rounded-md px-4 place-items-center",
+        "gap-2 flex flex-row min-h-12 border border-gray-200 bg-white rounded-lg px-4 my-2 items-start pb-[11px]",
         className
       )}
-      {...rest}
     >
-      <label className={cx("inline-flex place-items-center justify-center")}>
+      <label
+        className={cx(
+          "inline-flex place-items-center justify-center pt-[13px]"
+        )}
+      >
         <input
           type="checkbox"
           className={cx("peer hidden")}
           data-todo-id={todo.id}
-          checked={todo.isCompleted}
-          onChange={onChangeComplete}
+          defaultChecked={todo.isCompleted}
+          onChange={handleChangeComplete}
         />
         <div className={cx(todoCheckboxStyle({ size: "md" }))}>
           <CheckIcon
@@ -38,7 +48,7 @@ export function TodoItem(props: TodoItemProps) {
       </label>
       <button
         className={cx(
-          "flex-1 h-full text-left text-ellipsis overflow-hidden whitespace-nowrap",
+          "flex-1 h-full text-left whitespace-pre-line select-none pt-[11px]",
           todo.isCompleted ? "line-through text-disabled" : ""
         )}
         data-todo-id={todo.id}

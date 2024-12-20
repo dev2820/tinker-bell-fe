@@ -2,7 +2,7 @@ import { useDrag } from "@use-gesture/react";
 import { useSpring, animated, config } from "@react-spring/web";
 import { clamp } from "@/utils/clamp";
 import { addMonths, addWeeks, isSameDay, isSaturday, isSunday } from "date-fns";
-import { forwardRef, useCallback, useState } from "react";
+import { forwardRef, useCallback, useEffect, useState } from "react";
 import { Swiper, SwiperItem } from "@/components/ui/Swiper";
 import { DailyTodoList } from "./todo/DailyTodoList";
 import { useCurrentDateStore } from "@/stores/current-date";
@@ -11,6 +11,7 @@ import { useMonthlyTodos } from "@/hooks/use-monthly-todos";
 import { useTodos } from "@/hooks/use-todos";
 import { cn } from "@/lib/utils";
 import { getCalendarDays, getWeekDays } from "@/utils/date-time";
+import { Button } from "terra-design-system/react";
 
 const CELL_HEIGHT = 56;
 const MAX_HEIGHT = CELL_HEIGHT * 6;
@@ -28,6 +29,7 @@ export const DateSelector = forwardRef<HTMLDivElement, DateSelectorProps>(
     );
     const daysInCalendar = getCalendarDays(currentDate);
     const thisWeek = getWeek(daysInCalendar, currentDate);
+    const [isReorderMode, setIsReorderMode] = useState<boolean>(false);
     const [isDragging, setIsDragging] = useState<boolean>(false);
     const [{ h }, api] = useSpring(() => ({
       h: CELL_HEIGHT,
@@ -125,6 +127,14 @@ export const DateSelector = forwardRef<HTMLDivElement, DateSelectorProps>(
       [changeCurrentDate]
     );
 
+    const handleClickChangeOrder = () => {
+      setIsReorderMode(!isReorderMode);
+    };
+
+    useEffect(() => {
+      setIsReorderMode(false);
+    }, [currentDate]);
+
     return (
       <div
         ref={ref}
@@ -190,11 +200,38 @@ export const DateSelector = forwardRef<HTMLDivElement, DateSelectorProps>(
           className="pt-4 w-full flex flex-col justify-center place-items-center overflow-y-hidden"
           style={{ height: todoListHeight }}
         >
-          <div className="w-full h-full pt-4 overflow-y-auto">
-            <DailyTodoList
-              className="w-full"
-              currentDate={currentDate}
-            ></DailyTodoList>
+          <div className="w-full h-full pt-4">
+            <div className="h-8 flex flex-row-reverse px-4">
+              {!isReorderMode && (
+                <Button
+                  theme="neutral"
+                  size="xs"
+                  variant="ghost"
+                  onClick={handleClickChangeOrder}
+                  className="text-xs"
+                >
+                  순서 바꾸기
+                </Button>
+              )}
+              {isReorderMode && (
+                <Button
+                  theme="neutral"
+                  size="xs"
+                  variant="ghost"
+                  onClick={handleClickChangeOrder}
+                  className="text-xs"
+                >
+                  변경 완료
+                </Button>
+              )}
+            </div>
+            <div className="w-full h-[calc(100%_-_2rem)] overflow-y-auto">
+              <DailyTodoList
+                className="w-full"
+                currentDate={currentDate}
+                reorderMode={isReorderMode}
+              ></DailyTodoList>
+            </div>
           </div>
         </animated.div>
       </div>
