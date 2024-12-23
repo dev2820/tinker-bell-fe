@@ -13,11 +13,11 @@ export const TodoTitleTextarea = forwardRef<
   return (
     <TextareaAutosize
       className={cx(
-        "resize-none focus:outline-none bg-white text-black text-lg",
+        "resize-none rounded-md p-2 border bg-white text-md focus:border-primary outline-primary border-gray-300",
         className
       )}
       ref={ref}
-      minRows={2}
+      minRows={1}
       maxRows={3}
       {...rest}
     />

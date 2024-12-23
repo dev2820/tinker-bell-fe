@@ -11,6 +11,7 @@ export type RawTodo = {
   date: string;
   isCompleted: boolean;
   order: number;
+  description: string;
 };
 
 export async function fetchTodos(startDate: Date, endDate: Date) {
@@ -93,12 +94,13 @@ export async function deleteTodo(payload: DeleteTodoPayload) {
 
 type CreateTodoPayload = Omit<Todo, "id" | "isCompleted">;
 export async function createTodo(payload: CreateTodoPayload) {
-  const { title, date } = payload;
+  const { title, description, date } = payload;
   const isoDate = toISODate(date);
   const result = await authAPI
     .post(`todos`, {
       body: JSON.stringify({
         title: title,
+        description: description,
         date: isoDate,
       }),
       headers: {
@@ -114,13 +116,14 @@ type UpdateTodoPayload = Partial<Omit<Todo, "id">> & Pick<Todo, "id">;
 export async function updateTodo(
   payload: UpdateTodoPayload
 ): Promise<KyResponse> {
-  const { id, title, date, isCompleted } = payload;
+  const { id, title, date, description, isCompleted } = payload;
 
   return authAPI.put(`todos/${id}`, {
     body: JSON.stringify({
       title: title,
       date: date && toISODate(date),
       isCompleted: isCompleted,
+      description: description,
     }),
     headers: {
       Authorization: `Bearer ${Cookies.get("accessToken")}`,
@@ -161,6 +164,7 @@ export const toTodo = (rawTodo: RawTodo): Todo => {
 
   return {
     ...rawTodo,
+    description: rawTodo.description ?? "",
     date: {
       year: date.getFullYear(),
       month: date.getMonth() + 1,

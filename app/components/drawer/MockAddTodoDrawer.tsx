@@ -1,7 +1,7 @@
-import { Button, Drawer, Portal } from "terra-design-system/react";
-import { TodoTitleTextarea } from "../todo/TodoTitleInput";
+import { Button, Drawer, Portal, Textarea } from "terra-design-system/react";
+import { TodoTitleTextarea } from "../todo/TodoTitleTextarea";
 import { useAddTodoDrawerStore } from "@/stores/add-todo-drawer";
-import { KeyboardEvent, ChangeEvent, useState } from "react";
+import { ChangeEvent, useState } from "react";
 import { useCurrentDateStore } from "@/stores/current-date";
 import { useMockTodo } from "@/hooks/use-mock-todo";
 
@@ -9,6 +9,7 @@ export function MockAddTodoDrawer() {
   const addTodoDrawer = useAddTodoDrawerStore();
   const { currentDate } = useCurrentDateStore();
   const [title, setTitle] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
   const { createTodo } = useMockTodo(currentDate);
 
   const handleCloseCreateTodo = () => {
@@ -19,27 +20,11 @@ export function MockAddTodoDrawer() {
   const handleChangeTitle = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setTitle(e.currentTarget.value);
   };
-  const handleKeydownTitle = async (e: KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.nativeEvent.isComposing) {
-      return;
-    }
-    if (e.key === "Enter") {
-      createTodo({
-        title: title,
-        date: {
-          year: currentDate.getFullYear(),
-          month: currentDate.getMonth() + 1,
-          day: currentDate.getDate(),
-        },
-        order: 0,
-      });
 
-      setTitle("");
-    }
-  };
   const handleClickCreateTodo = async () => {
     createTodo({
       title: title,
+      description: description,
       date: {
         year: currentDate.getFullYear(),
         month: currentDate.getMonth() + 1,
@@ -49,6 +34,10 @@ export function MockAddTodoDrawer() {
     });
     addTodoDrawer.onClose();
     setTitle("");
+  };
+
+  const handleChangeDescription = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    setDescription(e.currentTarget.value);
   };
 
   return (
@@ -69,14 +58,19 @@ export function MockAddTodoDrawer() {
                 <TodoTitleTextarea
                   value={title}
                   onChange={handleChangeTitle}
-                  onKeyDown={handleKeydownTitle}
                   className="flex-1"
                   placeholder="할 일을 입력해주세요"
                   enterKeyHint="done"
                 />
               </div>
             </Drawer.Header>
-            <Drawer.Body></Drawer.Body>
+            <Drawer.Body>
+              <Textarea
+                value={description}
+                placeholder="설명"
+                onChange={handleChangeDescription}
+              ></Textarea>
+            </Drawer.Body>
             <Drawer.Footer>
               <Button
                 variant="outline"

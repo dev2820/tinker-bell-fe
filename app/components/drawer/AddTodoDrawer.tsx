@@ -1,7 +1,7 @@
-import { Button, Drawer, Portal } from "terra-design-system/react";
-import { TodoTitleTextarea } from "../todo/TodoTitleInput";
+import { Button, Drawer, Portal, Textarea } from "terra-design-system/react";
+import { TodoTitleTextarea } from "../todo/TodoTitleTextarea";
 import { useAddTodoDrawerStore } from "@/stores/add-todo-drawer";
-import { KeyboardEvent, ChangeEvent, useState } from "react";
+import { ChangeEvent, useState } from "react";
 import { useDailyTodos } from "@/hooks/use-daily-todos";
 import { useCurrentDateStore } from "@/stores/current-date";
 import { SendHorizonalIcon } from "lucide-react";
@@ -10,6 +10,7 @@ export function AddTodoDrawer() {
   const addTodoDrawer = useAddTodoDrawerStore();
   const { currentDate } = useCurrentDateStore();
   const [title, setTitle] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
 
   const { createTodo } = useDailyTodos(currentDate);
 
@@ -25,31 +26,11 @@ export function AddTodoDrawer() {
     }
     setTitle(e.currentTarget.value);
   };
-  const handleKeydownTitle = async (e: KeyboardEvent<HTMLTextAreaElement>) => {
-    setTitle(e.currentTarget.value);
-    if (e.nativeEvent.isComposing) {
-      return;
-    }
-    if (e.key === "Enter") {
-      if (title.length === 0) {
-        return;
-      }
-      createTodo({
-        title: title,
-        date: {
-          year: currentDate.getFullYear(),
-          month: currentDate.getMonth() + 1,
-          day: currentDate.getDate(),
-        },
-        order: 0,
-      });
 
-      setTitle("");
-    }
-  };
   const handleClickCreateTodo = async () => {
     createTodo({
       title: title,
+      description: description,
       date: {
         year: currentDate.getFullYear(),
         month: currentDate.getMonth() + 1,
@@ -59,6 +40,10 @@ export function AddTodoDrawer() {
     });
     addTodoDrawer.onClose();
     setTitle("");
+  };
+
+  const handleChangeDescription = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    setDescription(e.currentTarget.value);
   };
 
   return (
@@ -75,18 +60,20 @@ export function AddTodoDrawer() {
         <Drawer.Positioner>
           <Drawer.Content className="h-full min-h-96 rounded-t-lg pt-4">
             <Drawer.Header className="h-full">
-              <div className="flex flex-row">
-                <TodoTitleTextarea
-                  value={title}
-                  onChange={handleChangeTitle}
-                  onKeyDown={handleKeydownTitle}
-                  className="flex-1"
-                  placeholder="할 일을 입력해주세요"
-                  enterKeyHint="done"
-                />
-              </div>
+              <TodoTitleTextarea
+                value={title}
+                onChange={handleChangeTitle}
+                placeholder="할 일을 입력해주세요"
+                enterKeyHint="done"
+              />
             </Drawer.Header>
-            <Drawer.Body></Drawer.Body>
+            <Drawer.Body>
+              <Textarea
+                value={description}
+                placeholder="설명"
+                onChange={handleChangeDescription}
+              ></Textarea>
+            </Drawer.Body>
             <Drawer.Footer>
               <Button
                 variant="ghost"

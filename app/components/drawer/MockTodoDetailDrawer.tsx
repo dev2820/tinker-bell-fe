@@ -4,8 +4,9 @@ import {
   Drawer,
   IconButton,
   Portal,
+  Textarea,
 } from "terra-design-system/react";
-import { TodoTitleTextarea } from "../todo/TodoTitleInput";
+import { TodoTitleTextarea } from "../todo/TodoTitleTextarea";
 import { ChangeEvent, useState } from "react";
 import { useTodoDetailDrawerStore } from "@/stores/todo-detail-drawer";
 import { CalendarIcon, Trash2Icon } from "lucide-react";
@@ -54,6 +55,18 @@ export function MockTodoDetailDrawer() {
       });
       debouncedUpdateTodoById(currentTodo.id, {
         title: newTitle,
+      });
+    }
+  };
+
+  const handleUpdateDescription = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    const newDescription = e.currentTarget.value;
+    if (currentTodo) {
+      changeCurrentTodo({
+        description: newDescription,
+      });
+      debouncedUpdateTodoById(currentTodo.id, {
+        description: newDescription,
       });
     }
   };
@@ -109,117 +122,130 @@ export function MockTodoDetailDrawer() {
             onFocus={(e) => e.preventDefault()}
           >
             <Drawer.Header>
-              <Drawer.Title className="w-full">
-                <div className="flex flex-row place-items-start h-auto">
-                  <TodoTitleTextarea
-                    value={currentTodo.title}
-                    onChange={handleUpdateTitle}
-                    className="w-full h-8 min-w-0"
-                    placeholder="할 일을 입력해주세요"
-                  />
-                  <IconButton
-                    size="md"
-                    variant="ghost"
-                    onClick={handleClickDeleteCurrentTodo}
-                    className="flex-none -mt-1.5"
-                  >
-                    <Trash2Icon size={24} />
-                  </IconButton>
-                </div>
-              </Drawer.Title>
+              <div className="flex flex-row place-items-start h-auto">
+                <TodoTitleTextarea
+                  value={currentTodo.title}
+                  onChange={handleUpdateTitle}
+                  className="w-full min-w-0 text-md"
+                  placeholder="할 일을 입력해주세요"
+                />
+                <IconButton
+                  size="md"
+                  variant="ghost"
+                  onClick={handleClickDeleteCurrentTodo}
+                  className="flex-none"
+                >
+                  <Trash2Icon size={24} />
+                </IconButton>
+              </div>
             </Drawer.Header>
-            <Drawer.Description>
-              <section className="flex flex-row place-items-center gap-3 px-4">
-                <CalendarIcon size={24} />
-                <Dialog.Root>
-                  {`${currentTodo.date.year}-${currentTodo.date.month
-                    .toString()
-                    .padStart(2, "0")}-${currentTodo.date.day
-                    .toString()
-                    .padStart(2, "0")}`}
-                  <Dialog.Trigger asChild>
-                    <IconButton size="sm" onClick={handleClickCalendarIcon}>
-                      <CalendarIcon size={24} />
-                    </IconButton>
-                  </Dialog.Trigger>
-                  <Dialog.Backdrop />
-                  <Dialog.Positioner>
-                    <Dialog.Content className="w-4/5 min-w-92 h-112 py-6 flex flex-col">
-                      <Dialog.Title className="text-center flex-none px-4">
-                        날짜 변경
-                      </Dialog.Title>
-                      <Dialog.Description className="flex-1">
-                        <CalendarRoot
-                          baseDate={currentDate}
-                          onSelectDate={handleSelectDate}
-                          onChangeShownDate={handleChangeShownDate}
-                        >
-                          <CalendarHeader />
-                          <CalendarContainer className="px-4">
-                            {(year, month) => (
-                              <CalendarGrid
-                                className=""
-                                year={year}
-                                month={month}
-                              >
-                                {(days) => (
-                                  <>
-                                    {days.map(([year, month, day]) => (
-                                      <CalendarCellWithLabel
-                                        key={`${year}-${month}-${day}`}
-                                        year={year}
-                                        month={month}
-                                        day={day}
-                                        className={cn(
-                                          "w-full h-10",
-                                          isSameDay(
-                                            new Date(year, month, day),
-                                            selectedDate
-                                          ) && "bg-gray-200"
-                                        )}
-                                        data-year={year}
-                                        data-month={month}
-                                        data-day={day}
-                                        isOutOfMonth={
-                                          month !== shownDate.getMonth()
-                                        }
-                                      />
-                                    ))}
-                                  </>
-                                )}
-                              </CalendarGrid>
-                            )}
-                          </CalendarContainer>
-                        </CalendarRoot>
-                      </Dialog.Description>
-                      <div className="flex flex-row-reverse flex-none px-4 gap-3">
-                        <Dialog.CloseTrigger asChild>
-                          <Button
-                            theme="primary"
-                            onClick={handleClickUpdateDateConfirm}
+            <Drawer.Body className="text-md">
+              <Textarea
+                value={currentTodo.description}
+                placeholder="설명"
+                onChange={handleUpdateDescription}
+                className="mb-4"
+              ></Textarea>
+              <section>
+                <div className="flex flex-row gap-3 place-items-center mb-2 text-gray-800">
+                  <CalendarIcon size={24} />
+                  <span>
+                    {`${currentTodo.date.year}-${currentTodo.date.month
+                      .toString()
+                      .padStart(2, "0")}-${currentTodo.date.day
+                      .toString()
+                      .padStart(2, "0")}`}
+                  </span>
+                </div>
+                <div className="flex flex-row justify-start gap-3 w-full">
+                  <h3 className="my-auto">미루기 옵션</h3>
+                  <Button size="xs" onClick={handleClickDelayTomorrow}>
+                    내일로
+                  </Button>
+                  <Button size="xs" onClick={handleClickDelayWeek}>
+                    다음주로
+                  </Button>
+                  <Dialog.Root>
+                    <Dialog.Trigger asChild>
+                      <Button size="xs" onClick={handleClickCalendarIcon}>
+                        직접 선택
+                      </Button>
+                    </Dialog.Trigger>
+                    <Dialog.Backdrop />
+                    <Dialog.Positioner>
+                      <Dialog.Content className="w-4/5 min-w-92 h-112 py-6 flex flex-col">
+                        <Dialog.Title className="text-center flex-none px-4">
+                          날짜 변경
+                        </Dialog.Title>
+                        <Dialog.Description className="flex-1">
+                          <CalendarRoot
+                            baseDate={currentDate}
+                            onSelectDate={handleSelectDate}
+                            onChangeShownDate={handleChangeShownDate}
                           >
-                            확인
-                          </Button>
-                        </Dialog.CloseTrigger>
-                        <Dialog.CloseTrigger asChild>
-                          <Button variant="outline" theme="neutral">
-                            취소
-                          </Button>
-                        </Dialog.CloseTrigger>
-                      </div>
-                    </Dialog.Content>
-                  </Dialog.Positioner>
-                </Dialog.Root>
-                <Button size="sm" onClick={handleClickDelayTomorrow}>
-                  내일로
-                </Button>
-                <Button size="sm" onClick={handleClickDelayWeek}>
-                  다음주로
-                </Button>
+                            <CalendarHeader />
+                            <CalendarContainer className="px-4">
+                              {(year, month) => (
+                                <CalendarGrid
+                                  className=""
+                                  year={year}
+                                  month={month}
+                                >
+                                  {(days) => (
+                                    <>
+                                      {days.map(([year, month, day]) => (
+                                        <CalendarCellWithLabel
+                                          key={`${year}-${month}-${day}`}
+                                          year={year}
+                                          month={month}
+                                          day={day}
+                                          className={cn(
+                                            "w-full h-10",
+                                            isSameDay(
+                                              new Date(year, month, day),
+                                              selectedDate
+                                            ) && "bg-gray-200"
+                                          )}
+                                          data-year={year}
+                                          data-month={month}
+                                          data-day={day}
+                                          isOutOfMonth={
+                                            month !== shownDate.getMonth()
+                                          }
+                                        />
+                                      ))}
+                                    </>
+                                  )}
+                                </CalendarGrid>
+                              )}
+                            </CalendarContainer>
+                          </CalendarRoot>
+                        </Dialog.Description>
+                        <div className="flex flex-row-reverse flex-none px-4 gap-3">
+                          <Dialog.CloseTrigger asChild>
+                            <Button
+                              theme="primary"
+                              onClick={handleClickUpdateDateConfirm}
+                            >
+                              확인
+                            </Button>
+                          </Dialog.CloseTrigger>
+                          <Dialog.CloseTrigger asChild>
+                            <Button variant="outline" theme="neutral">
+                              취소
+                            </Button>
+                          </Dialog.CloseTrigger>
+                        </div>
+                      </Dialog.Content>
+                    </Dialog.Positioner>
+                  </Dialog.Root>
+                </div>
               </section>
-            </Drawer.Description>
+            </Drawer.Body>
             <Drawer.Footer>
-              <Button onClick={onClose}>닫기</Button>
+              <Button variant="ghost" onClick={onClose}>
+                닫기
+              </Button>
             </Drawer.Footer>
           </Drawer.Content>
         </Drawer.Positioner>

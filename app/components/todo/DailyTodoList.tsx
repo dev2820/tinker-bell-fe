@@ -51,6 +51,7 @@ export function DailyTodoList(props: DailyTodoListProps) {
     const todo = [...incompletedTodos, ...completedTodos]?.find(
       (todo) => todo.id === todoId
     );
+    console.log(todo);
     if (todo) {
       todoDetailDrawer.changeCurrentTodo(todo);
     }

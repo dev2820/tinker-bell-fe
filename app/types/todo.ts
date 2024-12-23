@@ -8,6 +8,7 @@ export type Todo = {
   };
   isCompleted: boolean;
   order: number;
+  description: string;
 };
 
 // todo: date를 분해할 것 -> 년월일만 저장하도록, toTodo는 한국 시간으로 컨버팅해서
