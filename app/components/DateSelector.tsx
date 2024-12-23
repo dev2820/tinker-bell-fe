@@ -273,11 +273,12 @@ function Weeks({
   return (
     <div className="w-full flex flex-row">
       {weekDays.map((date) => (
-        <div
+        <button
           className="relative h-14 w-full flex flex-col place-items-center justify-center"
           key={date.toISOString()}
+          onClick={() => onClickDate(date)}
         >
-          <button
+          <div
             className={cn(
               "rounded-full h-8 w-8 text-center flex flex-row justify-center place-items-center transition-colors duration-300 bg-transparent text-black",
               isSunday(date) && "text-red-500",
@@ -286,16 +287,15 @@ function Weeks({
                 ? "bg-primary text-primary-foreground"
                 : "bg-transparent"
             )}
-            onClick={() => onClickDate(date)}
           >
             {date.getDate()}
-          </button>
+          </div>
           <small className="absolute top-11 text-[10px]">
             {totalTodoMap
               .get(`${date.getMonth() + 1}-${date.getDate()}`)
               ?.join("/")}
           </small>
-        </div>
+        </button>
       ))}
     </div>
   );
