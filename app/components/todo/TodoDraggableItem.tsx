@@ -1,13 +1,7 @@
-import {
-  ChangeEvent,
-  ChangeEventHandler,
-  MouseEventHandler,
-  useState,
-} from "react";
+import { ChangeEventHandler, MouseEventHandler, useState } from "react";
 import { Todo } from "@/types/todo";
 import { cx } from "@/utils/cx";
-import { CheckIcon, EqualIcon } from "lucide-react";
-import { cva } from "class-variance-authority";
+import { EqualIcon } from "lucide-react";
 import { Reorder, useDragControls } from "framer-motion";
 import { vibrateShort } from "@/utils/device/vibrate";
 
@@ -18,14 +12,10 @@ export type TodoItemProps = {
   onClickTodo?: MouseEventHandler<HTMLButtonElement>;
 };
 export function TodoDraggableItem(props: TodoItemProps) {
-  const { todo, className, onChangeComplete, onClickTodo } = props;
+  const { todo, className, onClickTodo } = props;
   const controls = useDragControls();
   const [isDragging, setIsDragging] = useState(false);
 
-  const handleChangeComplete = (e: ChangeEvent<HTMLInputElement>) => {
-    onChangeComplete?.(e);
-    vibrateShort();
-  };
   const handleDragStart = () => {
     setIsDragging(true);
     vibrateShort();
@@ -56,25 +46,6 @@ export function TodoDraggableItem(props: TodoItemProps) {
           className
         )}
       >
-        <label
-          className={cx(
-            "inline-flex place-items-center justify-center pt-[13px]"
-          )}
-        >
-          <input
-            type="checkbox"
-            className={cx("peer hidden")}
-            data-todo-id={todo.id}
-            defaultChecked={todo.isCompleted}
-            onChange={handleChangeComplete}
-          />
-          <div className={cx(todoCheckboxStyle({ size: "md" }))}>
-            <CheckIcon
-              size={14}
-              className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2"
-            />
-          </div>
-        </label>
         <button
           className={cx(
             "flex-1 h-full text-left whitespace-pre-line select-none pt-[11px]",
@@ -96,26 +67,3 @@ export function TodoDraggableItem(props: TodoItemProps) {
     </Reorder.Item>
   );
 }
-
-const todoCheckboxStyle = cva(
-  [
-    "relative",
-    "rounded-full",
-    "border border-gray-400 peer-checked:border-primary",
-    "text-transparent peer-checked:text-primary-foreground",
-    "bg-transparent peer-checked:bg-primary",
-    "transition-colors duration-200",
-  ],
-  {
-    variants: {
-      size: {
-        sm: "w-4 h-4",
-        md: "w-5 h-5",
-        lg: "w-6 h-6",
-      },
-    },
-    defaultVariants: {
-      size: "md",
-    },
-  }
-);

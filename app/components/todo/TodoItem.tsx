@@ -27,6 +27,16 @@ export function TodoItem(props: TodoItemProps) {
         className
       )}
     >
+      <button
+        className={cx(
+          "flex-1 h-full text-left whitespace-pre-line select-none pt-[11px]",
+          todo.isCompleted ? "line-through text-disabled" : ""
+        )}
+        data-todo-id={todo.id}
+        onClick={onClickTodo}
+      >
+        {todo.title}
+      </button>
       <label
         className={cx(
           "inline-flex place-items-center justify-center pt-[13px]"
@@ -46,16 +56,6 @@ export function TodoItem(props: TodoItemProps) {
           />
         </div>
       </label>
-      <button
-        className={cx(
-          "flex-1 h-full text-left whitespace-pre-line select-none pt-[11px]",
-          todo.isCompleted ? "line-through text-disabled" : ""
-        )}
-        data-todo-id={todo.id}
-        onClick={onClickTodo}
-      >
-        {todo.title}
-      </button>
     </div>
   );
 }

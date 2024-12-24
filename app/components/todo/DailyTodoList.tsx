@@ -8,6 +8,8 @@ import { Reorder, AnimatePresence } from "framer-motion";
 import { ChangeEvent, MouseEvent } from "react";
 import { TodoDraggableItem } from "./TodoDraggableItem";
 import { TodoItem } from "./TodoItem";
+import { useModeStore } from "@/stores/mode";
+import { useShallow } from "zustand/shallow";
 
 type DailyTodoListProps = {
   className?: string;
@@ -26,10 +28,14 @@ export function DailyTodoList(props: DailyTodoListProps) {
     reorderIncompletedTodos,
   } = useDailyTodos(currentDate);
   const { toaster, showToast } = useToast();
-
+  const { isReorderMode } = useModeStore(
+    useShallow((state) => ({ isReorderMode: state.isReorderMode }))
+  );
   const todoDetailDrawer = useTodoDetailDrawerStore();
 
   const handleChangeComplete = (e: ChangeEvent<HTMLElement>) => {
+    if (isReorderMode) return;
+
     const $target = e.currentTarget;
     const todoId = Number($target.dataset["todoId"]);
     const todo = findTodoById(todoId);
@@ -45,6 +51,8 @@ export function DailyTodoList(props: DailyTodoListProps) {
     vibrateShort();
   };
   const handleClickTodoItem = (e: MouseEvent<HTMLElement>) => {
+    if (isReorderMode) return;
+
     const $target = e.currentTarget;
     const todoId = Number($target.dataset["todoId"]);
 
