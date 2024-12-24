@@ -1,4 +1,3 @@
-import { Failed, Success } from "@/types/monad";
 import { Todo } from "@/types/todo";
 import { authAPI } from "..";
 import Cookies from "js-cookie";
@@ -57,31 +56,6 @@ export async function fetchTodosByDate(date: Date) {
     }>();
 }
 
-type FetchTodoPayload = Pick<Todo, "id">;
-export async function fetchTodo(payload: FetchTodoPayload) {
-  const { id } = payload;
-  try {
-    const result = await authAPI
-      .get(`todos/${id}`, {
-        headers: {
-          Authorization: `Bearer ${Cookies.get("accessToken")}`,
-        },
-      })
-      .json<RawTodo>();
-    return {
-      isFailed: false,
-      value: toTodo(result),
-      error: null,
-    } as Success<Todo>;
-  } catch (err) {
-    return {
-      isFailed: true,
-      value: null,
-      error: err as Error,
-    } as Failed<Error>;
-  }
-}
-
 type DeleteTodoPayload = Pick<Todo, "id">;
 export async function deleteTodo(payload: DeleteTodoPayload) {
   const { id } = payload;
@@ -109,7 +83,7 @@ export async function createTodo(payload: CreateTodoPayload) {
     })
     .json<RawTodo>();
 
-  return toTodo(result);
+  return result;
 }
 
 type UpdateTodoPayload = Partial<Omit<Todo, "id">> & Pick<Todo, "id">;
@@ -158,20 +132,6 @@ export async function updateTodoOrder(payload: UpdateTodoOrderPayload) {
     },
   });
 }
-
-export const toTodo = (rawTodo: RawTodo): Todo => {
-  const date = new Date(rawTodo.date);
-
-  return {
-    ...rawTodo,
-    description: rawTodo.description ?? "",
-    date: {
-      year: date.getFullYear(),
-      month: date.getMonth() + 1,
-      day: date.getDate(),
-    },
-  };
-};
 
 const toISODate = (date: Todo["date"]) => {
   return new Date(

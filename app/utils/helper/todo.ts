@@ -93,5 +93,21 @@ export const toTodo = (rawTodo: RawTodo): Todo => {
       month: date.getMonth() + 1,
       day: date.getDate(),
     },
+    description: rawTodo.description ?? "",
+  };
+};
+
+export const getDefaultTodo = (): Todo => {
+  return {
+    id: -1,
+    title: "",
+    date: {
+      year: 1970,
+      month: 1,
+      day: 1,
+    },
+    description: "",
+    order: -1,
+    isCompleted: false,
   };
 };
