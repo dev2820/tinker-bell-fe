@@ -49,7 +49,7 @@ export function TodoItem(props: TodoItemProps) {
           defaultChecked={todo.isCompleted}
           onChange={handleChangeComplete}
         />
-        <div className={cx(todoCheckboxStyle({ size: "md" }))}>
+        <div className={cx(todoCheckboxStyle({ size: "md" }), "mx-1")}>
           <CheckIcon
             size={14}
             className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2"
