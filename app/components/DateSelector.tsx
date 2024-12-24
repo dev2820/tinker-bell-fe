@@ -12,6 +12,7 @@ import { useTodos } from "@/hooks/use-todos";
 import { cn } from "@/lib/utils";
 import { getCalendarDays, getWeekDays } from "@/utils/date-time";
 import { Button } from "terra-design-system/react";
+import { useModeStore } from "@/stores/mode";
 
 const CELL_HEIGHT = 56;
 const MAX_HEIGHT = CELL_HEIGHT * 6;
@@ -27,9 +28,9 @@ export const DateSelector = forwardRef<HTMLDivElement, DateSelectorProps>(
     const { currentDate, changeCurrentDate } = useCurrentDateStore(
       useShallow((state) => ({ ...state }))
     );
+    const { isReorderMode, onReorderMode, offReorderMode } = useModeStore();
     const daysInCalendar = getCalendarDays(currentDate);
     const thisWeek = getWeek(daysInCalendar, currentDate);
-    const [isReorderMode, setIsReorderMode] = useState<boolean>(false);
     const [isDragging, setIsDragging] = useState<boolean>(false);
     const [{ h }, api] = useSpring(() => ({
       h: CELL_HEIGHT,
@@ -127,13 +128,13 @@ export const DateSelector = forwardRef<HTMLDivElement, DateSelectorProps>(
       [changeCurrentDate]
     );
 
-    const handleClickChangeOrder = () => {
-      setIsReorderMode(!isReorderMode);
+    const handleClickOnReorderMode = () => {
+      onReorderMode();
     };
 
     useEffect(() => {
-      setIsReorderMode(false);
-    }, [currentDate]);
+      offReorderMode();
+    }, [currentDate, offReorderMode]);
 
     return (
       <div
@@ -207,21 +208,10 @@ export const DateSelector = forwardRef<HTMLDivElement, DateSelectorProps>(
                   theme="neutral"
                   size="xs"
                   variant="ghost"
-                  onClick={handleClickChangeOrder}
+                  onClick={handleClickOnReorderMode}
                   className="text-xs"
                 >
                   순서 바꾸기
-                </Button>
-              )}
-              {isReorderMode && (
-                <Button
-                  theme="neutral"
-                  size="xs"
-                  variant="ghost"
-                  onClick={handleClickChangeOrder}
-                  className="text-xs"
-                >
-                  변경 완료
                 </Button>
               )}
             </div>

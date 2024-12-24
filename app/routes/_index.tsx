@@ -16,6 +16,9 @@ import { CalendarAppHeader } from "@/components/CalendarAppHeader";
 import { RoundButton } from "@/components/ui/RoundButton";
 import { PlusIcon } from "lucide-react";
 import { useAddTodoDrawerStore } from "@/stores/add-todo-drawer";
+import { useModeStore } from "@/stores/mode";
+import { useShallow } from "zustand/shallow";
+import { Button } from "terra-design-system/react";
 
 export const meta: MetaFunction = () => {
   return [
@@ -99,10 +102,20 @@ export default function Index() {
 
 function TodoPage() {
   const { currentDate } = useCurrentDateStore();
+  const { isReorderMode, offReorderMode } = useModeStore(
+    useShallow((state) => ({
+      isReorderMode: state.isReorderMode,
+      offReorderMode: state.offReorderMode,
+    }))
+  );
   const addTodoDrawer = useAddTodoDrawerStore();
 
   const handleClickPlusTodo = () => {
     addTodoDrawer.onOpen();
+  };
+
+  const handleDoneReorder = () => {
+    offReorderMode();
   };
 
   return (
@@ -116,10 +129,23 @@ function TodoPage() {
         </time>
       </CalendarAppHeader>
       <TodoDailyView className="h-[calc(100%_-_136px)]" />
-      <footer className="h-[72px] flex flex-row justify-center">
-        <RoundButton onClick={handleClickPlusTodo}>
-          <PlusIcon size={28} />
-        </RoundButton>
+      <footer className="h-[72px] flex flex-row justify-center px-4">
+        {!isReorderMode && (
+          <RoundButton onClick={handleClickPlusTodo}>
+            <PlusIcon size={28} />
+          </RoundButton>
+        )}
+        {isReorderMode && (
+          <Button
+            theme="primary"
+            variant="filled"
+            size="lg"
+            onClick={handleDoneReorder}
+            className="w-full h-14"
+          >
+            변경 완료
+          </Button>
+        )}
       </footer>
       <AddTodoDrawer />
       <TodoDetailDrawer />
