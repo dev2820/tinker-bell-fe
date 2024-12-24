@@ -24,6 +24,7 @@ export const useTodoDetailDrawerStore = create<
       day: 0,
     },
     isCompleted: false,
+    description: "",
     order: 0,
   },
   onOpen: () => {
