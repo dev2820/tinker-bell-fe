@@ -11,7 +11,7 @@ export type RawTodo = {
   date: string;
   isCompleted: boolean;
   order: number;
-  description: string;
+  description: string | null;
 };
 
 export async function fetchTodos(startDate: Date, endDate: Date) {
