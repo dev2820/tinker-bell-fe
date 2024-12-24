@@ -11,6 +11,8 @@ export const useCurrentTodo = (defaultTodo?: Todo) => {
         month: 1,
         day: 1,
       },
+      description: "",
+      order: -1,
       isCompleted: false,
     }
   );
