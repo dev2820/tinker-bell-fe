@@ -10,13 +10,13 @@ export function TodoDailyView(props: TodoDailyViewProps) {
   const { width, height } = useWindowSize();
 
   return (
-    <div className={cn("pb-4 flex flex-col relative", className)} {...rest}>
+    <div className={cn("flex flex-col relative", className)} {...rest}>
       <ClientOnly>
         {() => (
           <DateSelector
             className="flex-none"
             width={width - 32}
-            height={height - (72 + 48 + 32)}
+            height={height - 64}
           />
         )}
       </ClientOnly>

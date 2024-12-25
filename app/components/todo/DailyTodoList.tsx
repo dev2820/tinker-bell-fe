@@ -82,7 +82,7 @@ export function DailyTodoList(props: DailyTodoListProps) {
   }
   return (
     <div className={cn("overflow-y-auto", className)}>
-      <div className="overflow-y-scroll pb-8">
+      <div className="overflow-y-scroll">
         {!reorderMode && (
           <ul className="overflow-y-hidden overflow-x-hidden">
             {incompletedTodos.map((todo) => (

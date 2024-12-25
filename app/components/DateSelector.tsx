@@ -201,7 +201,7 @@ export const DateSelector = forwardRef<HTMLDivElement, DateSelectorProps>(
           className="pt-4 w-full flex flex-col justify-center place-items-center overflow-y-hidden"
           style={{ height: todoListHeight }}
         >
-          <div className="w-full h-full pt-4">
+          <div className="w-full h-full">
             <div className="h-8 flex flex-row-reverse px-4">
               {!isReorderMode && (
                 <Button
@@ -217,7 +217,7 @@ export const DateSelector = forwardRef<HTMLDivElement, DateSelectorProps>(
             </div>
             <div className="w-full h-[calc(100%_-_2rem)] overflow-y-auto">
               <DailyTodoList
-                className="w-full"
+                className="w-full pb-20"
                 currentDate={currentDate}
                 reorderMode={isReorderMode}
               ></DailyTodoList>

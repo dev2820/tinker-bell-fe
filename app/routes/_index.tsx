@@ -128,32 +128,30 @@ function TodoPage() {
           {formatKoreanDate(currentDate, "yyyy년 MM월")}
         </time>
       </CalendarAppHeader>
-      <TodoDailyView className="h-[calc(100%_-_136px)]" />
-      <footer className="h-[72px] flex flex-row justify-center px-4">
-        <CTAButton
-          shape="round"
-          className={cn(
-            "fixed bottom-4 h-14 pr-6 transition-transform duration-300 translate-y-0",
-            (isReorderMode || addTodoDrawer.isOpen) && "translate-y-64"
-          )}
-          onClick={handleClickPlusTodo}
-          leftIcon={<PlusIcon size={20} />}
-        >
-          할 일 추가
-        </CTAButton>
-        <CTAButton
-          theme="primary"
-          variant="filled"
-          size="lg"
-          onClick={handleDoneReorder}
-          className={cn(
-            "fixed bottom-4 w-[calc(100%_-_32px)] h-14 transition-transform duration-300",
-            isReorderMode ? "translate-y-0" : "translate-y-64"
-          )}
-        >
-          변경 완료
-        </CTAButton>
-      </footer>
+      <TodoDailyView className="h-[calc(100%_-_64px)]" />
+      <CTAButton
+        shape="round"
+        className={cn(
+          "fixed left-1/2 -translate-x-1/2 bottom-4 h-14 pr-6 transition-transform duration-300 translate-y-0",
+          (isReorderMode || addTodoDrawer.isOpen) && "translate-y-64"
+        )}
+        onClick={handleClickPlusTodo}
+        leftIcon={<PlusIcon size={20} />}
+      >
+        할 일 추가
+      </CTAButton>
+      <CTAButton
+        theme="primary"
+        variant="filled"
+        size="lg"
+        onClick={handleDoneReorder}
+        className={cn(
+          "fixed left-1/2 -translate-x-1/2 bottom-4 w-[calc(100%_-_32px)] h-14 transition-transform duration-300",
+          isReorderMode ? "translate-y-0" : "translate-y-64"
+        )}
+      >
+        변경 완료
+      </CTAButton>
       <AddTodoDrawer />
       <TodoDetailDrawer />
       <AlertDialog />
