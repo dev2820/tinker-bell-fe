@@ -84,7 +84,7 @@ export function DailyTodoList(props: DailyTodoListProps) {
     <div className={cn("overflow-y-auto", className)}>
       <div className="overflow-y-scroll pb-8">
         {!reorderMode && (
-          <>
+          <ul className="overflow-y-hidden overflow-x-hidden">
             {incompletedTodos.map((todo) => (
               <TodoItem
                 key={todo.id}
@@ -94,7 +94,7 @@ export function DailyTodoList(props: DailyTodoListProps) {
                 onClickTodo={handleClickTodoItem}
               />
             ))}
-          </>
+          </ul>
         )}
         {reorderMode && (
           <Reorder.Group
@@ -120,7 +120,7 @@ export function DailyTodoList(props: DailyTodoListProps) {
         )}
         {!nothingTodo && <hr className="w-[calc(100%_-_32px)] mx-auto my-8" />}
         {!reorderMode && (
-          <>
+          <ul className="overflow-y-hidden overflow-x-hidden">
             {completedTodos.map((todo) => (
               <TodoItem
                 key={todo.id}
@@ -130,7 +130,7 @@ export function DailyTodoList(props: DailyTodoListProps) {
                 onClickTodo={handleClickTodoItem}
               />
             ))}
-          </>
+          </ul>
         )}
         {reorderMode && (
           <Reorder.Group
