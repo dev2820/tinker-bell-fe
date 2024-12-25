@@ -17,14 +17,7 @@ export function AddTodoDrawer() {
   const handleCloseCreateTodo = () => {
     addTodoDrawer.onClose();
     setTitle("");
-  };
-
-  const handleChangeTitle = (e: ChangeEvent<HTMLTextAreaElement>) => {
-    if (e.currentTarget.value === "\n") {
-      setTitle("");
-      return;
-    }
-    setTitle(e.currentTarget.value);
+    setDescription("");
   };
 
   const handleClickCreateTodo = async () => {
@@ -40,8 +33,11 @@ export function AddTodoDrawer() {
     });
     addTodoDrawer.onClose();
     setTitle("");
+    setDescription("");
   };
-
+  const handleChangeTitle = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    setTitle(e.currentTarget.value);
+  };
   const handleChangeDescription = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setDescription(e.currentTarget.value);
   };
