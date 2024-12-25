@@ -60,7 +60,7 @@ export function AddTodoDrawer() {
                 value={title}
                 onChange={handleChangeTitle}
                 placeholder="할 일을 입력해주세요"
-                enterKeyHint="done"
+                // enterKeyHint="done"
               />
             </Drawer.Header>
             <Drawer.Body>
