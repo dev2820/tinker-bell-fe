@@ -138,6 +138,7 @@ export default {
       },
       boxShadow: {
         "1": "0px 4px 12px 0px rgba(52, 52, 52, 0.2)",
+        cta: "0 10px 15px -3px rgba(255, 127, 87, 0.30)",
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",

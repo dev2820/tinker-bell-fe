@@ -13,12 +13,12 @@ import { formatDate } from "date-fns";
 import { formatKoreanDate } from "@/utils/date-time";
 import { useCurrentDateStore } from "@/stores/current-date";
 import { CalendarAppHeader } from "@/components/CalendarAppHeader";
-import { RoundButton } from "@/components/ui/RoundButton";
 import { PlusIcon } from "lucide-react";
 import { useAddTodoDrawerStore } from "@/stores/add-todo-drawer";
 import { useModeStore } from "@/stores/mode";
 import { useShallow } from "zustand/shallow";
-import { Button } from "terra-design-system/react";
+import { CTAButton } from "@/components/ui/CTAButton";
+import { cn } from "@/lib/utils";
 
 export const meta: MetaFunction = () => {
   return [
@@ -130,22 +130,29 @@ function TodoPage() {
       </CalendarAppHeader>
       <TodoDailyView className="h-[calc(100%_-_136px)]" />
       <footer className="h-[72px] flex flex-row justify-center px-4">
-        {!isReorderMode && (
-          <RoundButton onClick={handleClickPlusTodo}>
-            <PlusIcon size={28} />
-          </RoundButton>
-        )}
-        {isReorderMode && (
-          <Button
-            theme="primary"
-            variant="filled"
-            size="lg"
-            onClick={handleDoneReorder}
-            className="w-full h-14"
-          >
-            변경 완료
-          </Button>
-        )}
+        <CTAButton
+          shape="round"
+          className={cn(
+            "fixed bottom-4 h-14 pr-6 transition-transform duration-300 translate-y-0",
+            (isReorderMode || addTodoDrawer.isOpen) && "translate-y-64"
+          )}
+          onClick={handleClickPlusTodo}
+          leftIcon={<PlusIcon size={20} />}
+        >
+          할 일 추가
+        </CTAButton>
+        <CTAButton
+          theme="primary"
+          variant="filled"
+          size="lg"
+          onClick={handleDoneReorder}
+          className={cn(
+            "fixed bottom-4 w-[calc(100%_-_32px)] h-14 transition-transform duration-300",
+            isReorderMode ? "translate-y-0" : "translate-y-64"
+          )}
+        >
+          변경 완료
+        </CTAButton>
       </footer>
       <AddTodoDrawer />
       <TodoDetailDrawer />

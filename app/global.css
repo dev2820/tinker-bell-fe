@@ -64,6 +64,7 @@
     --primary-pressed: var(--orange-700);
     --primary-foreground: var(--neutral-50);
     --shadow-color: var(--orange-500);
+
     --warning: var(--yellow-500);
     --error: var(--red-500);
     --secondary: 0 0% 96.1%;
