@@ -2,7 +2,7 @@ import { useDrag } from "@use-gesture/react";
 import { useSpring, animated, config } from "@react-spring/web";
 import { clamp } from "@/utils/clamp";
 import { addMonths, addWeeks, isSameDay, isSaturday, isSunday } from "date-fns";
-import { ComponentProps, useCallback, useEffect, useState } from "react";
+import { ComponentProps, useEffect, useState } from "react";
 import { Swiper, SwiperItem } from "@/components/ui/Swiper";
 import { DailyTodoList } from "./todo/DailyTodoList";
 import { useCurrentDateStore } from "@/stores/current-date";
@@ -103,28 +103,18 @@ export function DateSelector(props: DateSelectorProps) {
     changeCurrentDate(date);
   };
 
-  const handleChangeWeek = useCallback(
-    (direct: number) => {
-      changeCurrentDate(
-        addWeeks(
-          useCurrentDateStore.getState().currentDate,
-          direct > 0 ? 1 : -1
-        )
-      );
-    },
-    [changeCurrentDate]
-  );
-  const handleChangeMonth = useCallback(
-    (direct: number) => {
-      changeCurrentDate(
-        addMonths(
-          useCurrentDateStore.getState().currentDate,
-          direct > 0 ? 1 : -1
-        )
-      );
-    },
-    [changeCurrentDate]
-  );
+  const handleChangeWeek = (direct: number) => {
+    console.log(direct, useCurrentDateStore.getState().currentDate);
+    changeCurrentDate(
+      addWeeks(useCurrentDateStore.getState().currentDate, direct > 0 ? 1 : -1)
+    );
+  };
+
+  const handleChangeMonth = (direct: number) => {
+    changeCurrentDate(
+      addMonths(useCurrentDateStore.getState().currentDate, direct > 0 ? 1 : -1)
+    );
+  };
 
   const handleClickOnReorderMode = () => {
     onReorderMode();

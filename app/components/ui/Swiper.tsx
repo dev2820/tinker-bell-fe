@@ -9,9 +9,8 @@
  */
 
 import { cn } from "@/lib/utils";
-import { clamp } from "@/utils/clamp";
 import { cx } from "@/utils/cx";
-import { useSpring, config, animated } from "@react-spring/web";
+import { config, animated, useSpringValue } from "@react-spring/web";
 import { useDrag } from "@use-gesture/react";
 import {
   ComponentProps,
@@ -74,43 +73,39 @@ function SwiperContainer(props: SwiperContainerProps) {
   /**
    * useDrag 사용
    */
-  const [{ x }, api] = useSpring(() => ({
-    x: 0,
+  const x = useSpringValue(0, {
     config: { tension: 10, friction: 26, mass: 0.3 },
     onRest: (result) => {
       if (result.finished) {
         if (x.get() === width && !isDragging) {
           onPrev();
-          api.start({ x: 0, immediate: true });
+          x.start(0, { immediate: true });
         } else if (x.get() === -width && !isDragging) {
           onNext();
-          api.start({ x: 0, immediate: true });
+          x.start(0, { immediate: true });
         }
       }
     },
-  }));
+  });
   const preventEventInMotion = x.to((v) => {
     if (v !== 0 && isDragging) return "none";
     return "auto";
   });
 
   const next = () => {
-    api.start({
-      x: width,
+    x.start(-width, {
       immediate: false,
       config: config.stiff,
     });
   };
   const prev = () => {
-    api.start({
-      x: -width,
+    x.start(width, {
       immediate: false,
       config: config.stiff,
     });
   };
   const reset = () => {
-    api.start({
-      x: 0,
+    x.start(0, {
       immediate: false,
       config: config.wobbly,
     });
@@ -119,26 +114,30 @@ function SwiperContainer(props: SwiperContainerProps) {
   const bind = useDrag(
     ({ last, offset: [ox], distance: [distX], cancel }) => {
       if (last) {
-        if (distX > width * 0.1) {
-          ox > 0 ? next() : prev();
+        if (distX > width * 0.05) {
           cancel();
+          ox > 0 ? prev() : next();
         } else {
           reset();
         }
         changeIsDragging(false);
       } else {
         changeIsDragging(true);
-        api.start({
-          x: clamp(ox, -width, width),
+        x.start(ox, {
           immediate: true,
         });
       }
     },
     {
-      from: () => [0, x.get()],
+      from: () => [0, width],
       filterTaps: true,
+      tapsThreshold: 10,
       rubberband: true,
       axis: "x",
+      bounds: {
+        left: -width,
+        right: width,
+      },
     }
   );
 
@@ -160,6 +159,7 @@ function SwiperContainer(props: SwiperContainerProps) {
           touchAction: "none",
           pointerEvents: preventEventInMotion,
         }}
+        data-test={x}
       >
         {children}
       </animated.div>
