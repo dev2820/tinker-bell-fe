@@ -1,6 +1,5 @@
 import { routerBack } from "@/utils/helper/app";
-import { useNavigate } from "@remix-run/react";
-import { MetaFunction } from "@remix-run/node";
+import { useNavigate, type MetaFunction } from "react-router";
 import { ChevronLeftIcon, TriangleAlertIcon } from "lucide-react";
 import { useState } from "react";
 import { Button, IconButton } from "terra-design-system/react";

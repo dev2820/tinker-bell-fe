@@ -1,5 +1,5 @@
 import { routerPush } from "@/utils/helper/app";
-import { json, Link, useLoaderData, useNavigate } from "@remix-run/react";
+import { Link, useLoaderData, useNavigate } from "react-router";
 import { Button } from "terra-design-system/react";
 
 export async function loader() {
@@ -8,10 +8,10 @@ export async function loader() {
   const kakaoLoginUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_CLIENT_ID}&redirect_uri=${API_URL}/oauth/redirect&response_type=code`;
   const appleLoginUrl = `https://appleid.apple.com/auth/authorize?client_id=store.ticketbell&redirect_uri=${API_URL}/oauth/redirect/apple&response_type=code&scope=email&response_mode=form_post`;
 
-  return json({
+  return {
     kakaoLoginUrl,
     appleLoginUrl,
-  });
+  };
 }
 
 export default function Login() {

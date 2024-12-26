@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 import { useCurrentDateStore } from "@/stores/current-date";
 import { routerPush } from "@/utils/helper/app";
-import { useNavigate } from "@remix-run/react";
+import { useNavigate } from "react-router";
 import { SettingsIcon } from "lucide-react";
 import { ComponentProps } from "react";
 import { IconButton } from "terra-design-system/react";

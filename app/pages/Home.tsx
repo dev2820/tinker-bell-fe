@@ -1,7 +1,5 @@
 import { authAPI, isHTTPError } from "@/utils/api";
-import type { MetaFunction } from "@remix-run/node";
-import { LoaderFunction, redirect } from "@remix-run/node";
-import { json } from "@remix-run/react";
+import { LoaderFunction, redirect, type MetaFunction } from "react-router";
 
 import { ToastProvider } from "@/contexts/toast";
 import { TodoDailyView } from "@/components/views/TodoDailyView";
@@ -89,7 +87,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     return redirect("/login");
   }
 
-  return json({});
+  return {};
 };
 
 export default function Index() {
