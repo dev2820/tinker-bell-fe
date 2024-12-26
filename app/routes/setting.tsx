@@ -1,5 +1,5 @@
 import { routerBack } from "@/utils/helper/app";
-import { useNavigate } from "react-router";
+import { useNavigate } from "@remix-run/react";
 import { ChevronLeft } from "lucide-react";
 import { deleteCookie } from "@/utils/cookie/client";
 import { Button } from "terra-design-system/react";

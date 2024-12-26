@@ -1,4 +1,4 @@
-import { NavigateFunction } from "react-router";
+import { NavigateFunction } from "@remix-run/react";
 
 const isApp = () => {
   return typeof window !== "undefined" && window.ReactNativeWebView;
