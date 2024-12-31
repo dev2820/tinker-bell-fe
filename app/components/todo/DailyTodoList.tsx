@@ -7,7 +7,6 @@ import { Toast } from "terra-design-system/react";
 import { Reorder, AnimatePresence } from "framer-motion";
 import { ChangeEvent, MouseEvent } from "react";
 import { TodoDraggableItem } from "./TodoDraggableItem";
-import { TodoItem } from "./TodoItem";
 import { useModeStore } from "@/stores/mode";
 import { useShallow } from "zustand/shallow";
 
@@ -83,77 +82,49 @@ export function DailyTodoList(props: DailyTodoListProps) {
   return (
     <div className={cn("overflow-y-auto", className)}>
       <div className="overflow-y-scroll">
-        {!reorderMode && (
-          <ul className="overflow-y-hidden overflow-x-hidden">
+        <Reorder.Group
+          axis="y"
+          as="ul"
+          values={incompletedTodos}
+          onReorder={reorderIncompletedTodos}
+          layoutScroll
+          className="overflow-y-hidden overflow-x-hidden"
+        >
+          <AnimatePresence>
             {incompletedTodos.map((todo) => (
-              <TodoItem
+              <TodoDraggableItem
                 key={todo.id}
                 todo={todo}
+                reorderMode={reorderMode}
                 className="w-[calc(100%_-_32px)] mx-auto"
                 onChangeComplete={handleChangeComplete}
                 onClickTodo={handleClickTodoItem}
               />
             ))}
-          </ul>
-        )}
-        {reorderMode && (
-          <Reorder.Group
-            axis="y"
-            as="ul"
-            values={incompletedTodos}
-            onReorder={reorderIncompletedTodos}
-            layoutScroll
-            className="overflow-y-hidden overflow-x-hidden"
-          >
-            <AnimatePresence>
-              {incompletedTodos.map((todo) => (
-                <TodoDraggableItem
-                  key={todo.id}
-                  todo={todo}
-                  className="w-[calc(100%_-_32px)] mx-auto"
-                  onChangeComplete={handleChangeComplete}
-                  onClickTodo={handleClickTodoItem}
-                />
-              ))}
-            </AnimatePresence>
-          </Reorder.Group>
-        )}
+          </AnimatePresence>
+        </Reorder.Group>
         {!nothingTodo && <hr className="w-[calc(100%_-_32px)] mx-auto my-8" />}
-        {!reorderMode && (
-          <ul className="overflow-y-hidden overflow-x-hidden">
+        <Reorder.Group
+          axis="y"
+          as="ul"
+          values={completedTodos}
+          onReorder={reorderCompletedTodos}
+          layoutScroll
+          className="overflow-y-hidden overflow-x-hidden"
+        >
+          <AnimatePresence>
             {completedTodos.map((todo) => (
-              <TodoItem
+              <TodoDraggableItem
                 key={todo.id}
                 todo={todo}
+                reorderMode={reorderMode}
                 className="w-[calc(100%_-_32px)] mx-auto"
                 onChangeComplete={handleChangeComplete}
                 onClickTodo={handleClickTodoItem}
               />
             ))}
-          </ul>
-        )}
-        {reorderMode && (
-          <Reorder.Group
-            axis="y"
-            as="ul"
-            values={completedTodos}
-            onReorder={reorderCompletedTodos}
-            layoutScroll
-            className="overflow-y-hidden overflow-x-hidden"
-          >
-            <AnimatePresence>
-              {completedTodos.map((todo) => (
-                <TodoDraggableItem
-                  key={todo.id}
-                  todo={todo}
-                  className="w-[calc(100%_-_32px)] mx-auto"
-                  onChangeComplete={handleChangeComplete}
-                  onClickTodo={handleClickTodoItem}
-                />
-              ))}
-            </AnimatePresence>
-          </Reorder.Group>
-        )}
+          </AnimatePresence>
+        </Reorder.Group>
 
         <Toast.Toaster toaster={toaster}>
           {(toast) => (

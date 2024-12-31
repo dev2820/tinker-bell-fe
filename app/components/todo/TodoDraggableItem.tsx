@@ -1,18 +1,25 @@
-import { ChangeEventHandler, MouseEventHandler, useState } from "react";
+import {
+  ChangeEvent,
+  ChangeEventHandler,
+  MouseEventHandler,
+  useState,
+} from "react";
 import { Todo } from "@/types/todo";
 import { cx } from "@/utils/cx";
-import { EqualIcon } from "lucide-react";
+import { CheckIcon, EqualIcon } from "lucide-react";
 import { Reorder, useDragControls } from "framer-motion";
 import { vibrateShort } from "@/utils/device/vibrate";
+import { cva } from "class-variance-authority";
 
-export type TodoItemProps = {
+export type TodoDraggableItemProps = {
   todo: Todo;
+  reorderMode: boolean;
   className?: string;
   onChangeComplete?: ChangeEventHandler<HTMLDivElement>;
   onClickTodo?: MouseEventHandler<HTMLButtonElement>;
 };
-export function TodoDraggableItem(props: TodoItemProps) {
-  const { todo, className, onClickTodo } = props;
+export function TodoDraggableItem(props: TodoDraggableItemProps) {
+  const { todo, className, reorderMode, onChangeComplete, onClickTodo } = props;
   const controls = useDragControls();
   const [isDragging, setIsDragging] = useState(false);
 
@@ -24,6 +31,10 @@ export function TodoDraggableItem(props: TodoItemProps) {
     setIsDragging(false);
     vibrateShort();
   };
+  const handleChangeComplete = (e: ChangeEvent<HTMLInputElement>) => {
+    onChangeComplete?.(e);
+    vibrateShort();
+  };
 
   return (
     <Reorder.Item
@@ -32,7 +43,6 @@ export function TodoDraggableItem(props: TodoItemProps) {
       dragControls={controls}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
-      whileDrag={{ scale: 1.02 }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -56,14 +66,60 @@ export function TodoDraggableItem(props: TodoItemProps) {
         >
           {todo.title}
         </button>
-        <div
-          className="text-gray-300 opacity-50 cursor-grab flex-none pt-[11px]"
-          onPointerDown={(e) => controls.start(e)}
-          style={{ touchAction: "none" }}
-        >
-          <EqualIcon size={24} />
-        </div>
+        {reorderMode && (
+          <div
+            className="text-gray-300 opacity-50 cursor-grab flex-none pt-[11px]"
+            onPointerDown={(e) => controls.start(e)}
+            style={{ touchAction: "none" }}
+          >
+            <EqualIcon size={24} />
+          </div>
+        )}
+        {!reorderMode && (
+          <label
+            className={cx(
+              "inline-flex place-items-center justify-center pt-[13px]"
+            )}
+          >
+            <input
+              type="checkbox"
+              className={cx("peer hidden")}
+              data-todo-id={todo.id}
+              defaultChecked={todo.isCompleted}
+              onChange={handleChangeComplete}
+            />
+            <div className={cx(todoCheckboxStyle({ size: "md" }), "mx-0.5")}>
+              <CheckIcon
+                size={14}
+                className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2"
+              />
+            </div>
+          </label>
+        )}
       </div>
     </Reorder.Item>
   );
 }
+
+const todoCheckboxStyle = cva(
+  [
+    "relative",
+    "rounded-full",
+    "border border-gray-400 peer-checked:border-primary",
+    "text-transparent peer-checked:text-primary-foreground",
+    "bg-transparent peer-checked:bg-primary",
+    "transition-colors duration-200",
+  ],
+  {
+    variants: {
+      size: {
+        sm: "w-4 h-4",
+        md: "w-5 h-5",
+        lg: "w-6 h-6",
+      },
+    },
+    defaultVariants: {
+      size: "md",
+    },
+  }
+);
