@@ -19,6 +19,7 @@ import { useModeStore } from "@/stores/mode";
 import { useShallow } from "zustand/shallow";
 import { CTAButton } from "@/components/ui/CTAButton";
 import { cn } from "@/lib/utils";
+import { useDailyTodos } from "@/hooks/use-daily-todos";
 
 export const meta: MetaFunction = () => {
   return [
@@ -102,6 +103,7 @@ export default function Index() {
 
 function TodoPage() {
   const { currentDate } = useCurrentDateStore();
+  const { commitReorderTodos } = useDailyTodos(currentDate);
   const { isReorderMode, offReorderMode } = useModeStore(
     useShallow((state) => ({
       isReorderMode: state.isReorderMode,
@@ -116,6 +118,7 @@ function TodoPage() {
 
   const handleDoneReorder = () => {
     offReorderMode();
+    commitReorderTodos();
   };
 
   return (

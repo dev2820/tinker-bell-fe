@@ -276,12 +276,17 @@ export const useDailyTodos = (currentDate: Date) => {
       id,
     });
   };
-  const reorderTodos = (todos: Todo[]) => {
+  const commitReorderTodos = () => {
+    const todos = queryClient.getQueryData<Todo[][]>(todoQueryKey);
+    if (!todos) {
+      return;
+    }
     reorderMutation.mutate({
-      orderList: todos.map((todo, index) => ({ id: todo.id, order: index })),
+      orderList: todos
+        .flat()
+        .map((todo, index) => ({ id: todo.id, order: index })),
     });
   };
-  const debouncedReorderTodos = useDebounce(reorderTodos, 1000);
 
   const reorderIncompletedTodos = (todos: Todo[]) => {
     // setDataQuery로 데이터 변경 적용
@@ -292,8 +297,6 @@ export const useDailyTodos = (currentDate: Date) => {
       }
       return [todos, oldData[1]];
     });
-
-    debouncedReorderTodos(todos);
   };
   const reorderCompletedTodos = (todos: Todo[]) => {
     // setDataQuery로 데이터 변경 적용
@@ -304,8 +307,6 @@ export const useDailyTodos = (currentDate: Date) => {
       }
       return [oldData[0], todos];
     });
-
-    debouncedReorderTodos(todos);
   };
 
   const findTodoById = (id: Todo["id"]) => {
@@ -325,5 +326,6 @@ export const useDailyTodos = (currentDate: Date) => {
     reorderIncompletedTodos,
     reorderCompletedTodos,
     deleteTodoById,
+    commitReorderTodos,
   };
 };
