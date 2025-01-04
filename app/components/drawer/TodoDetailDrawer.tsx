@@ -158,7 +158,7 @@ export function TodoDetailDrawer() {
                   </span>
                 </div>
                 <div className="flex flex-row justify-start gap-3 w-full">
-                  <h3 className="my-auto">미루기 옵션</h3>
+                  <h3 className="my-auto">미루기</h3>
                   <Button size="xs" onClick={handleClickDelayTomorrow}>
                     내일로
                   </Button>
