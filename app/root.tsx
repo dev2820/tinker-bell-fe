@@ -8,8 +8,9 @@ import {
 // import type { LinksFunction } from "@remix-run/node";
 import "terra-design-system/react/style";
 import "@/global.css";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { usePreventContextMenu } from "./hooks/use-prevent-contextmenu";
 
 // export const links: LinksFunction = () => [{ rel: "stylesheet", href: styles }];
 
@@ -48,16 +49,7 @@ export default function App() {
       })
   );
 
-  useEffect(() => {
-    const disableContextmenu = (event: MouseEvent) => {
-      event.preventDefault();
-    };
-    document.addEventListener("contextmenu", disableContextmenu);
-
-    return () => {
-      document.removeEventListener("contextmenu", disableContextmenu);
-    };
-  });
+  usePreventContextMenu();
 
   return (
     <QueryClientProvider client={queryClient}>
