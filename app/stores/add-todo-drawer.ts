@@ -1,3 +1,4 @@
+import { sendModalCloseEvent, sendModalOpenEvent } from "@/utils/helper/app";
 import { create } from "zustand";
 
 interface AddTodoDrawerState {
@@ -14,8 +15,10 @@ export const useAddTodoDrawerStore = create<
   isOpen: false,
   onOpen: () => {
     set({ isOpen: true });
+    sendModalOpenEvent();
   },
   onClose: () => {
     set({ isOpen: false });
+    sendModalCloseEvent();
   },
 }));

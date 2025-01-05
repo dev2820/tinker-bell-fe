@@ -9,6 +9,14 @@ const sendRouterEvent = (path: string): void => {
     JSON.stringify({ type: "ROUTER_EVENT", path: path })
   );
 };
+export const sendModalOpenEvent = (): void => {
+  window.ReactNativeWebView.postMessage(JSON.stringify({ type: "OPEN_MODAL" }));
+};
+export const sendModalCloseEvent = (): void => {
+  window.ReactNativeWebView.postMessage(
+    JSON.stringify({ type: "CLOSE_MODAL" })
+  );
+};
 
 export const routerBack = (navigate: NavigateFunction) => {
   if (isApp()) {

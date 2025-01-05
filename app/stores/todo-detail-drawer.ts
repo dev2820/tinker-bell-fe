@@ -1,4 +1,5 @@
 import { Todo } from "@/types/todo";
+import { sendModalOpenEvent, sendModalCloseEvent } from "@/utils/helper/app";
 import { create } from "zustand";
 
 interface TodoDetailDrawerState {
@@ -29,9 +30,11 @@ export const useTodoDetailDrawerStore = create<
   },
   onOpen: () => {
     set({ isOpen: true });
+    sendModalOpenEvent();
   },
   onClose: () => {
     set({ isOpen: false });
+    sendModalCloseEvent();
   },
   changeCurrentTodo: (params: Partial<Todo>) => {
     set({

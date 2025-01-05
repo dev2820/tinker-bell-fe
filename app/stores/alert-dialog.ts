@@ -1,3 +1,4 @@
+import { sendModalCloseEvent, sendModalOpenEvent } from "@/utils/helper/app";
 import { ReactNode } from "react";
 import { create } from "zustand";
 
@@ -26,9 +27,11 @@ export const useAlertStore = create<AlertDialogState & AlertDialogAction>(
         alert: alert,
         isOpen: true,
       });
+      sendModalOpenEvent();
     },
     onClose: () => {
       set({ isOpen: false });
+      sendModalCloseEvent();
     },
   })
 );

@@ -26,6 +26,7 @@ import { CalendarContainer } from "../calendar/CalendarContainer";
 import { CalendarGrid } from "../calendar/CalendarGrid";
 import { CalendarHeader } from "../calendar/CalendarHeader";
 import { CalendarRoot } from "../calendar/CalendarRoot";
+import { sendModalCloseEvent, sendModalOpenEvent } from "@/utils/helper/app";
 
 export function TodoDetailDrawer() {
   const { currentTodo, changeCurrentTodo, onClose, isOpen } =
@@ -165,7 +166,15 @@ export function TodoDetailDrawer() {
                   <Button size="xs" onClick={handleClickDelayWeek}>
                     다음주로
                   </Button>
-                  <Dialog.Root>
+                  <Dialog.Root
+                    onOpenChange={(details) => {
+                      if (details.open) {
+                        sendModalOpenEvent();
+                      } else {
+                        sendModalCloseEvent();
+                      }
+                    }}
+                  >
                     <Dialog.Trigger asChild>
                       <Button size="xs" onClick={handleClickCalendarIcon}>
                         직접 선택
