@@ -135,7 +135,7 @@ function TodoPage() {
       <CTAButton
         shape="round"
         className={cn(
-          "fixed left-1/2 -translate-x-1/2 bottom-4 h-14 pr-6 transition-transform duration-300 translate-y-0",
+          "fixed left-1/2 -translate-x-1/2 bottom-4 h-14 pr-6 transition translate-y-0",
           (isReorderMode || addTodoDrawer.isOpen) && "translate-y-64"
         )}
         onClick={handleClickPlusTodo}
@@ -149,7 +149,7 @@ function TodoPage() {
         size="lg"
         onClick={handleDoneReorder}
         className={cn(
-          "fixed left-1/2 -translate-x-1/2 bottom-4 w-[calc(100%_-_32px)] h-14 transition-transform duration-300",
+          "fixed left-1/2 -translate-x-1/2 bottom-4 w-[calc(100%_-_32px)] h-14 transition",
           isReorderMode ? "translate-y-0" : "translate-y-64"
         )}
       >
