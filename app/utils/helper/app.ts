@@ -10,9 +10,15 @@ const sendRouterEvent = (path: string): void => {
   );
 };
 export const sendModalOpenEvent = (): void => {
+  if (isApp()) {
+    return;
+  }
   window.ReactNativeWebView.postMessage(JSON.stringify({ type: "OPEN_MODAL" }));
 };
 export const sendModalCloseEvent = (): void => {
+  if (isApp()) {
+    return;
+  }
   window.ReactNativeWebView.postMessage(
     JSON.stringify({ type: "CLOSE_MODAL" })
   );
