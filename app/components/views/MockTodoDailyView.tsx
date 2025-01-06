@@ -30,6 +30,7 @@ import { useCurrentDateStore } from "@/stores/current-date";
 import { TodoLoadMore } from "../todo/TodoLoadMore";
 import { useMockTodo } from "@/hooks/use-mock-todo";
 import { partition } from "@/utils/partition";
+import { useModeStore } from "@/stores/mode";
 const slides = range(-500, 500, 1);
 const initialSlideIndex = slides.length / 2;
 
@@ -197,6 +198,7 @@ type TodoViewProps = {
 };
 function TodoView(props: TodoViewProps) {
   const { currentDate, onClickTodoCheck, onClickTodo, onClickAddTodo } = props;
+  const { isReorderMode } = useModeStore();
   const { todos, reorderTodos } = useMockTodo(currentDate);
   const [incompletedTodos, completedTodos] = partition(
     todos,
@@ -236,6 +238,7 @@ function TodoView(props: TodoViewProps) {
               <TodoDraggableItem
                 key={todo.id}
                 todo={todo}
+                reorderMode={isReorderMode}
                 onChangeComplete={handleChangeComplete}
                 onClickTodo={handleClickTodoItem}
               />
@@ -256,6 +259,7 @@ function TodoView(props: TodoViewProps) {
               <TodoDraggableItem
                 key={todo.id}
                 todo={todo}
+                reorderMode={isReorderMode}
                 onChangeComplete={handleChangeComplete}
                 onClickTodo={handleClickTodoItem}
               />
