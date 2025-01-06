@@ -36,6 +36,7 @@ export default {
           hover: "var(--primary-hover)",
           pressed: "var(--primary-pressed)",
           foreground: "var(--primary-foreground)",
+          inverse: "var(--primary-inverse)",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",

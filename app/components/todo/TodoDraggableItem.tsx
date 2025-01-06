@@ -106,7 +106,7 @@ const todoCheckboxStyle = cva(
     "relative",
     "rounded-full",
     "border border-gray-400 peer-checked:border-primary",
-    "text-transparent peer-checked:text-primary-foreground",
+    "text-transparent peer-checked:text-primary-inverse",
     "bg-transparent peer-checked:bg-primary",
     "transition-colors duration-200",
   ],
