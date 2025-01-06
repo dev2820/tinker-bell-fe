@@ -231,14 +231,12 @@ export function TodoDetailDrawer() {
                           </CalendarRoot>
                         </Dialog.Description>
                         <div className="flex flex-row-reverse flex-none px-4 gap-3">
-                          <Dialog.CloseTrigger asChild>
-                            <Button
-                              theme="primary"
-                              onClick={handleClickUpdateDateConfirm}
-                            >
-                              확인
-                            </Button>
-                          </Dialog.CloseTrigger>
+                          <Button
+                            theme="primary"
+                            onClick={handleClickUpdateDateConfirm}
+                          >
+                            확인
+                          </Button>
                           <Dialog.CloseTrigger asChild>
                             <Button variant="outline" theme="neutral">
                               취소

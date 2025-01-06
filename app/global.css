@@ -60,8 +60,8 @@
     --popover-foreground: 0 0% 3.9%;
     --primary: var(--orange-500);
     --primary-subtle: var(--orange-200);
-    --primary-hover: var(--orange-600);
-    --primary-pressed: var(--orange-700);
+    --primary-strong: var(--orange-600);
+    --primary-stronger: var(--orange-700);
     --primary-foreground: var(--neutral-50);
     --shadow-color: var(--orange-500);
 
@@ -91,8 +91,8 @@
     --my-colors-primary: var(--primary);
     --my-colors-primary-500: var(--primary);
     --my-colors-primary-foreground: var(--primary-foreground);
-    --my-colors-primary-hover: var(--primary-hover);
-    --my-colors-primary-pressed: var(--primary-pressed);
+    --my-colors-primary-strong: var(--primary-strong);
+    --my-colors-primary-stronger: var(--primary-stronger);
   }
   .dark {
     --background: 0 0% 3.9%;
