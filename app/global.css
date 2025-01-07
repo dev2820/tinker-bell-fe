@@ -62,8 +62,8 @@
     --primary-subtle: var(--orange-200);
     --primary-strong: var(--orange-600);
     --primary-stronger: var(--orange-700);
-    --primary-inverse: var(--neutral-50);
-    --primary-fg: var(--orange-500);
+    --primary-inverse: var(--neutral-500);
+    --primary-fg: var(--neutral-50);
     --primary-boundary: var(--orange-500);
     --shadow-color: var(--orange-500);
 

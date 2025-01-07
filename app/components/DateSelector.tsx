@@ -260,7 +260,7 @@ function Weeks({
               isSunday(date) && "text-red-500",
               isSaturday(date) && "text-blue-500",
               isSameDay(date, currentDate)
-                ? "bg-primary text-primary-inverse"
+                ? "bg-primary text-primary-fg"
                 : "bg-transparent"
             )}
           >
@@ -320,7 +320,7 @@ function Months({
               isSunday(date) && "text-red-500",
               isSaturday(date) && "text-blue-500",
               isSameDay(date, currentDate)
-                ? "bg-primary text-primary-inverse"
+                ? "bg-primary text-primary-fg"
                 : "bg-transparent"
             )}
             onClick={() => onClickDate(date)}

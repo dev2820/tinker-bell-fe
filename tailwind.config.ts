@@ -35,7 +35,7 @@ export default {
           subtle: "var(--primary-subtle)",
           hover: "var(--primary-hover)",
           pressed: "var(--primary-pressed)",
-          foreground: "var(--primary-foreground)",
+          fg: "var(--primary-fg)",
           inverse: "var(--primary-inverse)",
         },
         secondary: {
