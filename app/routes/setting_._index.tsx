@@ -1,12 +1,13 @@
-import { clearAppCookie, routerBack } from "@/utils/helper/app";
-import { ActionFunction, redirect } from "@remix-run/node";
+import { clearAppCookie, routerBack, routerPush } from "@/utils/helper/app";
 import { Form, useNavigate } from "@remix-run/react";
-
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, TagIcon } from "lucide-react";
 import { deleteCookie } from "@/utils/cookie/client";
 import { Button } from "terra-design-system/react";
+import { ComponentProps, ReactNode } from "react";
+import { cn } from "@/lib/utils";
 import { authAPI } from "@/utils/api";
 import { toCookieStorage } from "@/utils/cookie";
+import { ActionFunction, redirect } from "@remix-run/node";
 
 export const action: ActionFunction = async ({ request }) => {
   const rawCookie = request.headers.get("Cookie") ?? "";
@@ -50,6 +51,10 @@ export default function Setting() {
     deleteCookie("refreshToken");
     // navigate("/");
   };
+
+  const handleClickCategoryMenu = () => {
+    routerPush(navigate, "/setting/category");
+  };
   return (
     <main className="h-screen w-full">
       <header className="h-header relative px-4 text-center border-b">
@@ -60,7 +65,17 @@ export default function Setting() {
           설정
         </span>
       </header>
-      <div className="h-[calc(100%_-_64px)] px-4 py-4">
+      <div className="h-[calc(100%_-_64px)]">
+        <menu>
+          <li>
+            <MenuItem
+              onClick={handleClickCategoryMenu}
+              icon={<TagIcon size={16} />}
+            >
+              카테고리
+            </MenuItem>
+          </li>
+        </menu>
         <Form method="post">
           <Button type="submit" onClick={handleClickLogout}>
             로그아웃
@@ -70,3 +85,21 @@ export default function Setting() {
     </main>
   );
 }
+
+type MenuItemProps = ComponentProps<"button"> & { icon: ReactNode };
+const MenuItem = (props: MenuItemProps) => {
+  const { children, icon, className, ...rest } = props;
+  return (
+    <button
+      className={cn(
+        className,
+        "px-4 w-full h-10 text-start hover:bg-gray-100 active:bg-gray-200 duration-300 transition-colors border-b",
+        "flex flex-row items-center gap-2"
+      )}
+      {...rest}
+    >
+      {icon}
+      {children}
+    </button>
+  );
+};
