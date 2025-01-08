@@ -1,5 +1,4 @@
-import { Todo } from "@/types/todo";
-import { RawTodo } from "../api/todo";
+import { RawTodo, Todo } from "@/types/todo";
 
 export const isTargetDateTodo = (todo: Todo, targetDate: Date) => {
   return (
@@ -109,5 +108,6 @@ export const getDefaultTodo = (): Todo => {
     description: "",
     order: -1,
     isCompleted: false,
+    categoryList: [],
   };
 };

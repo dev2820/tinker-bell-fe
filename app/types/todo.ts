@@ -1,3 +1,19 @@
+type Category = {
+  id: number;
+  name: string;
+  color: string;
+};
+
+export type RawTodo = {
+  id: number;
+  title: string;
+  date: string;
+  isCompleted: boolean;
+  order: number;
+  description: string | null;
+  categoryList: Category[];
+};
+
 export type Todo = {
   id: number;
   title: string;
@@ -9,6 +25,7 @@ export type Todo = {
   isCompleted: boolean;
   order: number;
   description: string;
+  categoryList: Category[];
 };
 
 // todo: date를 분해할 것 -> 년월일만 저장하도록, toTodo는 한국 시간으로 컨버팅해서

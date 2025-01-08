@@ -1,17 +1,8 @@
-import { Todo } from "@/types/todo";
+import type { RawTodo, Todo } from "@/types/todo";
 import { authAPI } from "..";
 import Cookies from "js-cookie";
 import { lastDayOfMonth } from "date-fns";
 import { KyResponse } from "ky";
-
-export type RawTodo = {
-  id: number;
-  title: string;
-  date: string;
-  isCompleted: boolean;
-  order: number;
-  description: string | null;
-};
 
 export async function fetchTodos(startDate: Date, endDate: Date) {
   return await authAPI
