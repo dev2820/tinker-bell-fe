@@ -38,12 +38,12 @@ export function CalendarAppHeader(props: CalendarAppHeaderProps) {
         <SettingsIcon size={24} />
       </IconButton>
       <IconButton
-        className="absolute right-4 top-3"
+        className="absolute right-4 top-4"
         variant="outline"
-        size="sm"
+        size="xs"
         onClick={handleClickToday}
       >
-        <span>{today.getDate()}</span>
+        <span className="absolute">{today.getDate()}</span>
       </IconButton>
     </header>
   );
