@@ -8,3 +8,11 @@ export function logout() {
     },
   });
 }
+
+export function verifyToken(accessToken: string) {
+  return authAPI.get("token/verify", {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+}

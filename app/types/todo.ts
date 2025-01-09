@@ -1,14 +1,4 @@
-export type RawCategory = {
-  id: number;
-  name: string;
-  color: string;
-};
-
-export type Category = {
-  id: number;
-  name: string;
-  color: string;
-};
+import { Category } from "./category";
 
 export type RawTodo = {
   id: number;

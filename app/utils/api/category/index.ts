@@ -1,4 +1,4 @@
-import type { Category, RawCategory } from "@/types/todo";
+import type { Category, RawCategory } from "@/types/category";
 import { authAPI } from "..";
 import Cookies from "js-cookie";
 
