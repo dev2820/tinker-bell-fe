@@ -9,6 +9,9 @@ export const useDisclosure = () => {
   const onClose = useCallback(() => {
     setIsOpen(false);
   }, []);
+  const change = useCallback((isOpen: boolean) => {
+    setIsOpen(isOpen);
+  }, []);
 
-  return { isOpen, onOpen, onClose };
+  return { isOpen, onOpen, onClose, change };
 };

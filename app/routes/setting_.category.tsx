@@ -1,7 +1,7 @@
 import type { Category } from "@/types/category";
 import { CategoryList } from "@/components/views/CategoryList";
 import { ToastProvider } from "@/contexts/toast";
-import { fetchCategories } from "@/utils/api/category";
+import { createCategory, fetchCategories } from "@/utils/api/category";
 import { routerBack } from "@/utils/helper/app";
 import { useNavigate } from "@remix-run/react";
 import { ChevronLeft, PlusIcon, TagIcon } from "lucide-react";
@@ -13,13 +13,21 @@ import {
   Drawer,
   Input,
   Portal,
+  ColorPickerValueChangeDetails,
 } from "terra-design-system/react";
 import { cn } from "@/lib/utils";
+import { getRandomHexColor } from "@/utils/color";
+import { useDisclosure } from "@/hooks/use-disclosure";
 
 const MAX_CATEGORY_LENGTH = 15;
 export default function Category() {
   const navigate = useNavigate();
+  const [isCreating, setIsCreating] = useState<boolean>(false);
+  const drawerHandler = useDisclosure();
   const [categoryName, setCategoryName] = useState<string>("");
+  const [categoryColor, setCategoryColor] = useState<string>(
+    getRandomHexColor()
+  );
   const handleGoBack = () => {
     routerBack(navigate);
   };
@@ -38,6 +46,25 @@ export default function Category() {
   const handleChangeCategory = (e: ChangeEvent<HTMLInputElement>) => {
     setCategoryName(e.currentTarget.value.slice(0, 15));
   };
+  const handleChangeColor = (details: ColorPickerValueChangeDetails) => {
+    setCategoryColor(details.value.toString("hex"));
+  };
+  const handleClickAddCategory = async () => {
+    setIsCreating(true);
+    try {
+      await createCategory({
+        name: categoryName,
+        color: categoryColor,
+      });
+      drawerHandler.onClose();
+    } catch (err) {
+      /**
+       * TODO: 에러에 따른 Toast 출력
+       */
+    } finally {
+      setIsCreating(false);
+    }
+  };
 
   return (
     <ToastProvider>
@@ -52,8 +79,14 @@ export default function Category() {
         </header>
         <div className="h-[calc(100%_-_64px)] px-4 py-4">
           <CategoryList items={categories} />
-          <Drawer.Root variant="bottom">
-            <Drawer.Trigger>
+          <Drawer.Root
+            variant="bottom"
+            open={drawerHandler.isOpen}
+            onOpenChange={(e) => {
+              drawerHandler.change(e.open);
+            }}
+          >
+            <Drawer.Trigger asChild>
               <FloatingButton variant="filled" theme="primary" shape="round">
                 <PlusIcon size={32} />
               </FloatingButton>
@@ -82,15 +115,18 @@ export default function Category() {
                       </small>
                     </div>
                     <hr />
-                    <ColorPicker.Root>
+                    <ColorPicker.Root
+                      value={categoryColor}
+                      onValueChange={handleChangeColor}
+                    >
                       <ColorPicker.Context>
                         {(api) => (
                           <>
                             <ColorPicker.Control>
                               <ColorPicker.Trigger asChild>
-                                <button className="w-full flex flex-row gap-2 place-items-center">
+                                <button className="w-full flex flex-row gap-2 place-items-center py-2 text-gray-800">
                                   <ColorPicker.Swatch
-                                    className="rounded-full size-4"
+                                    className="rounded-full size-5"
                                     value={api.value}
                                   />
                                   <span className="select-none">
@@ -148,7 +184,12 @@ export default function Category() {
                     </ColorPicker.Root>
                   </Drawer.Body>
                   <Drawer.Footer>
-                    <Button theme="primary" className="w-full">
+                    <Button
+                      theme="primary"
+                      className="w-full"
+                      loading={isCreating}
+                      onClick={handleClickAddCategory}
+                    >
                       추가
                     </Button>
                   </Drawer.Footer>
@@ -161,6 +202,7 @@ export default function Category() {
     </ToastProvider>
   );
 }
+// 💪 운동
 const presets = [
   "hsl(10, 81%, 59%)",
   "hsl(60, 81%, 59%)",
