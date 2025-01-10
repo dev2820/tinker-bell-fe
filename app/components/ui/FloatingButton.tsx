@@ -16,7 +16,7 @@ export function FloatingButton(props: FloatingButtonProps) {
 }
 
 const buttonStyle = cva(
-  "fixed bottom-6 right-6 w-14 h-14 inline-flex justify-center place-items-center shadow-cta",
+  "fixed bottom-6 right-6 w-16 h-16 inline-flex justify-center place-items-center shadow-cta",
   {
     variants: {
       shape: {

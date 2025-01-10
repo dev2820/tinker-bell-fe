@@ -4,8 +4,8 @@ import { ToastProvider } from "@/contexts/toast";
 import { fetchCategories } from "@/utils/api/category";
 import { routerBack } from "@/utils/helper/app";
 import { useNavigate } from "@remix-run/react";
-import { ChevronLeft, PlusIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { ChevronLeft, PlusIcon, TagIcon } from "lucide-react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { FloatingButton } from "@/components/ui/FloatingButton";
 import {
   Button,
@@ -16,9 +16,10 @@ import {
 } from "terra-design-system/react";
 import { cn } from "@/lib/utils";
 
+const MAX_CATEGORY_LENGTH = 15;
 export default function Category() {
   const navigate = useNavigate();
-
+  const [categoryName, setCategoryName] = useState<string>("");
   const handleGoBack = () => {
     routerBack(navigate);
   };
@@ -33,6 +34,10 @@ export default function Category() {
   useEffect(() => {
     updateCategories();
   }, []);
+
+  const handleChangeCategory = (e: ChangeEvent<HTMLInputElement>) => {
+    setCategoryName(e.currentTarget.value.slice(0, 15));
+  };
 
   return (
     <ToastProvider>
@@ -64,10 +69,18 @@ export default function Category() {
                     {/**
                      * 최대 15자 제한
                      */}
-                    <input
-                      className="text-gray-900"
-                      placeholder="카테고리 이름을 입력해주세요"
-                    />
+                    <div className="relative flex flex-row gap-2 place-items-center py-2">
+                      <TagIcon size={20} className="text-gray-300 flex-none" />
+                      <input
+                        className="w-full flex-1 text-gray-800 focus:outline-none text-md"
+                        onChange={handleChangeCategory}
+                        value={categoryName}
+                        placeholder="카테고리 이름 (최대 15자)"
+                      />
+                      <small className="text-gray-300">
+                        {categoryName.length}/{MAX_CATEGORY_LENGTH}
+                      </small>
+                    </div>
                     <hr />
                     <ColorPicker.Root>
                       <ColorPicker.Context>
@@ -108,12 +121,7 @@ export default function Category() {
                                   <div className="trds-flex trds-gap-2 trds-flex-1">
                                     <ColorPicker.ChannelInput
                                       channel="hex"
-                                      asChild
-                                    >
-                                      <Input />
-                                    </ColorPicker.ChannelInput>
-                                    <ColorPicker.ChannelInput
-                                      channel="alpha"
+                                      className="w-full"
                                       asChild
                                     >
                                       <Input />
