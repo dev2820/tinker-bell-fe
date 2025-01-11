@@ -67,6 +67,7 @@ export async function createTodo(payload: CreateTodoPayload) {
         title: title,
         description: description,
         date: isoDate,
+        categoryIdList: [],
       }),
       headers: {
         Authorization: `Bearer ${Cookies.get("accessToken")}`,
@@ -89,6 +90,7 @@ export async function updateTodo(
       date: date && toISODate(date),
       isCompleted: isCompleted,
       description: description,
+      categoryIdList: [],
     }),
     headers: {
       Authorization: `Bearer ${Cookies.get("accessToken")}`,
