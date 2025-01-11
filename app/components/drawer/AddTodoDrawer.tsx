@@ -1,5 +1,4 @@
-import { Button, Drawer, Portal, Textarea } from "terra-design-system/react";
-import { TodoTitleTextarea } from "../todo/TodoTitleTextarea";
+import { Button, Drawer, Portal } from "terra-design-system/react";
 import { useAddTodoDrawerStore } from "@/stores/add-todo-drawer";
 import { ChangeEvent, useState } from "react";
 import { useDailyTodos } from "@/hooks/use-daily-todos";
@@ -36,7 +35,7 @@ export function AddTodoDrawer() {
     setTitle("");
     setDescription("");
   };
-  const handleChangeTitle = (e: ChangeEvent<HTMLTextAreaElement>) => {
+  const handleChangeTitle = (e: ChangeEvent<HTMLInputElement>) => {
     setTitle(e.currentTarget.value);
   };
   const handleChangeDescription = (e: ChangeEvent<HTMLTextAreaElement>) => {
@@ -50,26 +49,31 @@ export function AddTodoDrawer() {
       onExitComplete={handleCloseCreateTodo}
       onInteractOutside={addTodoDrawer.onClose}
       onEscapeKeyDown={addTodoDrawer.onClose}
-      // trapFocus={false}
     >
       <Portal>
         <Drawer.Backdrop />
         <Drawer.Positioner>
           <Drawer.Content className="h-full min-h-96 rounded-t-lg pt-4">
-            <Drawer.Header className="h-full">
-              <TodoTitleTextarea
-                value={title}
-                onChange={handleChangeTitle}
-                placeholder="할 일을 입력해주세요"
-                // enterKeyHint="done"
-              />
+            <Drawer.Header className="h-full border-b">
+              <h3 className="font-bold text-xl">할 일 추가</h3>
             </Drawer.Header>
-            <Drawer.Body>
-              <Textarea
+            <Drawer.Body className="p-0 divide-y">
+              <div className="relative">
+                <input
+                  value={title}
+                  className="border-0 px-4 py-2 focus:outline-none w-full"
+                  onChange={handleChangeTitle}
+                  placeholder="할 일을 입력해주세요"
+                  // enterKeyHint="done"
+                />
+              </div>
+              <textarea
                 value={description}
+                className="border-0 px-4 focus:outline-none py-2 h-28"
                 placeholder="설명"
+                cols={5}
                 onChange={handleChangeDescription}
-              ></Textarea>
+              ></textarea>
             </Drawer.Body>
             <Drawer.Footer>
               <Button
