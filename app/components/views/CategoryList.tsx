@@ -19,14 +19,16 @@ export function CategoryList(props: CategoryListProps) {
     <ul className={cn(className)} {...rest}>
       {items.map((item) => (
         <li key={item.id} className="border-b">
-          <div className="h-12 px-4">
+          <button
+            className="h-12 px-4 w-full"
+            data-category-id={item.id}
+            onClick={handleClickCategoryItem}
+          >
             <CategoryItem
               category={item}
-              data-category-id={item.id}
-              onClick={handleClickCategoryItem}
               className="h-full w-full"
             ></CategoryItem>
-          </div>
+          </button>
         </li>
       ))}
     </ul>
