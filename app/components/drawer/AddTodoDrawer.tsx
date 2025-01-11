@@ -30,6 +30,7 @@ export function AddTodoDrawer() {
         day: currentDate.getDate(),
       },
       order: 0,
+      categoryIdList: [],
     });
     addTodoDrawer.onClose();
     setTitle("");
