@@ -1,6 +1,7 @@
 import { cn } from "@/lib/utils";
 import { type Category } from "@/types/category";
 import { type ComponentProps, type MouseEvent } from "react";
+import { CategoryItem } from "../category/CategoryItem";
 
 export type CategoryListProps = ComponentProps<"ul"> & {
   items: Category[];
@@ -31,21 +32,3 @@ export function CategoryList(props: CategoryListProps) {
     </ul>
   );
 }
-
-type CategoryItemProps = ComponentProps<"button"> & { category: Category };
-const CategoryItem = (props: CategoryItemProps) => {
-  const { category, className, ...rest } = props;
-
-  return (
-    <button
-      className={cn(className, "flex flex-row place-items-center gap-2")}
-      {...rest}
-    >
-      <span
-        style={{ backgroundColor: category.color }}
-        className="size-5 rounded-full"
-      ></span>
-      {category.name}
-    </button>
-  );
-};
