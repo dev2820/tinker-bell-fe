@@ -1,9 +1,37 @@
 import { clearAppCookie, routerBack } from "@/utils/helper/app";
-import { useNavigate } from "@remix-run/react";
+import { ActionFunction, redirect } from "@remix-run/node";
+import { Form, useNavigate } from "@remix-run/react";
+
 import { ChevronLeft } from "lucide-react";
-import { deleteCookie } from "@/utils/cookie/client";
+// import { deleteCookie } from "@/utils/cookie/client";
 import { Button } from "terra-design-system/react";
-import * as AuthAPI from "@/utils/api/auth";
+import { authAPI } from "@/utils/api";
+import { toCookieStorage } from "@/utils/cookie";
+
+export const action: ActionFunction = async ({ request }) => {
+  const rawCookie = request.headers.get("Cookie") ?? "";
+  const cookie = toCookieStorage(rawCookie);
+  const accessToken = cookie.get("accessToken");
+  try {
+    authAPI.get("oauth/logout", {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+  } catch (err) {
+    // handle error
+  }
+
+  return redirect("/", {
+    headers: {
+      "Set-Cookie": [
+        "accessToken=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Secure; SameSite=Lax",
+        "refreshToken=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Secure; SameSite=Lax",
+      ].join(", "),
+    },
+  });
+};
+
 export default function Setting() {
   const navigate = useNavigate();
 
@@ -12,15 +40,15 @@ export default function Setting() {
   };
 
   const handleClickLogout = async () => {
-    await AuthAPI.logout();
+    clearAppCookie();
+    // await AuthAPI.logout();
 
     /**
      * FIXME: logout 고쳐지면 accessToken, refreshToken을 직접 지우는 코드는 제거
      */
-    deleteCookie("accessToken");
-    deleteCookie("refreshToken");
-    clearAppCookie();
-    navigate("/");
+    // deleteCookie("accessToken");
+    // deleteCookie("refreshToken");
+    // navigate("/");
   };
   return (
     <main className="h-screen w-full">
@@ -33,7 +61,11 @@ export default function Setting() {
         </span>
       </header>
       <div className="h-[calc(100%_-_64px)] px-4 py-4">
-        <Button onClick={handleClickLogout}>로그아웃</Button>
+        <Form method="post">
+          <Button type="submit" onClick={handleClickLogout}>
+            로그아웃
+          </Button>
+        </Form>
       </div>
     </main>
   );
