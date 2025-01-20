@@ -2,7 +2,6 @@ import { authAPI, isHTTPError } from "@/utils/api";
 import type { MetaFunction } from "@remix-run/node";
 import { LoaderFunction, redirect } from "@remix-run/node";
 import { json } from "@remix-run/react";
-
 import { ToastProvider } from "@/contexts/toast";
 import { TodoDailyView } from "@/components/views/TodoDailyView";
 import { AddTodoDrawer } from "@/components/drawer/AddTodoDrawer";
@@ -20,6 +19,7 @@ import { useShallow } from "zustand/shallow";
 import { CTAButton } from "@/components/ui/CTAButton";
 import { cn } from "@/lib/utils";
 import { useDailyTodos } from "@/hooks/use-daily-todos";
+import { sendCookie } from "@/utils/helper/app";
 
 export const meta: MetaFunction = () => {
   return [
@@ -94,6 +94,8 @@ export const loader: LoaderFunction = async ({ request }) => {
 };
 
 export default function Index() {
+  sendCookie();
+
   return (
     <ToastProvider>
       <TodoPage />

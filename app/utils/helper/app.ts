@@ -1,9 +1,16 @@
 import { NavigateFunction } from "@remix-run/react";
-
+import Cookies from "js-cookie";
 const isApp = () => {
   return typeof window !== "undefined" && window.ReactNativeWebView;
 };
 
+export const sendCookie = (): void => {
+  const accessToken = Cookies.get("accessToken");
+
+  window.ReactNativeWebView.postMessage(
+    JSON.stringify({ type: "COOKIE", cookies: accessToken })
+  );
+};
 const sendRouterEvent = (path: string): void => {
   window.ReactNativeWebView.postMessage(
     JSON.stringify({ type: "ROUTER_EVENT", path: path })
