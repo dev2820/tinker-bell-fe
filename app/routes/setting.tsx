@@ -3,7 +3,7 @@ import { ActionFunction, redirect } from "@remix-run/node";
 import { Form, useNavigate } from "@remix-run/react";
 
 import { ChevronLeft } from "lucide-react";
-// import { deleteCookie } from "@/utils/cookie/client";
+import { deleteCookie } from "@/utils/cookie/client";
 import { Button } from "terra-design-system/react";
 import { authAPI } from "@/utils/api";
 import { toCookieStorage } from "@/utils/cookie";
@@ -46,8 +46,8 @@ export default function Setting() {
     /**
      * FIXME: logout 고쳐지면 accessToken, refreshToken을 직접 지우는 코드는 제거
      */
-    // deleteCookie("accessToken");
-    // deleteCookie("refreshToken");
+    deleteCookie("accessToken");
+    deleteCookie("refreshToken");
     // navigate("/");
   };
   return (
