@@ -1,4 +1,4 @@
-import { routerBack } from "@/utils/helper/app";
+import { clearCookie, routerBack } from "@/utils/helper/app";
 import { useNavigate } from "@remix-run/react";
 import { ChevronLeft } from "lucide-react";
 import { deleteCookie } from "@/utils/cookie/client";
@@ -19,6 +19,7 @@ export default function Setting() {
      */
     deleteCookie("accessToken");
     deleteCookie("refreshToken");
+    clearCookie();
     navigate("/");
   };
   return (

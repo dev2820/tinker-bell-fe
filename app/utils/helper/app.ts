@@ -11,6 +11,12 @@ export const sendCookie = (): void => {
     JSON.stringify({ type: "COOKIE", cookies: accessToken })
   );
 };
+
+export const clearCookie = (): void => {
+  window.ReactNativeWebView.postMessage(
+    JSON.stringify({ type: "COOKIE", cookies: "" })
+  );
+};
 const sendRouterEvent = (path: string): void => {
   window.ReactNativeWebView.postMessage(
     JSON.stringify({ type: "ROUTER_EVENT", path: path })
