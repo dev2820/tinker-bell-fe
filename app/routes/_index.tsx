@@ -19,7 +19,8 @@ import { useShallow } from "zustand/shallow";
 import { CTAButton } from "@/components/ui/CTAButton";
 import { cn } from "@/lib/utils";
 import { useDailyTodos } from "@/hooks/use-daily-todos";
-import { sendCookie } from "@/utils/helper/app";
+// import { sendCookie } from "@/utils/helper/app";
+// import { useEffect } from "react";
 
 export const meta: MetaFunction = () => {
   return [
@@ -94,7 +95,9 @@ export const loader: LoaderFunction = async ({ request }) => {
 };
 
 export default function Index() {
-  sendCookie();
+  // useEffect(() => {
+  //   // sendCookie();
+  // }, []);
 
   return (
     <ToastProvider>
