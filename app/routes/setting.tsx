@@ -13,7 +13,7 @@ export const action: ActionFunction = async ({ request }) => {
   const cookie = toCookieStorage(rawCookie);
   const accessToken = cookie.get("accessToken");
   try {
-    authAPI.get("oauth/logout", {
+    await authAPI.get("oauth/logout", {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
