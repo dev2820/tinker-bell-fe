@@ -12,10 +12,12 @@ export const sendCookie = (): void => {
   );
 };
 
-export const clearCookie = (): void => {
-  window.ReactNativeWebView.postMessage(
-    JSON.stringify({ type: "COOKIE", cookies: "" })
-  );
+export const clearAppCookie = (): void => {
+  if (isApp()) {
+    window.ReactNativeWebView.postMessage(
+      JSON.stringify({ type: "COOKIE", cookies: "" })
+    );
+  }
 };
 const sendRouterEvent = (path: string): void => {
   window.ReactNativeWebView.postMessage(
