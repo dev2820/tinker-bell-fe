@@ -1,15 +1,15 @@
 import { NavigateFunction } from "@remix-run/react";
-import Cookies from "js-cookie";
+
 const isApp = () => {
   return typeof window !== "undefined" && window.ReactNativeWebView;
 };
 
 export const sendCookie = (): void => {
-  const accessToken = Cookies.get("accessToken");
-
-  window.ReactNativeWebView.postMessage(
-    JSON.stringify({ type: "COOKIE", cookies: accessToken })
-  );
+  if (isApp()) {
+    window.ReactNativeWebView.postMessage(
+      JSON.stringify({ type: "COOKIE", cookies: document.cookie })
+    );
+  }
 };
 
 export const clearAppCookie = (): void => {
