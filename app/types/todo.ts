@@ -1,4 +1,4 @@
-import { Category } from "./category";
+import { Category, RawCategory } from "./category";
 
 export type RawTodo = {
   id: number;
