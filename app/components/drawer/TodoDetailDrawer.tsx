@@ -10,7 +10,7 @@ import { TodoTitleTextarea } from "../todo/TodoTitleTextarea";
 import { ChangeEvent, useState } from "react";
 import { useDailyTodos } from "@/hooks/use-daily-todos";
 import { useTodoDetailDrawerStore } from "@/stores/todo-detail-drawer";
-import { CalendarIcon, Trash2Icon } from "lucide-react";
+import { CalendarIcon, TagIcon, Trash2Icon } from "lucide-react";
 import {
   changeDateOfTodo,
   delayNextDay,
@@ -27,10 +27,18 @@ import { CalendarGrid } from "../calendar/CalendarGrid";
 import { CalendarHeader } from "../calendar/CalendarHeader";
 import { CalendarRoot } from "../calendar/CalendarRoot";
 import { sendModalCloseEvent, sendModalOpenEvent } from "@/utils/helper/app";
+import { MenuItem } from "../MenuItem";
+import { useDisclosure } from "@/hooks/use-disclosure";
+import { useCategories } from "@/hooks/use-categories";
+import { CategoryItem } from "../category/CategoryItem";
+import { CategoryList } from "../views/CategoryList";
+import { Category } from "@/types/category";
 
 export function TodoDetailDrawer() {
   const { currentTodo, changeCurrentTodo, onClose, isOpen } =
     useTodoDetailDrawerStore();
+  const categoryModalHandler = useDisclosure();
+  const { categories } = useCategories();
   const { currentDate } = useCurrentDateStore();
   const [selectedDate, setSelectedDate] = useState<Date>(currentDate);
   const [shownDate, setShownDate] = useState<Date>(currentDate);
@@ -107,6 +115,33 @@ export function TodoDetailDrawer() {
     setShownDate(new Date(year, month));
   };
 
+  const handleChangeCategory = (id: Category["id"]) => {
+    const newCategory = categories.find((c) => c.id === id);
+    if (newCategory) {
+      changeCurrentTodo({
+        categoryList: [newCategory.id],
+      });
+      debouncedUpdateTodoById(currentTodo.id, {
+        categoryList: [newCategory.id],
+      });
+    }
+    categoryModalHandler.onClose();
+  };
+  const handleClickDeleteCategory = () => {
+    changeCurrentTodo({
+      categoryList: [],
+    });
+    debouncedUpdateTodoById(currentTodo.id, {
+      categoryList: [],
+    });
+    categoryModalHandler.onClose();
+  };
+
+  const selectedCategory = categories.find(
+    (c) => c.id === currentTodo.categoryList[0]
+  );
+
+  console.log(selectedCategory, currentTodo);
   return (
     <Drawer.Root
       variant="bottom"
@@ -243,6 +278,49 @@ export function TodoDetailDrawer() {
                             </Button>
                           </Dialog.CloseTrigger>
                         </div>
+                      </Dialog.Content>
+                    </Dialog.Positioner>
+                  </Dialog.Root>
+                </div>
+                <div>
+                  <MenuItem
+                    icon={<TagIcon className="text-gray-400" size={16} />}
+                    type="button"
+                    className="text-gray-800 border-b"
+                    onClick={categoryModalHandler.onOpen}
+                  >
+                    {selectedCategory ? (
+                      <CategoryItem category={selectedCategory} />
+                    ) : (
+                      "카테고리 선택"
+                    )}
+                  </MenuItem>
+                  <Dialog.Root
+                    open={categoryModalHandler.isOpen}
+                    onInteractOutside={categoryModalHandler.onClose}
+                  >
+                    <Dialog.Backdrop />
+                    <Dialog.Positioner>
+                      <Dialog.Content className="mx-4 w-full max-w-md p-4">
+                        <Dialog.Title>카테고리 선택</Dialog.Title>
+                        <CategoryList
+                          items={categories}
+                          onClickCategory={handleChangeCategory}
+                        />
+                        <button
+                          className="h-12 w-full"
+                          type="button"
+                          onClick={handleClickDeleteCategory}
+                        >
+                          <CategoryItem
+                            category={{
+                              id: -1,
+                              name: "없음",
+                              color: "#ffffff",
+                            }}
+                            className="h-full w-full"
+                          ></CategoryItem>
+                        </button>
                       </Dialog.Content>
                     </Dialog.Positioner>
                   </Dialog.Root>

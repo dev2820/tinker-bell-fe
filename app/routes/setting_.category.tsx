@@ -140,7 +140,6 @@ export default function Category() {
       ...newCategory,
       color: getRandomHexColor(),
     });
-    console.log("?");
     createDrawerHandler.onOpen();
   };
 

@@ -2,11 +2,10 @@ import { clearAppCookie, routerBack, routerPush } from "@/utils/helper/app";
 import { Form, useNavigate } from "@remix-run/react";
 import { ChevronLeft, LogOutIcon, TagIcon } from "lucide-react";
 import { deleteCookie } from "@/utils/cookie/client";
-import { ComponentProps, ReactNode } from "react";
-import { cn } from "@/lib/utils";
 import { authAPI } from "@/utils/api";
 import { toCookieStorage } from "@/utils/cookie";
 import { ActionFunction, redirect } from "@remix-run/node";
+import { MenuItem } from "@/components/MenuItem";
 
 export const action: ActionFunction = async ({ request }) => {
   const rawCookie = request.headers.get("Cookie") ?? "";
@@ -91,21 +90,3 @@ export default function Setting() {
     </main>
   );
 }
-
-type MenuItemProps = ComponentProps<"button"> & { icon: ReactNode };
-const MenuItem = (props: MenuItemProps) => {
-  const { children, icon, className, ...rest } = props;
-  return (
-    <button
-      className={cn(
-        className,
-        "px-4 w-full h-12 text-start hover:bg-gray-100 active:bg-gray-200 duration-300 transition-colors border-b",
-        "flex flex-row items-center gap-2"
-      )}
-      {...rest}
-    >
-      {icon}
-      {children}
-    </button>
-  );
-};

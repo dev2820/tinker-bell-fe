@@ -27,6 +27,7 @@ export const useTodoDetailDrawerStore = create<
     isCompleted: false,
     description: "",
     order: 0,
+    categoryList: [],
   },
   onOpen: () => {
     set({ isOpen: true });
