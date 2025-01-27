@@ -104,7 +104,6 @@ export function DateSelector(props: DateSelectorProps) {
   };
 
   const handleChangeWeek = (direct: number) => {
-    console.log(direct, useCurrentDateStore.getState().currentDate);
     changeCurrentDate(
       addWeeks(useCurrentDateStore.getState().currentDate, direct > 0 ? 1 : -1)
     );

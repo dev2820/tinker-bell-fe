@@ -141,7 +141,6 @@ export function TodoDetailDrawer() {
     (c) => c.id === currentTodo.categoryIdList[0]
   );
 
-  console.log(selectedCategory, currentTodo);
   return (
     <Drawer.Root
       variant="bottom"
