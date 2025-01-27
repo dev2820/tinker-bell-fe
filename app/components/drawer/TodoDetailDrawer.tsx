@@ -119,26 +119,26 @@ export function TodoDetailDrawer() {
     const newCategory = categories.find((c) => c.id === id);
     if (newCategory) {
       changeCurrentTodo({
-        categoryList: [newCategory.id],
+        categoryIdList: [newCategory.id],
       });
       debouncedUpdateTodoById(currentTodo.id, {
-        categoryList: [newCategory.id],
+        categoryIdList: [newCategory.id],
       });
     }
     categoryModalHandler.onClose();
   };
   const handleClickDeleteCategory = () => {
     changeCurrentTodo({
-      categoryList: [],
+      categoryIdList: [],
     });
     debouncedUpdateTodoById(currentTodo.id, {
-      categoryList: [],
+      categoryIdList: [],
     });
     categoryModalHandler.onClose();
   };
 
   const selectedCategory = categories.find(
-    (c) => c.id === currentTodo.categoryList[0]
+    (c) => c.id === currentTodo.categoryIdList[0]
   );
 
   console.log(selectedCategory, currentTodo);

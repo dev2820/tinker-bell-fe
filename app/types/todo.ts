@@ -7,7 +7,7 @@ export type RawTodo = {
   isCompleted: boolean;
   order: number;
   description: string | null;
-  categoryList: RawCategory["id"][];
+  categoryList: RawCategory[];
 };
 
 export type Todo = {
@@ -21,7 +21,7 @@ export type Todo = {
   isCompleted: boolean;
   order: number;
   description: string;
-  categoryList: Category["id"][];
+  categoryIdList: Category["id"][];
 };
 
 // todo: date를 분해할 것 -> 년월일만 저장하도록, toTodo는 한국 시간으로 컨버팅해서

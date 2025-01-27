@@ -59,7 +59,7 @@ export async function deleteTodo(payload: DeleteTodoPayload) {
 
 type CreateTodoPayload = Omit<Todo, "id" | "isCompleted">;
 export async function createTodo(payload: CreateTodoPayload) {
-  const { title, description, categoryList, date } = payload;
+  const { title, description, categoryIdList, date } = payload;
   const isoDate = toISODate(date);
   const result = await authAPI
     .post(`todos`, {
@@ -67,7 +67,7 @@ export async function createTodo(payload: CreateTodoPayload) {
         title: title,
         description: description,
         date: isoDate,
-        categoryIdList: categoryList,
+        categoryIdList: categoryIdList,
       }),
       headers: {
         Authorization: `Bearer ${Cookies.get("accessToken")}`,
@@ -82,7 +82,7 @@ type UpdateTodoPayload = Partial<Omit<Todo, "id">> & Pick<Todo, "id">;
 export async function updateTodo(
   payload: UpdateTodoPayload
 ): Promise<KyResponse> {
-  const { id, title, date, description, isCompleted } = payload;
+  const { id, title, date, description, categoryIdList, isCompleted } = payload;
 
   return authAPI.put(`todos/${id}`, {
     body: JSON.stringify({
@@ -90,7 +90,7 @@ export async function updateTodo(
       date: date && toISODate(date),
       isCompleted: isCompleted,
       description: description,
-      categoryList: [],
+      categoryIdList: categoryIdList,
     }),
     headers: {
       Authorization: `Bearer ${Cookies.get("accessToken")}`,

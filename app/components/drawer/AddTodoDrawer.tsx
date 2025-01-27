@@ -37,7 +37,7 @@ export function AddTodoDrawer() {
         day: currentDate.getDate(),
       },
       order: 0,
-      categoryList: categoryId >= 0 ? [categoryId] : [],
+      categoryIdList: categoryId >= 0 ? [categoryId] : [],
     });
     addTodoDrawer.onClose();
     setTitle("");
