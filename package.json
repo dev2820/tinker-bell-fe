@@ -33,6 +33,7 @@
     "react-dom": "^19.0.0",
     "react-textarea-autosize": "^8.5.5",
     "remix-utils": "^8.0.0",
+    "resizable-split-view": "^0.1.8",
     "swiper": "^11.1.14",
     "tailwind-merge": "^2.5.3",
     "tailwind-variants": "^0.2.1",

@@ -129,8 +129,8 @@
 html,
 body {
   font-size: 16px;
-  @apply bg-white dark:bg-gray-950;
 
+  @apply bg-white dark:bg-gray-950;
   @media (prefers-color-scheme: dark) {
     color-scheme: dark;
   }
@@ -145,6 +145,7 @@ body {
 
 body {
   overscroll-behavior: none;
+  touch-action: none; /* 배경이 움직이지 않게 해줌 */
 }
 
 @layer base {

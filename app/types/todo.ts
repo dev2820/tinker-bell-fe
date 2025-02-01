@@ -7,7 +7,7 @@ export type RawTodo = {
   isCompleted: boolean;
   order: number;
   description: string | null;
-  categoryList: RawCategory[];
+  categoryIdList: RawCategory["id"][];
 };
 
 export type Todo = {

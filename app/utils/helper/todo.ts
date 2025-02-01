@@ -87,7 +87,6 @@ export const toTodo = (rawTodo: RawTodo): Todo => {
 
   return {
     ...rawTodo,
-    categoryIdList: rawTodo.categoryList.map((c) => c.id),
     date: {
       year: date.getFullYear(),
       month: date.getMonth() + 1,

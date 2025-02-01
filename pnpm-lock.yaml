@@ -71,6 +71,9 @@ dependencies:
   remix-utils:
     specifier: ^8.0.0
     version: 8.0.0(react@19.0.0)
+  resizable-split-view:
+    specifier: ^0.1.8
+    version: 0.1.8
   swiper:
     specifier: ^11.1.14
     version: 11.1.14
@@ -6435,6 +6438,10 @@ packages:
 
   /require-like@0.1.2:
     resolution: {integrity: sha512-oyrU88skkMtDdauHDuKVrgR+zuItqr6/c//FXzvmxRGMexSDc6hNvJInGW3LL46n+8b50RykrvwSUIIQH2LQ5A==}
+
+  /resizable-split-view@0.1.8:
+    resolution: {integrity: sha512-0GCcByaYlYnJ5PoBxs6+xx8txturGtvhrgdZKvZzl5yZc4RBgqBi4o8QxAkAuGW+pv3nquXTIHH2nVPPAFrsrg==}
+    dev: false
 
   /resolve-from@4.0.0:
     resolution: {integrity: sha512-pb/MYmXstAkysRFx8piNI1tGFNQIFA3vkE3Gq4EuA1dF6gHp/+vgZqsCGJapvy8N3Q+4o7FwvquPJcnZ7RYy4g==}
