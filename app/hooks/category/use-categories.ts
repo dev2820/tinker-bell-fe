@@ -3,7 +3,7 @@ import type { Category, RawCategory } from "@/types/category";
 import { useQuery } from "@tanstack/react-query";
 import { CATEGORY_QUERY_KEY } from "./query-key";
 
-const toCategory = (rawData: RawCategory) => {
+const toCategory = (rawData: RawCategory): Category => {
   return { ...rawData };
 };
 export const useCategories = () => {

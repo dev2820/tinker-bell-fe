@@ -10,6 +10,7 @@ import { CheckIcon, EqualIcon } from "lucide-react";
 import { Reorder, useDragControls } from "framer-motion";
 import { vibrateShort } from "@/utils/device/vibrate";
 import { cva } from "class-variance-authority";
+import { CategoryTag } from "../category/CategoryTag";
 
 export type TodoDraggableItemProps = {
   todo: Todo;
@@ -56,16 +57,23 @@ export function TodoDraggableItem(props: TodoDraggableItemProps) {
           className
         )}
       >
-        <button
-          className={cx(
-            "flex-1 h-full text-left whitespace-pre-line select-none pt-[11px]",
-            todo.isCompleted ? "line-through text-disabled" : ""
+        <div className="flex-1 flex flex-col h-full text-left whitespace-pre-line select-none pt-[11px]">
+          <button
+            className={cx(
+              "text-left",
+              todo.isCompleted ? "line-through text-disabled" : ""
+            )}
+            data-todo-id={todo.id}
+            onClick={onClickTodo}
+          >
+            {todo.title}
+          </button>
+          {todo.categoryIdList.length > 0 && (
+            <div className="flex flex-row gap-2 mt-1">
+              <CategoryTag categoryId={todo.categoryIdList[0]} />
+            </div>
           )}
-          data-todo-id={todo.id}
-          onClick={onClickTodo}
-        >
-          {todo.title}
-        </button>
+        </div>
         {reorderMode && (
           <div
             className="text-gray-300 opacity-50 cursor-grab flex-none pt-[11px]"
