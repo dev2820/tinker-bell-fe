@@ -59,20 +59,21 @@ export function TodoDraggableItem(props: TodoDraggableItemProps) {
       >
         <div className="flex-1 flex flex-col h-full text-left whitespace-pre-line select-none pt-[11px]">
           <button
-            className={cx(
-              "text-left",
-              todo.isCompleted ? "line-through text-disabled" : ""
-            )}
+            className={cx("text-left")}
             data-todo-id={todo.id}
             onClick={onClickTodo}
           >
-            {todo.title}
-          </button>
-          {todo.categoryIdList.length > 0 && (
-            <div className="flex flex-row gap-2 mt-1">
-              <CategoryTag categoryId={todo.categoryIdList[0]} />
+            <div
+              className={todo.isCompleted ? "line-through text-disabled" : ""}
+            >
+              {todo.title}
             </div>
-          )}
+            {todo.categoryIdList.length > 0 && (
+              <div className="flex flex-row gap-2 mt-1">
+                <CategoryTag categoryId={todo.categoryIdList[0]} />
+              </div>
+            )}
+          </button>
         </div>
         {reorderMode && (
           <div
