@@ -14,5 +14,6 @@ export const useCategories = () => {
       return rawCategories.map(toCategory);
     },
     initialData: [],
+    initialDataUpdatedAt: 0,
   });
 };
