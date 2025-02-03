@@ -281,7 +281,7 @@ export function TodoDetailDrawer() {
                     </Dialog.Positioner>
                   </Dialog.Root>
                 </div>
-                <div>
+                <div className="mt-2">
                   <MenuItem
                     icon={<TagIcon className="text-gray-400" size={16} />}
                     type="button"
