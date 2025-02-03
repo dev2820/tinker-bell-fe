@@ -1,20 +1,19 @@
-import { useEffect, useState } from "react";
-import { fetchCategories } from "@/utils/api/category";
-import type { Category } from "@/types/category";
+import * as CategoryAPI from "@/utils/api/category";
+import type { Category, RawCategory } from "@/types/category";
+import { useQuery } from "@tanstack/react-query";
 
+const CATEGORY_QUERY_KEY = ["categories"] as const;
+
+const toCategory = (rawData: RawCategory) => {
+  return { ...rawData };
+};
 export const useCategories = () => {
-  const [categories, setCategories] = useState<Category[]>([]);
-
-  useEffect(() => {
-    async function updateCategories() {
-      const categories = await fetchCategories();
-      setCategories(categories);
-    }
-
-    updateCategories();
-  }, []);
-
-  return {
-    categories,
-  };
+  return useQuery<Category[], Error>({
+    queryKey: CATEGORY_QUERY_KEY,
+    queryFn: async () => {
+      const rawCategories = await CategoryAPI.fetchCategories();
+      return rawCategories.map(toCategory);
+    },
+    initialData: [],
+  });
 };

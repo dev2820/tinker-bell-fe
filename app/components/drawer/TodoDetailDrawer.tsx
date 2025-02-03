@@ -38,7 +38,7 @@ export function TodoDetailDrawer() {
   const { currentTodo, changeCurrentTodo, onClose, isOpen } =
     useTodoDetailDrawerStore();
   const categoryModalHandler = useDisclosure();
-  const { categories } = useCategories();
+  const { data: categories } = useCategories();
   const { currentDate } = useCurrentDateStore();
   const [selectedDate, setSelectedDate] = useState<Date>(currentDate);
   const [shownDate, setShownDate] = useState<Date>(currentDate);

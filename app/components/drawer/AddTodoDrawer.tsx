@@ -18,7 +18,7 @@ export function AddTodoDrawer() {
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [categoryId, setCategoryId] = useState<number>(-1);
-  const { categories } = useCategories();
+  const { data: categories } = useCategories();
   const { createTodo } = useDailyTodos(currentDate);
 
   const handleCloseCreateTodo = () => {
