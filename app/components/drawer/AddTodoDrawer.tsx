@@ -6,7 +6,7 @@ import { useCurrentDateStore } from "@/stores/current-date";
 import { SendHorizonalIcon, TagIcon } from "lucide-react";
 import { MenuItem } from "../MenuItem";
 import { CategoryList } from "../views/CategoryList";
-import { useCategories } from "@/hooks/use-categories";
+import { useCategories } from "@/hooks/category/use-categories";
 import { Category } from "@/types/category";
 import { useDisclosure } from "@/hooks/use-disclosure";
 import { CategoryItem } from "../category/CategoryItem";

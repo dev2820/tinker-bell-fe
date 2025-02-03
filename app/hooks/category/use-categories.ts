@@ -1,8 +1,7 @@
 import * as CategoryAPI from "@/utils/api/category";
 import type { Category, RawCategory } from "@/types/category";
 import { useQuery } from "@tanstack/react-query";
-
-const CATEGORY_QUERY_KEY = ["categories"] as const;
+import { CATEGORY_QUERY_KEY } from "./query-key";
 
 const toCategory = (rawData: RawCategory) => {
   return { ...rawData };

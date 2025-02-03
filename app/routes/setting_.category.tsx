@@ -1,16 +1,10 @@
 import type { Category } from "@/types/category";
 import { CategoryList } from "@/components/views/CategoryList";
 import { ToastProvider } from "@/contexts/toast";
-import {
-  createCategory,
-  deleteCategory,
-  fetchCategories,
-  updateCategory,
-} from "@/utils/api/category";
 import { routerBack } from "@/utils/helper/app";
 import { useNavigate } from "@remix-run/react";
 import { ChevronLeft, PlusIcon, TagIcon, Trash2Icon } from "lucide-react";
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useState } from "react";
 import { FloatingButton } from "@/components/ui/FloatingButton";
 import {
   Button,
@@ -24,6 +18,10 @@ import {
 import { cn } from "@/lib/utils";
 import { getRandomHexColor } from "@/utils/color";
 import { useDisclosure } from "@/hooks/use-disclosure";
+import { useCategories } from "@/hooks/category/use-categories";
+import { useCreateCategory } from "@/hooks/category/use-create-category";
+import { useDeleteCategory } from "@/hooks/category/use-delete-category";
+import { useUpdateCategory } from "@/hooks/category/use-update-category";
 
 const MAX_CATEGORY_LENGTH = 15;
 export default function Category() {
@@ -40,16 +38,10 @@ export default function Category() {
     routerBack(navigate);
   };
 
-  const [categories, setCategories] = useState<Category[]>([]);
-
-  async function updateCategories() {
-    const categories = await fetchCategories();
-    setCategories(categories);
-  }
-
-  useEffect(() => {
-    updateCategories();
-  }, []);
+  const { data: categories } = useCategories();
+  const { mutateAsync: createCategory } = useCreateCategory();
+  const { mutateAsync: deleteCategory } = useDeleteCategory();
+  const { mutateAsync: updateCategory } = useUpdateCategory();
 
   const handleChangeNewCategoryName = (e: ChangeEvent<HTMLInputElement>) => {
     const name = e.currentTarget.value.slice(0, 15);
@@ -71,7 +63,6 @@ export default function Category() {
     setIsLoading(true);
     try {
       await createCategory(newCategory);
-      await updateCategories();
       createDrawerHandler.onClose();
       setNewCategory({
         name: "",
@@ -123,7 +114,6 @@ export default function Category() {
         return;
       }
       await updateCategory(modifyCategory);
-      await updateCategories();
       modifyDrawerHandler.onClose();
       setModifyCategory(undefined);
     } catch (err) {
@@ -150,7 +140,6 @@ export default function Category() {
 
     try {
       await deleteCategory({ id: modifyCategory.id });
-      await updateCategories();
     } catch (err) {
       /**
        * TODO: handle error

@@ -29,7 +29,7 @@ import { CalendarRoot } from "../calendar/CalendarRoot";
 import { sendModalCloseEvent, sendModalOpenEvent } from "@/utils/helper/app";
 import { MenuItem } from "../MenuItem";
 import { useDisclosure } from "@/hooks/use-disclosure";
-import { useCategories } from "@/hooks/use-categories";
+import { useCategories } from "@/hooks/category/use-categories";
 import { CategoryItem } from "../category/CategoryItem";
 import { CategoryList } from "../views/CategoryList";
 import { Category } from "@/types/category";
