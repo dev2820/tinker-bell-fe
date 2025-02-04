@@ -5,7 +5,7 @@ import {
   useState,
 } from "react";
 import { Todo } from "@/types/todo";
-import { cx } from "@/utils/cx";
+import { cn } from "@/utils/cn";
 import { CheckIcon, EqualIcon } from "lucide-react";
 import { Reorder, useDragControls } from "framer-motion";
 import { vibrateShort } from "@/utils/device/vibrate";
@@ -50,7 +50,7 @@ export function TodoDraggableItem(props: TodoDraggableItemProps) {
       transition={{ duration: 0.15 }}
     >
       <div
-        className={cx(
+        className={cn(
           "todo",
           "gap-2 flex flex-row min-h-12 border border-gray-200 bg-white rounded-lg px-4 my-2 items-start pb-[11px]",
           isDragging ? "shadow-md" : "",
@@ -59,7 +59,7 @@ export function TodoDraggableItem(props: TodoDraggableItemProps) {
       >
         <div className="flex-1 flex flex-col h-full text-left whitespace-pre-line select-none pt-[11px]">
           <button
-            className={cx("text-left")}
+            className={cn("text-left")}
             data-todo-id={todo.id}
             onClick={onClickTodo}
           >
@@ -86,18 +86,18 @@ export function TodoDraggableItem(props: TodoDraggableItemProps) {
         )}
         {!reorderMode && (
           <label
-            className={cx(
+            className={cn(
               "inline-flex place-items-center justify-center pt-[13px]"
             )}
           >
             <input
               type="checkbox"
-              className={cx("peer hidden")}
+              className={cn("peer hidden")}
               data-todo-id={todo.id}
               defaultChecked={todo.isCompleted}
               onChange={handleChangeComplete}
             />
-            <div className={cx(todoCheckboxStyle({ size: "md" }), "mx-0.5")}>
+            <div className={cn(todoCheckboxStyle({ size: "md" }), "mx-0.5")}>
               <CheckIcon
                 size={14}
                 className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2"

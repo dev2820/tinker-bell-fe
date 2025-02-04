@@ -1,4 +1,4 @@
-import { cx } from "@/utils/cx";
+import { cn } from "@/utils/cn";
 import { cva, type VariantProps } from "class-variance-authority";
 import { CheckIcon } from "lucide-react";
 import { ComponentProps } from "react";
@@ -12,10 +12,10 @@ export function TodoCheckbox(props: TodoCheckboxProps) {
 
   return (
     <label
-      className={cx("inline-flex place-items-center justify-center", className)}
+      className={cn("inline-flex place-items-center justify-center", className)}
     >
-      <input type="checkbox" className={cx("peer hidden")} {...rest} />
-      <div className={cx(todoCheckboxStyle({ size }))}>
+      <input type="checkbox" className={cn("peer hidden")} {...rest} />
+      <div className={cn(todoCheckboxStyle({ size }))}>
         <CheckIcon
           size={iconSize}
           className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2"

@@ -8,8 +8,8 @@
  * *useDrag를 이용해야한다.
  */
 
-import { cn } from "@/lib/utils";
-import { cx } from "@/utils/cx";
+import { cn } from "@/utils/cn";
+import { cn } from "@/utils/cn";
 import { config, animated, useSpringValue } from "@react-spring/web";
 import { useDrag } from "@use-gesture/react";
 import {
@@ -143,7 +143,7 @@ function SwiperContainer(props: SwiperContainerProps) {
 
   return (
     <div
-      className={cx("h-full", className)}
+      className={cn("h-full", className)}
       style={{ width: `${width}px` }}
       {...rest}
     >
@@ -174,7 +174,7 @@ export function SwiperItem(props: SwiperItemProps) {
 
   return (
     <div
-      className={cx("inline-block absolute top-0", className)}
+      className={cn("inline-block absolute top-0", className)}
       style={{
         width: `${width}px`,
         left: `${index * width}px`,

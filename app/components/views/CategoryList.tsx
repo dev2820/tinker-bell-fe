@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/cn";
 import { type Category } from "@/types/category";
 import { type ComponentProps, type MouseEvent } from "react";
 import { CategoryItem } from "../category/CategoryItem";

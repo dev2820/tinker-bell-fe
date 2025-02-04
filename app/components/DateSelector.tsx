@@ -9,7 +9,7 @@ import { useCurrentDateStore } from "@/stores/current-date";
 import { useShallow } from "zustand/shallow";
 import { useMonthlyTodos } from "@/hooks/use-monthly-todos";
 import { useTodos } from "@/hooks/use-todos";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/cn";
 import { getCalendarDays, getWeekDays } from "@/utils/date-time";
 import { Button } from "terra-design-system/react";
 import { useModeStore } from "@/stores/mode";

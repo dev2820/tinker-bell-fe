@@ -1,6 +1,6 @@
 import { useToast } from "@/contexts/toast";
 import { useDailyTodos } from "@/hooks/use-daily-todos";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/cn";
 import { useTodoDetailDrawerStore } from "@/stores/todo-detail-drawer";
 import { vibrateShort } from "@/utils/device/vibrate";
 import { Toast } from "terra-design-system/react";

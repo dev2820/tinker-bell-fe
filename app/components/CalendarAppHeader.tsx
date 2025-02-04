@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/cn";
 import { useCurrentDateStore } from "@/stores/current-date";
 import { routerPush } from "@/utils/helper/app";
 import { useNavigate } from "@remix-run/react";

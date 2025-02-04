@@ -15,7 +15,7 @@ import {
   ColorPickerValueChangeDetails,
   IconButton,
 } from "terra-design-system/react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/cn";
 import { getRandomHexColor } from "@/utils/color";
 import { useDisclosure } from "@/hooks/use-disclosure";
 import { useCategories } from "@/hooks/category/use-categories";

@@ -17,7 +17,7 @@ import { useAddTodoDrawerStore } from "@/stores/add-todo-drawer";
 import { useModeStore } from "@/stores/mode";
 import { useShallow } from "zustand/shallow";
 import { CTAButton } from "@/components/ui/CTAButton";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/cn";
 import { useDailyTodos } from "@/hooks/use-daily-todos";
 import { sendCookie } from "@/utils/helper/app";
 import { useEffect } from "react";

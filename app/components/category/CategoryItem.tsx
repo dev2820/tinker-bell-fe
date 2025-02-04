@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/cn";
 import { Category } from "@/types/category";
 import { type ComponentProps } from "react";
 

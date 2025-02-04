@@ -2,7 +2,7 @@ import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { Button } from "terra-design-system/react";
 import { useCalendar } from "./CalendarRoot";
 import { ComponentProps } from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/cn";
 
 type CalendarHeaderProps = Omit<ComponentProps<"div">, "children">;
 

@@ -1,4 +1,4 @@
-import { cx } from "@/utils/cx";
+import { cn } from "@/utils/cn";
 import TextareaAutosize, {
   type TextareaAutosizeProps,
 } from "react-textarea-autosize";
@@ -8,7 +8,7 @@ export function TodoTitleTextarea(props: TextareaAutosizeProps) {
 
   return (
     <TextareaAutosize
-      className={cx(
+      className={cn(
         "resize-none rounded-md p-2 border bg-white text-md focus:border-primary outline-primary border-gray-300",
         className
       )}

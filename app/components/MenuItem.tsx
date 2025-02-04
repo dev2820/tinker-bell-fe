@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/cn";
 import { ComponentProps, ReactNode } from "react";
 
 type MenuItemProps = ComponentProps<"button"> & { icon: ReactNode };

@@ -19,7 +19,7 @@ import {
 } from "@/utils/helper/todo";
 import { useToast } from "@/contexts/toast";
 import { useCurrentDateStore } from "@/stores/current-date";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/cn";
 import { isSameDay } from "date-fns";
 import { CalendarCellWithLabel } from "../calendar/CalendarCellWithLabel";
 import { CalendarContainer } from "../calendar/CalendarContainer";

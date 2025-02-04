@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/cn";
 import { ComponentProps } from "react";
 import { DateSelector } from "../DateSelector";
 import { useWindowSize } from "@/hooks/use-window-size";
