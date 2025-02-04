@@ -1,18 +1,13 @@
 import type { Category, RawCategory } from "@/types/category";
 import { authAPI } from "./index";
 import Cookies from "js-cookie";
+import { KyInstance } from "ky";
 
 /**
  * @see https://api.ticketbell.store/swagger-ui/index.html#/category-controller/getCategoryList
  */
-export async function fetchCategories() {
-  return await authAPI
-    .get(`categories`, {
-      headers: {
-        Authorization: `Bearer ${Cookies.get("accessToken")}`,
-      },
-    })
-    .json<RawCategory[]>();
+export async function fetchCategories(client: KyInstance) {
+  return await client.get(`categories`).json<RawCategory[]>();
 }
 
 type UpdateCategoryPayload = Partial<Omit<Category, "id">> &
