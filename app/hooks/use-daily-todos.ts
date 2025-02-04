@@ -248,7 +248,7 @@ export const useDailyTodos = (currentDate: Date) => {
     [data, updateMutation]
   );
 
-  const debouncedUpdateTodoById = useDebounce(updateTodoById, 300);
+  const debouncedUpdateTodoById = useDebounce(updateTodoById, 500);
 
   const toggleTodoById = (id: Todo["id"]) => {
     if (!data) {
