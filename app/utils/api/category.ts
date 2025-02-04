@@ -1,5 +1,5 @@
 import type { Category, RawCategory } from "@/types/category";
-import { authAPI } from "..";
+import { authAPI } from "./index";
 import Cookies from "js-cookie";
 
 /**
