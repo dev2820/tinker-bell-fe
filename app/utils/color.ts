@@ -20,7 +20,3 @@ export function getTextColorBasedOnBackground(r: number, g: number, b: number) {
   // 명도가 낮으면 흰색 텍스트, 높으면 검은색 텍스트 반환
   return luminance > 0.5 ? "black" : "white";
 }
-
-// 예시: RGB 값이 (255, 255, 255)인 경우
-console.log(getTextColorBasedOnBackground(255, 255, 255)); // 'black'
-console.log(getTextColorBasedOnBackground(0, 0, 0)); // 'white'
