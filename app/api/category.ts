@@ -1,6 +1,4 @@
 import type { Category, RawCategory } from "@/types/category";
-import { authAPI } from "./index";
-import Cookies from "js-cookie";
 import { KyInstance } from "ky";
 
 /**
@@ -30,34 +28,33 @@ export async function updateCategory(
     .json<RawCategory>();
 }
 
-type DeleteCategoryPayload = Pick<Category, "id">;
+export type DeleteCategoryPayload = Pick<Category, "id">;
 /**
  * @see https://api.ticketbell.store/swagger-ui/index.html#/category-controller/removeCategory
  */
-export async function deleteCategory(payload: DeleteCategoryPayload) {
+export async function deleteCategory(
+  client: KyInstance,
+  payload: DeleteCategoryPayload
+) {
   const { id } = payload;
-  return await authAPI.delete(`categories/${id}`, {
-    headers: {
-      Authorization: `Bearer ${Cookies.get("accessToken")}`,
-    },
-  });
+  return await client.delete(`categories/${id}`);
 }
 
-type CreateCategoryPayload = Omit<Category, "id">;
+export type CreateCategoryPayload = Omit<Category, "id">;
 /**
  * @see https://api.ticketbell.store/swagger-ui/index.html#/category-controller/saveCategory
  */
-export async function createCategory(payload: CreateCategoryPayload) {
+export async function createCategory(
+  client: KyInstance,
+  payload: CreateCategoryPayload
+) {
   const { name, color } = payload;
-  return await authAPI
+  return await client
     .post(`categories`, {
       body: JSON.stringify({
         name,
         color,
       }),
-      headers: {
-        Authorization: `Bearer ${Cookies.get("accessToken")}`,
-      },
     })
     .json<RawCategory>();
 }
