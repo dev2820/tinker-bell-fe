@@ -22,7 +22,7 @@ export function useDeleteCategory() {
       return { categories: previousCategories };
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: CATEGORY_QUERY_KEY });
+      // queryClient.invalidateQueries({ queryKey: CATEGORY_QUERY_KEY });
     },
     onError: (_, __, context) => {
       if (context?.categories) {
