@@ -1,4 +1,4 @@
-import * as CategoryAPI from "@/utils/api/category";
+import * as CategoryAPI from "@/api/category";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CATEGORY_QUERY_KEY } from "./query-key";
 import { toCategory } from "@/utils/helper/category";

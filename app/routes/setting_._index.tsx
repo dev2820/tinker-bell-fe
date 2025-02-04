@@ -2,7 +2,7 @@ import { clearAppCookie, routerBack, routerPush } from "@/utils/helper/app";
 import { Form, useNavigate } from "@remix-run/react";
 import { ChevronLeft, LogOutIcon, TagIcon } from "lucide-react";
 import { deleteCookie } from "@/utils/cookie/client";
-import { authAPI } from "@/utils/api";
+import { authAPI } from "@/api";
 import { toCookieStorage } from "@/utils/cookie";
 import { ActionFunction, redirect } from "@remix-run/node";
 import { MenuItem } from "@/components/MenuItem";

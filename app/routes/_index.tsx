@@ -1,4 +1,4 @@
-import { authAPI, isHTTPError } from "@/utils/api";
+import { authAPI, isHTTPError } from "@/api";
 import type { MetaFunction } from "@remix-run/node";
 import { LoaderFunction, redirect } from "@remix-run/node";
 import { json } from "@remix-run/react";

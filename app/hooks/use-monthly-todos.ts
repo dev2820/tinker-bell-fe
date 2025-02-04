@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import * as todoAPI from "@/utils/api/todo";
+import * as todoAPI from "@/api/todo";
 import { useMemo } from "react";
 import { toTodo } from "@/utils/helper/todo";
 

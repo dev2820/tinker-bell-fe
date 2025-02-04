@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import * as todoAPI from "@/utils/api/todo";
+import * as todoAPI from "@/api/todo";
 import { useCallback, useMemo } from "react";
 import { formatDate, isSameDay } from "date-fns";
 import { Todo } from "@/types/todo";
