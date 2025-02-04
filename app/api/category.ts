@@ -10,22 +10,22 @@ export async function fetchCategories(client: KyInstance) {
   return await client.get(`categories`).json<RawCategory[]>();
 }
 
-type UpdateCategoryPayload = Partial<Omit<Category, "id">> &
+export type UpdateCategoryPayload = Partial<Omit<Category, "id">> &
   Pick<Category, "id">;
 /**
  * @see https://api.ticketbell.store/swagger-ui/index.html#/category-controller/changeCategory
  */
-export async function updateCategory(payload: UpdateCategoryPayload) {
+export async function updateCategory(
+  client: KyInstance,
+  payload: UpdateCategoryPayload
+) {
   const { id, name, color } = payload;
-  return await authAPI
+  return await client
     .put(`categories/${id}`, {
       body: JSON.stringify({
         name,
         color,
       }),
-      headers: {
-        Authorization: `Bearer ${Cookies.get("accessToken")}`,
-      },
     })
     .json<RawCategory>();
 }
