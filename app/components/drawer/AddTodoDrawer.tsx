@@ -42,6 +42,7 @@ export function AddTodoDrawer() {
     addTodoDrawer.onClose();
     setTitle("");
     setDescription("");
+    setCategoryId(-1);
   };
   const handleChangeTitle = (e: ChangeEvent<HTMLInputElement>) => {
     setTitle(e.currentTarget.value);
