@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import * as todoAPI from "@/api/todo";
+import * as TodoAPI from "@/api/todo";
 import { useCallback, useMemo } from "react";
 import { formatDate, isSameDay } from "date-fns";
 import { Todo } from "@/types/todo";
@@ -7,6 +7,7 @@ import { useDebounce } from "./use-debounce";
 import { isThatDateTodo, toTodo } from "@/utils/helper/todo";
 import { partition } from "@/utils/partition";
 import { getWeekDays } from "@/utils/date-time";
+import { httpClient } from "@/utils/http-client";
 
 const makeDailyQueryKey = (date: Date) => {
   return ["todo", formatDate(date, "yyyy-MM-dd")];
@@ -21,7 +22,7 @@ export const useDailyTodos = (currentDate: Date) => {
     queryKey: todoQueryKey,
     queryFn: async () => {
       try {
-        const res = await todoAPI.fetchTodosByDate(currentDate);
+        const res = await TodoAPI.fetchTodosByDate(currentDate);
         const { completedTodoList, incompletedTodoList } = res;
 
         return [incompletedTodoList.map(toTodo), completedTodoList.map(toTodo)];
@@ -34,7 +35,8 @@ export const useDailyTodos = (currentDate: Date) => {
 
   const createMutation = useMutation({
     mutationKey: todoQueryKey,
-    mutationFn: todoAPI.createTodo,
+    mutationFn: (payload: TodoAPI.CreateTodoPayload) =>
+      TodoAPI.createTodo(httpClient, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: todoQueryKey,
@@ -56,7 +58,7 @@ export const useDailyTodos = (currentDate: Date) => {
   });
   const updateMutation = useMutation({
     mutationKey: todoQueryKey,
-    mutationFn: todoAPI.updateTodo,
+    mutationFn: TodoAPI.updateTodo,
     onMutate: (payload) => {
       // 낙관적 업데이트
       const previousTodos = queryClient.getQueryData<Todo[][]>(todoQueryKey);
@@ -124,7 +126,7 @@ export const useDailyTodos = (currentDate: Date) => {
   });
   const deleteMutation = useMutation({
     mutationKey: todoQueryKey,
-    mutationFn: todoAPI.deleteTodo,
+    mutationFn: TodoAPI.deleteTodo,
     onMutate: (payload) => {
       // 낙관적 업데이트
       const previousTodos = queryClient.getQueryData<Todo[][]>(todoQueryKey);
@@ -172,7 +174,7 @@ export const useDailyTodos = (currentDate: Date) => {
   });
   const toggleMutation = useMutation({
     mutationKey: todoQueryKey,
-    mutationFn: todoAPI.updateTodoComplete,
+    mutationFn: TodoAPI.updateTodoComplete,
     onMutate: (payload) => {
       // 낙관적 업데이트
       const previousTodos = queryClient.getQueryData<Todo[][]>(todoQueryKey);
@@ -225,7 +227,7 @@ export const useDailyTodos = (currentDate: Date) => {
   });
   const reorderMutation = useMutation({
     mutationKey: todoQueryKey,
-    mutationFn: todoAPI.updateTodoOrder,
+    mutationFn: TodoAPI.updateTodoOrder,
     onError: (error) => {
       console.error("Error ordering item:", error);
     },

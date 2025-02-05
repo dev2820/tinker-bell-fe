@@ -2,7 +2,7 @@ import type { RawTodo, Todo } from "@/types/todo";
 import { authAPI } from "..";
 import Cookies from "js-cookie";
 import { lastDayOfMonth } from "date-fns";
-import { KyResponse } from "ky";
+import { KyInstance, KyResponse } from "ky";
 
 export async function fetchTodos(startDate: Date, endDate: Date) {
   return await authAPI
@@ -57,11 +57,17 @@ export async function deleteTodo(payload: DeleteTodoPayload) {
   });
 }
 
-type CreateTodoPayload = Omit<Todo, "id" | "isCompleted">;
-export async function createTodo(payload: CreateTodoPayload) {
+export type CreateTodoPayload = Omit<Todo, "id" | "isCompleted">;
+/**
+ * @see https://api.ticketbell.store/swagger-ui/index.html#/todo-controller/saveTodo
+ */
+export async function createTodo(
+  client: KyInstance,
+  payload: CreateTodoPayload
+) {
   const { title, description, categoryIdList, date } = payload;
   const isoDate = toISODate(date);
-  const result = await authAPI
+  const result = await client
     .post(`todos`, {
       body: JSON.stringify({
         title: title,
@@ -69,9 +75,6 @@ export async function createTodo(payload: CreateTodoPayload) {
         date: isoDate,
         categoryIdList: categoryIdList,
       }),
-      headers: {
-        Authorization: `Bearer ${Cookies.get("accessToken")}`,
-      },
     })
     .json<RawTodo>();
 
