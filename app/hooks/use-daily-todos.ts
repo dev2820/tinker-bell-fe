@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import * as TodoAPI from "@/api/todo";
 import { useCallback, useMemo } from "react";
 import { Todo } from "@/types/todo";
@@ -10,6 +10,7 @@ import { useCreateTodo } from "./todo/use-create-todo";
 import { useDeleteTodo } from "./todo/use-delete-todo";
 import { useUpdateTodo } from "./todo/use-update-todo";
 import { useToggleTodo } from "./todo/use-toggle-todo";
+import { useReorderTodo } from "./todo/use-reorder-todo";
 
 export const useDailyTodos = (currentDate: Date) => {
   const todoQueryKey = useMemo(() => {
@@ -36,15 +37,7 @@ export const useDailyTodos = (currentDate: Date) => {
   const updateMutation = useUpdateTodo(currentDate);
   const deleteMutation = useDeleteTodo(currentDate);
   const toggleMutation = useToggleTodo(currentDate);
-
-  const reorderMutation = useMutation({
-    mutationKey: todoQueryKey,
-    mutationFn: (payload: TodoAPI.UpdateTodoOrderPayload) =>
-      TodoAPI.updateTodoOrder(httpClient, payload),
-    onError: (error) => {
-      console.error("Error ordering item:", error);
-    },
-  });
+  const reorderMutation = useReorderTodo(currentDate);
 
   const updateTodoById = useCallback(
     (id: Todo["id"], payload: Partial<Omit<Todo, "id">>) => {
