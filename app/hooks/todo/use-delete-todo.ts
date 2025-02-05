@@ -1,10 +1,6 @@
 import * as TodoAPI from "@/api/todo";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  makeDailyQueryKey,
-  makeMonthlyQueryKey,
-  TODO_QUERY_KEY,
-} from "./query-key";
+import { makeDailyQueryKey, makeMonthlyQueryKey } from "./query-key";
 import { httpClient } from "@/utils/http-client";
 import { Todo } from "@/types/todo";
 import { partition } from "@/utils/partition";
@@ -17,11 +13,10 @@ const deleteTodo = (payload: TodoAPI.DeleteTodoPayload) =>
  */
 export function useDeleteTodo(date: Date) {
   const queryClient = useQueryClient();
-
   const queryKey = makeDailyQueryKey(date);
 
   return useMutation({
-    mutationKey: TODO_QUERY_KEY,
+    mutationKey: queryKey,
     mutationFn: deleteTodo,
     onMutate: (payload) => {
       const previousTodos = queryClient.getQueryData<Todo[][]>(queryKey);

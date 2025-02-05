@@ -1,10 +1,6 @@
 import * as TodoAPI from "@/api/todo";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  makeDailyQueryKey,
-  makeMonthlyQueryKey,
-  TODO_QUERY_KEY,
-} from "./query-key";
+import { makeDailyQueryKey } from "./query-key";
 import { httpClient } from "@/utils/http-client";
 
 const createTodo = (payload: TodoAPI.CreateTodoPayload) =>
@@ -15,18 +11,18 @@ const createTodo = (payload: TodoAPI.CreateTodoPayload) =>
  */
 export function useCreateTodo(date: Date) {
   const queryClient = useQueryClient();
-
+  const queryKey = makeDailyQueryKey(date);
   return useMutation({
-    mutationKey: TODO_QUERY_KEY,
+    mutationKey: queryKey,
     mutationFn: createTodo,
     onSuccess: () => {
       // 대상 일자 업데이트
       queryClient.invalidateQueries({
-        queryKey: makeDailyQueryKey(date),
+        queryKey: queryKey,
       });
       // 대상 월 업데이트
       queryClient.invalidateQueries({
-        queryKey: makeMonthlyQueryKey(date),
+        queryKey: queryKey,
       });
     },
     onError: (error) => {

@@ -1,6 +1,6 @@
 import { formatDate } from "@/utils/date-time";
 
-export const TODO_QUERY_KEY = ["TODO"];
+const TODO_QUERY_KEY = ["TODO"];
 
 export const makeDailyQueryKey = (date: Date) => [
   ...TODO_QUERY_KEY,

@@ -1,16 +1,15 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import * as TodoAPI from "@/api/todo";
 import { useCallback, useMemo } from "react";
-import { isSameDay } from "date-fns";
 import { Todo } from "@/types/todo";
 import { useDebounce } from "./use-debounce";
-import { isThatDateTodo, toTodo } from "@/utils/helper/todo";
+import { toTodo } from "@/utils/helper/todo";
 import { partition } from "@/utils/partition";
-import { getWeekDays } from "@/utils/date-time";
 import { httpClient } from "@/utils/http-client";
 import { makeDailyQueryKey, makeMonthlyQueryKey } from "./todo/query-key";
 import { useCreateTodo } from "./todo/use-create-todo";
 import { useDeleteTodo } from "./todo/use-delete-todo";
+import { useUpdateTodo } from "./todo/use-update-todo";
 
 export const useDailyTodos = (currentDate: Date) => {
   const todoQueryKey = useMemo(() => {
@@ -34,75 +33,7 @@ export const useDailyTodos = (currentDate: Date) => {
   });
 
   const createMutation = useCreateTodo(currentDate);
-  const updateMutation = useMutation({
-    mutationKey: todoQueryKey,
-    mutationFn: (payload: TodoAPI.UpdateTodoPayload) =>
-      TodoAPI.updateTodo(httpClient, payload),
-    onMutate: (payload) => {
-      // 낙관적 업데이트
-      const previousTodos = queryClient.getQueryData<Todo[][]>(todoQueryKey);
-
-      queryClient.setQueryData<Todo[][]>(todoQueryKey, (oldData) => {
-        if (!oldData) {
-          return oldData;
-        }
-
-        const allTodos = oldData.flat(1);
-        const oldTodoIndex = allTodos.findIndex(
-          (todo) => todo.id === payload.id
-        );
-        if (oldTodoIndex < 0) {
-          return oldData;
-        }
-        const oldTodo = allTodos[oldTodoIndex];
-
-        const updatedTodos = allTodos
-          .toSpliced(oldTodoIndex, 1, {
-            ...oldTodo,
-            ...payload,
-          })
-          .filter((todo) => isThatDateTodo(todo, currentDate));
-        return partition(updatedTodos, (todo) => !todo.isCompleted);
-      });
-
-      return { previousTodos };
-    },
-    onSuccess: (_, payload) => {
-      if (!payload.date) {
-        return;
-      }
-
-      const newDate = new Date(
-        payload.date.year,
-        payload.date.month - 1,
-        payload.date.day
-      );
-      if (isSameDay(newDate, currentDate)) {
-        return;
-      }
-
-      queryClient.invalidateQueries({
-        queryKey: makeDailyQueryKey(newDate),
-      });
-      queryClient.invalidateQueries({
-        queryKey: makeMonthlyQueryKey(currentDate),
-      });
-      const week = getWeekDays(currentDate);
-      queryClient.invalidateQueries({
-        queryKey: [
-          "todos",
-          `${week[0].toISOString()}~${week[week.length - 1].toISOString()}`,
-        ],
-      });
-    },
-    onError: (error, _, context) => {
-      // 낙관적 업데이트 롤백
-      console.error("Error update item:", error);
-      if (context?.previousTodos) {
-        queryClient.setQueryData(todoQueryKey, context.previousTodos);
-      }
-    },
-  });
+  const updateMutation = useUpdateTodo(currentDate);
   const deleteMutation = useDeleteTodo(currentDate);
   const toggleMutation = useMutation({
     mutationKey: todoQueryKey,
