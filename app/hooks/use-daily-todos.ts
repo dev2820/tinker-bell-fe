@@ -4,12 +4,12 @@ import { useCallback, useMemo } from "react";
 import { Todo } from "@/types/todo";
 import { useDebounce } from "./use-debounce";
 import { toTodo } from "@/utils/helper/todo";
-import { partition } from "@/utils/partition";
 import { httpClient } from "@/utils/http-client";
-import { makeDailyQueryKey, makeMonthlyQueryKey } from "./todo/query-key";
+import { makeDailyQueryKey } from "./todo/query-key";
 import { useCreateTodo } from "./todo/use-create-todo";
 import { useDeleteTodo } from "./todo/use-delete-todo";
 import { useUpdateTodo } from "./todo/use-update-todo";
+import { useToggleTodo } from "./todo/use-toggle-todo";
 
 export const useDailyTodos = (currentDate: Date) => {
   const todoQueryKey = useMemo(() => {
@@ -35,53 +35,8 @@ export const useDailyTodos = (currentDate: Date) => {
   const createMutation = useCreateTodo(currentDate);
   const updateMutation = useUpdateTodo(currentDate);
   const deleteMutation = useDeleteTodo(currentDate);
-  const toggleMutation = useMutation({
-    mutationKey: todoQueryKey,
-    mutationFn: (payload: TodoAPI.UpdateTodoCompletePayload) =>
-      TodoAPI.updateTodoComplete(httpClient, payload),
-    onMutate: (payload) => {
-      // 낙관적 업데이트
-      const previousTodos = queryClient.getQueryData<Todo[][]>(todoQueryKey);
+  const toggleMutation = useToggleTodo(currentDate);
 
-      queryClient.setQueryData<Todo[][]>(todoQueryKey, (oldData) => {
-        if (!oldData) {
-          return oldData;
-        }
-
-        const allTodos = oldData.flat(1);
-        const targetIndex = allTodos.findIndex(
-          (todo) => todo.id === payload.id
-        );
-
-        if (targetIndex < 0) {
-          return oldData;
-        }
-
-        const newTodo: Todo = {
-          ...allTodos[targetIndex],
-          isCompleted: payload.isCompleted,
-        };
-
-        const updatedTodos = allTodos.toSpliced(targetIndex, 1, newTodo);
-
-        return partition(updatedTodos, (todo) => !todo.isCompleted);
-      });
-
-      return { previousTodos };
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: makeMonthlyQueryKey(currentDate),
-      });
-    },
-    onError: (error, _, context) => {
-      // 낙관적 업데이트 롤백
-      console.error("Error toggle item:", error);
-      if (context?.previousTodos) {
-        queryClient.setQueryData(todoQueryKey, context.previousTodos);
-      }
-    },
-  });
   const reorderMutation = useMutation({
     mutationKey: todoQueryKey,
     mutationFn: (payload: TodoAPI.UpdateTodoOrderPayload) =>

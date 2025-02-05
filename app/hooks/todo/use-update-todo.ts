@@ -8,7 +8,7 @@ import { isThatDateTodo } from "@/utils/helper/todo";
 import { isSameDay } from "date-fns";
 
 const updateTodo = (payload: TodoAPI.UpdateTodoPayload) =>
-  TodoAPI.deleteTodo(httpClient, payload);
+  TodoAPI.updateTodo(httpClient, payload);
 
 /**
  * TODO: date update인 것과 아닌 것을 구분하기
