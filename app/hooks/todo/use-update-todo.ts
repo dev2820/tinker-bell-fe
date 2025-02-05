@@ -67,6 +67,7 @@ export function useUpdateTodo(date: Date) {
       });
       queryClient.invalidateQueries({
         queryKey: makeMonthlyQueryKey(date),
+        refetchType: "all",
       });
     },
     onError: (error, _, context) => {

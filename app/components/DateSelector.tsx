@@ -8,7 +8,6 @@ import { DailyTodoList } from "./todo/DailyTodoList";
 import { useCurrentDateStore } from "@/stores/current-date";
 import { useShallow } from "zustand/shallow";
 import { useMonthlyTodos } from "@/hooks/use-monthly-todos";
-import { useTodos } from "@/hooks/use-todos";
 import { cn } from "@/utils/cn";
 import { getCalendarDays, getWeekDays } from "@/utils/date-time";
 import { Button } from "terra-design-system/react";
@@ -26,6 +25,7 @@ export function DateSelector(props: DateSelectorProps) {
   const { currentDate, changeCurrentDate } = useCurrentDateStore(
     useShallow((state) => ({ ...state }))
   );
+
   const { isReorderMode, onReorderMode, offReorderMode } = useModeStore();
   const daysInCalendar = getCalendarDays(currentDate);
   const thisWeek = getWeek(daysInCalendar, currentDate);
@@ -123,6 +123,22 @@ export function DateSelector(props: DateSelectorProps) {
     offReorderMode();
   }, [currentDate, offReorderMode]);
 
+  const { incompletedTodos, completedTodos } = useMonthlyTodos(
+    currentDate.getFullYear(),
+    currentDate.getMonth()
+  );
+
+  const totalTodoMap = [...incompletedTodos, ...completedTodos].reduce(
+    (map, todo) => {
+      const key = `${todo.date.month}-${todo.date.day}`;
+      const [prevDone, prevTotal] = map.get(key) ?? [0, 0];
+      map.set(key, [prevDone + (todo.isCompleted ? 1 : 0), prevTotal + 1]);
+
+      return map;
+    },
+    new Map<string, [number, number]>()
+  );
+
   return (
     <div
       ref={ref}
@@ -154,6 +170,7 @@ export function DateSelector(props: DateSelectorProps) {
                 <Weeks
                   index={idx}
                   currentDate={currentDate}
+                  totalTodoMap={totalTodoMap}
                   onClickDate={handleClickDate}
                 />
               </SwiperItem>
@@ -177,6 +194,7 @@ export function DateSelector(props: DateSelectorProps) {
                 <Months
                   currentDate={currentDate}
                   index={idx}
+                  totalTodoMap={totalTodoMap}
                   onClickDate={handleClickDate}
                 />
               </SwiperItem>
@@ -222,28 +240,15 @@ const getWeek = (days: Date[], targetDate: Date) => {
 function Weeks({
   index,
   currentDate,
+  totalTodoMap,
   onClickDate,
 }: {
   currentDate: Date;
   index: number;
+  totalTodoMap: Map<string, [number, number]>;
   onClickDate: (date: Date) => void;
 }) {
   const weekDays = getWeekDays(addWeeks(currentDate, index));
-  const { incompletedTodos, completedTodos } = useTodos(
-    weekDays[0],
-    weekDays[weekDays.length - 1]
-  );
-
-  const totalTodoMap = [...incompletedTodos, ...completedTodos]?.reduce(
-    (map, todo) => {
-      const key = `${todo.date.month}-${todo.date.day}`;
-      const [prevDone, prevTotal] = map.get(key) ?? [0, 0];
-      map.set(key, [prevDone + (todo.isCompleted ? 1 : 0), prevTotal + 1]);
-
-      return map;
-    },
-    new Map<string, [number, number]>()
-  );
 
   return (
     <div className="w-full flex flex-row">
@@ -279,27 +284,14 @@ function Weeks({
 function Months({
   index,
   currentDate,
+  totalTodoMap,
   onClickDate,
 }: {
   currentDate: Date;
   index: number;
+  totalTodoMap: Map<string, [number, number]>;
   onClickDate: (date: Date) => void;
 }) {
-  const { incompletedTodos, completedTodos } = useMonthlyTodos(
-    currentDate.getFullYear(),
-    currentDate.getMonth()
-  );
-  const totalTodoMap = [...incompletedTodos, ...completedTodos]?.reduce(
-    (map, todo) => {
-      const key = `${todo.date.month}-${todo.date.day}`;
-      const [prevDone, prevTotal] = map.get(key) ?? [0, 0];
-      map.set(key, [prevDone + (todo.isCompleted ? 1 : 0), prevTotal + 1]);
-
-      return map;
-    },
-    new Map<string, [number, number]>()
-  );
-
   return (
     <div className="grid grid-cols-7 place-items-center">
       {getCalendarDays(addMonths(currentDate, index)).map((date) => (

@@ -11,6 +11,7 @@ import "@/global.css";
 import { useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { usePreventContextMenu } from "./hooks/use-prevent-contextmenu";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 // export const links: LinksFunction = () => [{ rel: "stylesheet", href: styles }];
 
@@ -54,6 +55,7 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <Outlet />
+      <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );
 }

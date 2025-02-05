@@ -5,7 +5,7 @@ import { httpClient } from "@/utils/http-client";
 import { makeMonthlyQueryKey } from "./todo/query-key";
 
 export const useMonthlyTodos = (currentYear: number, currentMonth: number) => {
-  const queryKey = makeMonthlyQueryKey(new Date(currentYear, currentMonth + 1));
+  const queryKey = makeMonthlyQueryKey(new Date(currentYear, currentMonth));
 
   const { data } = useQuery({
     queryKey: queryKey,
