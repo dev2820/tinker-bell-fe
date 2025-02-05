@@ -42,23 +42,6 @@ export const useDailyTodos = (currentDate: Date) => {
 
   const debouncedUpdateTodoById = useDebounce(updateTodoById, 500);
 
-  // const updateDateOfTodoById = useCallback(
-  //   (id: Todo["id"], payload: Pick<Todo, "id" | "date">) => {
-  //     if (!data) {
-  //       return;
-  //     }
-
-  //     const targetTodo = data.flat(1).find((todo) => todo.id === id);
-  //     if (targetTodo) {
-  //       updateMutation.mutate({
-  //         ...targetTodo,
-  //         ...payload,
-  //       });
-  //     }
-  //   },
-  //   [data, updateMutation]
-  // );
-
   const toggleTodoById = (id: Todo["id"]) => {
     if (!data) {
       return;
