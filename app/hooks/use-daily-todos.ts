@@ -9,6 +9,8 @@ import { partition } from "@/utils/partition";
 import { getWeekDays } from "@/utils/date-time";
 import { httpClient } from "@/utils/http-client";
 import { makeDailyQueryKey, makeMonthlyQueryKey } from "./todo/query-key";
+import { useCreateTodo } from "./todo/use-create-todo";
+import { useDeleteTodo } from "./todo/use-delete-todo";
 
 export const useDailyTodos = (currentDate: Date) => {
   const todoQueryKey = useMemo(() => {
@@ -31,29 +33,7 @@ export const useDailyTodos = (currentDate: Date) => {
     },
   });
 
-  const createMutation = useMutation({
-    mutationKey: todoQueryKey,
-    mutationFn: (payload: TodoAPI.CreateTodoPayload) =>
-      TodoAPI.createTodo(httpClient, payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: todoQueryKey,
-      });
-      queryClient.invalidateQueries({
-        queryKey: makeMonthlyQueryKey(currentDate),
-      });
-      const week = getWeekDays(currentDate);
-      queryClient.invalidateQueries({
-        queryKey: [
-          "todos",
-          `${week[0].toISOString()}~${week[week.length - 1].toISOString()}`,
-        ],
-      });
-    },
-    onError: (error) => {
-      console.error("Error add item:", error);
-    },
-  });
+  const createMutation = useCreateTodo(currentDate);
   const updateMutation = useMutation({
     mutationKey: todoQueryKey,
     mutationFn: (payload: TodoAPI.UpdateTodoPayload) =>
@@ -123,48 +103,7 @@ export const useDailyTodos = (currentDate: Date) => {
       }
     },
   });
-  const deleteMutation = useMutation({
-    mutationKey: todoQueryKey,
-    mutationFn: (payload: TodoAPI.DeleteTodoPayload) =>
-      TodoAPI.deleteTodo(httpClient, payload),
-    onMutate: (payload) => {
-      // 낙관적 업데이트
-      const previousTodos = queryClient.getQueryData<Todo[][]>(todoQueryKey);
-
-      queryClient.setQueryData<Todo[][]>(todoQueryKey, (oldData) => {
-        if (!oldData) {
-          return oldData;
-        }
-
-        const allTodos = oldData.flat(1);
-        const deleteIndex = allTodos.findIndex(
-          (todo) => todo.id === payload.id
-        );
-
-        if (deleteIndex < 0) {
-          return oldData;
-        }
-
-        const updatedTodos = allTodos.toSpliced(deleteIndex, 1);
-
-        return partition(updatedTodos, (todo) => !todo.isCompleted);
-      });
-
-      return { previousTodos };
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: makeMonthlyQueryKey(currentDate),
-      });
-    },
-    onError: (error, _, context) => {
-      // 낙관적 업데이트 롤백
-      console.error("Error update item:", error);
-      if (context?.previousTodos) {
-        queryClient.setQueryData(todoQueryKey, context.previousTodos);
-      }
-    },
-  });
+  const deleteMutation = useDeleteTodo(currentDate);
   const toggleMutation = useMutation({
     mutationKey: todoQueryKey,
     mutationFn: (payload: TodoAPI.UpdateTodoCompletePayload) =>

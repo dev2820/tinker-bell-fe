@@ -1,29 +1,36 @@
-// import * as TodoAPI from "@/api/todo";
-// import { useMutation, useQueryClient } from "@tanstack/react-query";
-// import {
-//   makeDailyQueryKey,
-//   makeMonthlyQueryKey,
-//   TODO_QUERY_KEY,
-// } from "./query-key";
+import * as TodoAPI from "@/api/todo";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  makeDailyQueryKey,
+  makeMonthlyQueryKey,
+  TODO_QUERY_KEY,
+} from "./query-key";
+import { httpClient } from "@/utils/http-client";
 
-// export function useCreateCategory(date: Date) {
-//   const queryClient = useQueryClient();
+const createTodo = (payload: TodoAPI.CreateTodoPayload) =>
+  TodoAPI.createTodo(httpClient, payload);
 
-//   return useMutation({
-//     mutationKey: TODO_QUERY_KEY,
-//     mutationFn: TodoAPI.createTodo,
-//     onSuccess: (data) => {
-//       // 대상 일자 업데이트
-//       queryClient.invalidateQueries({
-//         queryKey: makeDailyQueryKey(date),
-//       });
-//       // 대상 월 업데이트
-//       queryClient.invalidateQueries({
-//         queryKey: makeMonthlyQueryKey(date),
-//       });
-//     },
-//     onError: (error) => {
-//       console.error("Error add item:", error);
-//     },
-//   });
-// }
+/**
+ * TODO: invalidateQueries가 아닌 업데이트된 내용을 직접 반영해 패치할 일 없게 하기
+ */
+export function useCreateTodo(date: Date) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationKey: TODO_QUERY_KEY,
+    mutationFn: createTodo,
+    onSuccess: () => {
+      // 대상 일자 업데이트
+      queryClient.invalidateQueries({
+        queryKey: makeDailyQueryKey(date),
+      });
+      // 대상 월 업데이트
+      queryClient.invalidateQueries({
+        queryKey: makeMonthlyQueryKey(date),
+      });
+    },
+    onError: (error) => {
+      console.error("Error add todo:", error);
+    },
+  });
+}
