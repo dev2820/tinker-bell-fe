@@ -1,17 +1,15 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import * as TodoAPI from "@/api/todo";
 import { useCallback, useMemo } from "react";
-import { formatDate, isSameDay } from "date-fns";
+import { isSameDay } from "date-fns";
 import { Todo } from "@/types/todo";
 import { useDebounce } from "./use-debounce";
 import { isThatDateTodo, toTodo } from "@/utils/helper/todo";
 import { partition } from "@/utils/partition";
 import { getWeekDays } from "@/utils/date-time";
 import { httpClient } from "@/utils/http-client";
+import { makeDailyQueryKey, makeMonthlyQueryKey } from "./todo/query-key";
 
-const makeDailyQueryKey = (date: Date) => {
-  return ["todo", formatDate(date, "yyyy-MM-dd")];
-};
 export const useDailyTodos = (currentDate: Date) => {
   const todoQueryKey = useMemo(() => {
     return makeDailyQueryKey(currentDate);
@@ -42,7 +40,7 @@ export const useDailyTodos = (currentDate: Date) => {
         queryKey: todoQueryKey,
       });
       queryClient.invalidateQueries({
-        queryKey: ["todos", formatDate(currentDate, "yyyy-MM")],
+        queryKey: makeMonthlyQueryKey(currentDate),
       });
       const week = getWeekDays(currentDate);
       queryClient.invalidateQueries({
@@ -107,7 +105,7 @@ export const useDailyTodos = (currentDate: Date) => {
         queryKey: makeDailyQueryKey(newDate),
       });
       queryClient.invalidateQueries({
-        queryKey: ["todos", formatDate(currentDate, "yyyy-MM")],
+        queryKey: makeMonthlyQueryKey(currentDate),
       });
       const week = getWeekDays(currentDate);
       queryClient.invalidateQueries({
@@ -156,14 +154,7 @@ export const useDailyTodos = (currentDate: Date) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["todos", formatDate(currentDate, "yyyy-MM")],
-      });
-      const week = getWeekDays(currentDate);
-      queryClient.invalidateQueries({
-        queryKey: [
-          "todos",
-          `${week[0].toISOString()}~${week[week.length - 1].toISOString()}`,
-        ],
+        queryKey: makeMonthlyQueryKey(currentDate),
       });
     },
     onError: (error, _, context) => {
@@ -210,14 +201,7 @@ export const useDailyTodos = (currentDate: Date) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["todos", formatDate(currentDate, "yyyy-MM")],
-      });
-      const week = getWeekDays(currentDate);
-      queryClient.invalidateQueries({
-        queryKey: [
-          "todos",
-          `${week[0].toISOString()}~${week[week.length - 1].toISOString()}`,
-        ],
+        queryKey: makeMonthlyQueryKey(currentDate),
       });
     },
     onError: (error, _, context) => {
