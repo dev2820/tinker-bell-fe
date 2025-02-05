@@ -1,16 +1,14 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import * as TodoAPI from "@/api/todo";
+import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useMemo } from "react";
 import { Todo } from "@/types/todo";
 import { useDebounce } from "./use-debounce";
-import { toTodo } from "@/utils/helper/todo";
-import { httpClient } from "@/utils/http-client";
 import { makeDailyQueryKey } from "./todo/query-key";
 import { useCreateTodo } from "./todo/use-create-todo";
 import { useDeleteTodo } from "./todo/use-delete-todo";
 import { useUpdateTodo } from "./todo/use-update-todo";
 import { useToggleTodo } from "./todo/use-toggle-todo";
 import { useReorderTodo } from "./todo/use-reorder-todo";
+import { useDayTodos } from "./todo/use-day-todos";
 
 export const useDailyTodos = (currentDate: Date) => {
   const todoQueryKey = useMemo(() => {
@@ -18,21 +16,7 @@ export const useDailyTodos = (currentDate: Date) => {
   }, [currentDate]);
 
   const queryClient = useQueryClient();
-  const { data, isLoading } = useQuery({
-    queryKey: todoQueryKey,
-    queryFn: async () => {
-      try {
-        const res = await TodoAPI.fetchTodosByDate(httpClient, currentDate);
-        const { completedTodoList, incompletedTodoList } = res;
-
-        return [incompletedTodoList.map(toTodo), completedTodoList.map(toTodo)];
-      } catch (err) {
-        console.error("Error: fetch todos", err);
-        return [[], []];
-      }
-    },
-  });
-
+  const { data, isLoading } = useDayTodos(currentDate);
   const createMutation = useCreateTodo(currentDate);
   const updateMutation = useUpdateTodo(currentDate);
   const deleteMutation = useDeleteTodo(currentDate);
@@ -57,6 +41,23 @@ export const useDailyTodos = (currentDate: Date) => {
   );
 
   const debouncedUpdateTodoById = useDebounce(updateTodoById, 500);
+
+  // const updateDateOfTodoById = useCallback(
+  //   (id: Todo["id"], payload: Pick<Todo, "id" | "date">) => {
+  //     if (!data) {
+  //       return;
+  //     }
+
+  //     const targetTodo = data.flat(1).find((todo) => todo.id === id);
+  //     if (targetTodo) {
+  //       updateMutation.mutate({
+  //         ...targetTodo,
+  //         ...payload,
+  //       });
+  //     }
+  //   },
+  //   [data, updateMutation]
+  // );
 
   const toggleTodoById = (id: Todo["id"]) => {
     if (!data) {
