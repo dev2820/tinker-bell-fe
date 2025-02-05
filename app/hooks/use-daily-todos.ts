@@ -22,7 +22,7 @@ export const useDailyTodos = (currentDate: Date) => {
     queryKey: todoQueryKey,
     queryFn: async () => {
       try {
-        const res = await TodoAPI.fetchTodosByDate(currentDate);
+        const res = await TodoAPI.fetchTodosByDate(httpClient, currentDate);
         const { completedTodoList, incompletedTodoList } = res;
 
         return [incompletedTodoList.map(toTodo), completedTodoList.map(toTodo)];
@@ -58,7 +58,8 @@ export const useDailyTodos = (currentDate: Date) => {
   });
   const updateMutation = useMutation({
     mutationKey: todoQueryKey,
-    mutationFn: TodoAPI.updateTodo,
+    mutationFn: (payload: TodoAPI.UpdateTodoPayload) =>
+      TodoAPI.updateTodo(httpClient, payload),
     onMutate: (payload) => {
       // 낙관적 업데이트
       const previousTodos = queryClient.getQueryData<Todo[][]>(todoQueryKey);
@@ -126,7 +127,8 @@ export const useDailyTodos = (currentDate: Date) => {
   });
   const deleteMutation = useMutation({
     mutationKey: todoQueryKey,
-    mutationFn: TodoAPI.deleteTodo,
+    mutationFn: (payload: TodoAPI.DeleteTodoPayload) =>
+      TodoAPI.deleteTodo(httpClient, payload),
     onMutate: (payload) => {
       // 낙관적 업데이트
       const previousTodos = queryClient.getQueryData<Todo[][]>(todoQueryKey);
@@ -174,7 +176,8 @@ export const useDailyTodos = (currentDate: Date) => {
   });
   const toggleMutation = useMutation({
     mutationKey: todoQueryKey,
-    mutationFn: TodoAPI.updateTodoComplete,
+    mutationFn: (payload: TodoAPI.UpdateTodoCompletePayload) =>
+      TodoAPI.updateTodoComplete(httpClient, payload),
     onMutate: (payload) => {
       // 낙관적 업데이트
       const previousTodos = queryClient.getQueryData<Todo[][]>(todoQueryKey);
@@ -227,7 +230,8 @@ export const useDailyTodos = (currentDate: Date) => {
   });
   const reorderMutation = useMutation({
     mutationKey: todoQueryKey,
-    mutationFn: TodoAPI.updateTodoOrder,
+    mutationFn: (payload: TodoAPI.UpdateTodoOrderPayload) =>
+      TodoAPI.updateTodoOrder(httpClient, payload),
     onError: (error) => {
       console.error("Error ordering item:", error);
     },

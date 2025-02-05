@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import * as todoAPI from "@/api/todo";
 import { useMemo } from "react";
 import { toTodo } from "@/utils/helper/todo";
+import { httpClient } from "@/utils/http-client";
 
 const makeQueryKey = (year: number, month: number) => {
   return ["todos", `${year}-${String(month + 1).padStart(2, "0")}`];
@@ -15,7 +16,11 @@ export const useMonthlyTodos = (currentYear: number, currentMonth: number) => {
     queryKey: todoQueryKey,
     queryFn: async () => {
       try {
-        const res = await todoAPI.fetchMonthTodos(currentYear, currentMonth);
+        const res = await todoAPI.fetchMonthTodos(
+          httpClient,
+          currentYear,
+          currentMonth
+        );
         const { completedTodoList, incompletedTodoList } = res;
 
         return [incompletedTodoList.map(toTodo), completedTodoList.map(toTodo)];
