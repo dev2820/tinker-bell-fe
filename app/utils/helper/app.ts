@@ -1,3 +1,4 @@
+import { useThemeStore } from "@/stores/theme";
 import { NavigateFunction } from "@remix-run/react";
 
 const isApp = () => {
@@ -24,6 +25,18 @@ const sendRouterEvent = (path: string): void => {
     JSON.stringify({ type: "ROUTER_EVENT", path: path })
   );
 };
+
+export const sendChangeTheme = (): void => {
+  if (isApp()) {
+    window.ReactNativeWebView.postMessage(
+      JSON.stringify({
+        type: "CHANGE_THEME",
+        theme: useThemeStore.getState().theme,
+      })
+    );
+  }
+};
+
 export const sendModalOpenEvent = (): void => {
   if (isApp()) {
     window.ReactNativeWebView.postMessage(

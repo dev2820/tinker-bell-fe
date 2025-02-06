@@ -1,4 +1,9 @@
-import { clearAppCookie, routerBack, routerPush } from "@/utils/helper/app";
+import {
+  clearAppCookie,
+  routerBack,
+  routerPush,
+  sendChangeTheme,
+} from "@/utils/helper/app";
 import { Form, useNavigate } from "@remix-run/react";
 import { ChevronLeft, LogOutIcon, MoonIcon, TagIcon } from "lucide-react";
 import { deleteCookie } from "@/utils/cookie/client";
@@ -58,6 +63,7 @@ export default function Setting() {
 
   const handleToggleDarkmode = () => {
     toggleTheme();
+    sendChangeTheme();
   };
 
   return (
