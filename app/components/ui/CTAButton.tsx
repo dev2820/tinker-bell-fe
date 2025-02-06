@@ -16,7 +16,10 @@ export function CTAButton(props: CTAButtonProps) {
 }
 
 const buttonStyle = cva(
-  "inline-flex justify-center place-items-center shadow-cta",
+  [
+    "inline-flex justify-center place-items-center shadow-cta",
+    "active:scale-[0.9]",
+  ],
   {
     variants: {
       shape: {
