@@ -52,7 +52,7 @@ export function TodoDraggableItem(props: TodoDraggableItemProps) {
       <div
         className={cn(
           "todo",
-          "gap-2 flex flex-row min-h-12 border border-gray-200 bg-white rounded-lg px-4 my-2 items-start pb-[11px]",
+          "bg-layer-fill gap-2 flex flex-row min-h-12 border border-boundary rounded-lg px-4 my-2 items-start pb-[11px]",
           isDragging ? "shadow-md" : "",
           className
         )}

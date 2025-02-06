@@ -9,7 +9,7 @@ export function TodoTitleTextarea(props: TextareaAutosizeProps) {
   return (
     <TextareaAutosize
       className={cn(
-        "resize-none rounded-md p-2 border bg-white text-md focus:border-primary outline-primary border-gray-300",
+        "resize-none rounded-md p-2 border text-md focus:border-primary outline-primary border-gray-300 bg-transparent",
         className
       )}
       minRows={1}

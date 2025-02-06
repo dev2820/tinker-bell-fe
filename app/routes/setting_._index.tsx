@@ -1,11 +1,12 @@
 import { clearAppCookie, routerBack, routerPush } from "@/utils/helper/app";
 import { Form, useNavigate } from "@remix-run/react";
-import { ChevronLeft, LogOutIcon, TagIcon } from "lucide-react";
+import { ChevronLeft, LogOutIcon, MoonIcon, TagIcon } from "lucide-react";
 import { deleteCookie } from "@/utils/cookie/client";
 import { authAPI } from "@/api";
 import { toCookieStorage } from "@/utils/cookie";
 import { ActionFunction, redirect } from "@remix-run/node";
 import { MenuItem } from "@/components/MenuItem";
+import { useThemeStore } from "@/stores/theme";
 
 export const action: ActionFunction = async ({ request }) => {
   const rawCookie = request.headers.get("Cookie") ?? "";
@@ -33,6 +34,7 @@ export const action: ActionFunction = async ({ request }) => {
 
 export default function Setting() {
   const navigate = useNavigate();
+  const { theme, toggleTheme } = useThemeStore();
 
   const handleGoBack = () => {
     routerBack(navigate);
@@ -53,6 +55,11 @@ export default function Setting() {
   const handleClickCategoryMenu = () => {
     routerPush(navigate, "/setting/category");
   };
+
+  const handleToggleDarkmode = () => {
+    toggleTheme();
+  };
+
   return (
     <main className="h-screen w-full">
       <header className="h-header relative px-4 text-center border-b">
@@ -71,6 +78,14 @@ export default function Setting() {
               icon={<TagIcon size={16} />}
             >
               카테고리
+            </MenuItem>
+          </li>
+          <li>
+            <MenuItem
+              onClick={handleToggleDarkmode}
+              icon={<MoonIcon size={16} />}
+            >
+              다크모드 <b>{theme === "dark" ? "ON" : "OFF"}</b>
             </MenuItem>
           </li>
           <li>

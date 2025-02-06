@@ -80,7 +80,7 @@ export function AddTodoDrawer() {
                 <div className="relative">
                   <input
                     value={title}
-                    className="border-b h-12 px-4 py-2 focus:outline-none w-full"
+                    className="bg-transparent border-b h-12 px-4 py-2 focus:outline-none w-full"
                     onChange={handleChangeTitle}
                     placeholder="할 일을 입력해주세요"
                     // enterKeyHint="done"
@@ -88,7 +88,7 @@ export function AddTodoDrawer() {
                 </div>
                 <textarea
                   value={description}
-                  className="border-b px-4 focus:outline-none py-2 h-28"
+                  className="bg-transparent border-b px-4 focus:outline-none py-2 h-28"
                   placeholder="설명"
                   cols={5}
                   onChange={handleChangeDescription}
@@ -97,7 +97,7 @@ export function AddTodoDrawer() {
                 <MenuItem
                   icon={<TagIcon className="text-gray-400" size={16} />}
                   type="button"
-                  className="text-gray-800 border-b"
+                  className="border-b"
                   onClick={categoryModalHandler.onOpen}
                 >
                   {selectedCategory ? (
@@ -119,7 +119,7 @@ export function AddTodoDrawer() {
                         onClickCategory={handleChangeCategory}
                       />
                       <button
-                        className="h-12 w-full"
+                        className="h-12 w-full px-4 hover:bg-layer-hover"
                         type="button"
                         onClick={handleClickDeleteCategory}
                       >

@@ -260,7 +260,7 @@ function Weeks({
         >
           <div
             className={cn(
-              "rounded-full h-8 w-8 text-center flex flex-row justify-center place-items-center transition-colors duration-300 bg-transparent text-black",
+              "rounded-full h-8 w-8 text-center flex flex-row justify-center place-items-center transition-colors duration-300 bg-transparent",
               isSunday(date) && "text-red-500",
               isSaturday(date) && "text-blue-500",
               isSameDay(date, currentDate)

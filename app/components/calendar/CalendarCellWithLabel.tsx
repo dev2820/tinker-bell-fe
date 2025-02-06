@@ -55,7 +55,7 @@ export const CalendarCellWithLabel = (props: CalendarCellProps) => {
   return (
     <button
       className={cn(
-        "flex flex-col items-center justify-start rounded-md text-black active:bg-gray-200 transition-colors duration-300",
+        "flex flex-col items-center justify-start rounded-md active:bg-layer-pressed transition-colors duration-300",
         isSunday(date) && "text-red-500",
         isSaturday(date) && "text-blue-500",
         isOutOfMonth && "opacity-20",

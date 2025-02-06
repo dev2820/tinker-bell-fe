@@ -194,7 +194,7 @@ export default function Category() {
                     <div className="relative flex flex-row gap-2 place-items-center py-2">
                       <TagIcon size={20} className="text-gray-300 flex-none" />
                       <input
-                        className="w-full flex-1 text-gray-800 focus:outline-none text-md"
+                        className="w-full flex-1 focus:outline-none text-md"
                         onChange={handleChangeNewCategoryName}
                         value={newCategory.name}
                         placeholder="카테고리 이름 (최대 15자)"
@@ -213,7 +213,7 @@ export default function Category() {
                           <>
                             <ColorPicker.Control>
                               <ColorPicker.Trigger asChild>
-                                <button className="w-full flex flex-row gap-2 place-items-center py-2 text-gray-800">
+                                <button className="w-full flex flex-row gap-2 place-items-center py-2">
                                   <ColorPicker.Swatch
                                     className="rounded-full size-5"
                                     value={api.value}
@@ -315,7 +315,7 @@ export default function Category() {
                     <div className="relative flex flex-row gap-2 place-items-center py-2">
                       <TagIcon size={20} className="text-gray-300 flex-none" />
                       <input
-                        className="w-full flex-1 text-gray-800 focus:outline-none text-md"
+                        className="w-full flex-1 focus:outline-none text-md"
                         onChange={handleChangeModifyCategoryName}
                         value={modifyCategory?.name ?? ""}
                         placeholder="카테고리 이름 (최대 15자)"
@@ -335,7 +335,7 @@ export default function Category() {
                           <>
                             <ColorPicker.Control>
                               <ColorPicker.Trigger asChild>
-                                <button className="w-full flex flex-row gap-2 place-items-center py-2 text-gray-800">
+                                <button className="w-full flex flex-row gap-2 place-items-center py-2">
                                   <ColorPicker.Swatch
                                     className="rounded-full size-5"
                                     value={api.value}

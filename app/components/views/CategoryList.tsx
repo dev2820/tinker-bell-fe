@@ -20,7 +20,7 @@ export function CategoryList(props: CategoryListProps) {
       {items.map((item) => (
         <li key={item.id} className="border-b">
           <button
-            className="h-12 px-4 w-full hover:bg-gray-100 transition-colors"
+            className="h-12 px-4 w-full hover:bg-layer-hover transition-colors"
             data-category-id={item.id}
             onClick={handleClickCategoryItem}
           >

@@ -182,7 +182,7 @@ export function TodoDetailDrawer() {
                 className="mb-4"
               ></Textarea>
               <section>
-                <div className="flex flex-row gap-3 place-items-center mb-2 text-gray-800">
+                <div className="flex flex-row gap-3 place-items-center mb-2">
                   <CalendarIcon size={24} />
                   <span>
                     {`${currentTodo.date.year}-${currentTodo.date.month
@@ -247,7 +247,7 @@ export function TodoDetailDrawer() {
                                             isSameDay(
                                               new Date(year, month, day),
                                               selectedDate
-                                            ) && "bg-gray-200"
+                                            ) && "bg-layer-pressed"
                                           )}
                                           data-year={year}
                                           data-month={month}
@@ -285,7 +285,7 @@ export function TodoDetailDrawer() {
                   <MenuItem
                     icon={<TagIcon className="text-gray-400" size={16} />}
                     type="button"
-                    className="text-gray-800 border-b"
+                    className="border-b"
                     onClick={categoryModalHandler.onOpen}
                   >
                     {selectedCategory ? (
@@ -307,7 +307,7 @@ export function TodoDetailDrawer() {
                           onClickCategory={handleChangeCategory}
                         />
                         <button
-                          className="h-12 w-full"
+                          className="h-12 w-full px-4 hover:bg-layer-hover"
                           type="button"
                           onClick={handleClickDeleteCategory}
                         >

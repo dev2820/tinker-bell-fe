@@ -52,6 +52,27 @@
     --red-800: #c62828;
     --red-900: #b71c1c;
 
+    --my-colors-primary-50: #fff7ed;
+    --my-colors-primary-100: #ffedd5;
+    --my-colors-primary-200: #fed7aa;
+    --my-colors-primary-300: #fdba74;
+    --my-colors-primary-400: #fb923c;
+    --my-colors-primary-500: #ff7f57;
+    --my-colors-primary-600: #ea580c;
+    --my-colors-primary-700: #c2410c;
+    --my-colors-primary-800: #9a3412;
+    --my-colors-primary-900: #7c2d12;
+    --my-colors-neutral-50: #fafafa;
+    --my-colors-neutral-100: #f5f5f5;
+    --my-colors-neutral-200: #e5e5e5;
+    --my-colors-neutral-300: #d4d4d4;
+    --my-colors-neutral-400: #a3a3a3;
+    --my-colors-neutral-500: #737373;
+    --my-colors-neutral-600: #525252;
+    --my-colors-neutral-700: #404040;
+    --my-colors-neutral-800: #262626;
+    --my-colors-neutral-900: #171717;
+
     --background: 0 0% 100%;
     --foreground: 0 0% 3.9%;
     --card: 0 0% 100%;
@@ -97,43 +118,76 @@
     --my-colors-primary-strong: var(--primary-strong);
     --my-colors-primary-stronger: var(--primary-stronger);
     --my-colors-primary-boundary: var(--primary-boundary);
+    --my-colors-primary-alpha: #c4b5fd1f;
+    --my-colors-primary-alpha2: #c4b5fd3d;
+    --my-colors-layer-fill: #ffffff;
+    --my-colors-layer-hover: var(--my-colors-neutral-100);
+    --my-colors-layer-pressed: var(--my-colors-neutral-200);
+
+    --my-colors-layer-input: #ffffff;
+    --my-colors-fg-input: var(--my-colors-neutral-800);
+
+    --my-colors-boundary: var(--my-colors-neutral-200);
   }
-  .dark {
-    --background: 0 0% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 14.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
-    --accent: 0 0% 14.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
-    --ring: 0 0% 83.1%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+  :root[data-theme="dark"] {
+    --my-colors-primary-subtlest: var(--my-colors-primary-900);
+    --my-colors-primary-subtler: var(--my-colors-primary-800);
+    --my-colors-primary-subtle: var(--my-colors-primary-700);
+    --my-colors-primary: var(--my-colors-primary-500);
+    --my-colors-primary-strong: var(--my-colors-primary-400);
+    --my-colors-primary-stronger: var(--my-colors-primary-300);
+    --my-colors-primary-alpha: rgba(255, 237, 213, 0.08);
+    --my-colors-primary-alpha2: rgba(255, 237, 213, 0.16);
+    --my-colors-neutral-subtler: var(--my-colors-neutral-800);
+    --my-colors-neutral-subtle: var(--my-colors-neutral-700);
+    --my-colors-neutral: #2e2e2e;
+    --my-colors-neutral-strong: #363636;
+    --my-colors-neutral-stronger: #484848;
+    --my-colors-neutral-strongest: #565656;
+    --my-colors-neutral-fg: #b3b3b3;
+
+    --my-colors-layer: #1f1f1f;
+    --my-colors-layer-alpha: rgba(255, 255, 255, 0);
+    --my-colors-layer-alpha2: rgba(0, 0, 0, 0.08);
+    --my-colors-layer-fill: #2e2e2e;
+    --my-colors-layer-hover: #363636;
+    --my-colors-layer-pressed: #484848;
+    --my-colors-layer-popover: #2e2e2e;
+    --my-colors-layer-highlight: #363636;
+    --my-colors-layer-input: #2e2e2e;
+    --my-colors-layer-trigger: #2e2e2e;
+    --my-colors-layer-muted: #565656;
+    --my-colors-layer-modal: #2e2e2e;
+
+    --my-colors-fg: #d8d8d8;
+    --my-colors-fg-input: var(--my-colors-neutral-100);
+    --my-colors-fg-title: #e0e0e0;
+    --my-colors-fg-description: #b3b3b3;
+    --my-colors-fg-caption: var(--my-colors-neutral-400);
+    --my-colors-fg-trigger: var(--my-colors-neutral-200);
+
+    --my-colors-boundary: var(--my-colors-neutral-700);
+    --my-colors-boundary-trigger: #2e2e2e;
+    --my-colors-boundary-popover: #363636;
+
+    /* --my-colors-primary: var(--primary);
+    --my-colors-primary-500: var(--primary);
+    --my-colors-primary-fg: var(--primary-fg);
+    --my-colors-primary-inverse: var(--primary-inverse);
+    --my-colors-primary-strong: var(--primary-strong);
+    --my-colors-primary-stronger: var(--primary-stronger);
+    --my-colors-primary-boundary: var(--primary-boundary); */
   }
+}
+
+input {
+  background: var(--my-colors-layer-input);
+  color: var(--my-colors-fg-input);
 }
 
 html,
 body {
   font-size: 16px;
-
-  @apply bg-white dark:bg-gray-950;
-  @media (prefers-color-scheme: dark) {
-    color-scheme: dark;
-  }
 }
 
 * {
@@ -146,6 +200,8 @@ body {
 body {
   overscroll-behavior: none;
   touch-action: none; /* 배경이 움직이지 않게 해줌 */
+  background: var(--my-colors-layer);
+  color: var(--my-colors-fg);
 }
 
 @layer base {

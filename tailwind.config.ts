@@ -72,12 +72,13 @@ export default {
           DEFAULT: "var(--neutral-300)",
           foreground: "var(--white)",
         },
-        chart: {
-          "1": "hsl(var(--chart-1))",
-          "2": "hsl(var(--chart-2))",
-          "3": "hsl(var(--chart-3))",
-          "4": "hsl(var(--chart-4))",
-          "5": "hsl(var(--chart-5))",
+        layer: {
+          fill: "var(--my-colors-layer-fill)",
+          hover: "var(--my-colors-layer-hover)",
+          pressed: "var(--my-colors-layer-pressed)",
+        },
+        boundary: {
+          DEFAULT: "var(--my-colors-boundary)",
         },
       },
       borderRadius: {

@@ -12,12 +12,15 @@ import { useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { usePreventContextMenu } from "./hooks/use-prevent-contextmenu";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { useThemeStore } from "./stores/theme";
 
 // export const links: LinksFunction = () => [{ rel: "stylesheet", href: styles }];
 
 export function Layout({ children }: { children: React.ReactNode }) {
+  const { theme } = useThemeStore();
+
   return (
-    <html lang="en">
+    <html lang="en" data-theme={theme}>
       <head>
         <meta charSet="utf-8" />
         <meta

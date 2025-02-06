@@ -20,7 +20,7 @@ export default function Login() {
 
   return (
     <div className="min-h-screen relative">
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 max-w-md w-full h-[400px] bg-white p-8">
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 max-w-md w-full h-[400px] p-8">
         <h2 className="text-2xl font-semibold text-gray-900 text-center mb-4">
           로그인
         </h2>
