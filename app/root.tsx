@@ -8,7 +8,7 @@ import {
 // import type { LinksFunction } from "@remix-run/node";
 import "terra-design-system/react/style";
 import "@/global.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { usePreventContextMenu } from "./hooks/use-prevent-contextmenu";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
@@ -19,6 +19,16 @@ import { useThemeStore } from "./stores/theme";
 export function Layout({ children }: { children: React.ReactNode }) {
   const { theme } = useThemeStore();
 
+  useEffect(() => {
+    const handleStorageChange = () => {
+      useThemeStore.persist.rehydrate();
+    };
+    window.addEventListener("storage", handleStorageChange);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  });
   return (
     <html lang="en" data-theme={theme}>
       <head>
