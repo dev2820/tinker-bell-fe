@@ -126,6 +126,7 @@
 
     --my-colors-layer-input: #ffffff;
     --my-colors-fg-input: var(--my-colors-neutral-800);
+    --my-colors-fg-placeholder: var(--my-colors-neutral-400);
 
     --my-colors-boundary: var(--my-colors-neutral-200);
   }
@@ -165,6 +166,7 @@
     --my-colors-fg-description: #b3b3b3;
     --my-colors-fg-caption: var(--my-colors-neutral-400);
     --my-colors-fg-trigger: var(--my-colors-neutral-200);
+    --my-colors-fg-placeholder: var(--my-colors-neutral-400);
 
     --my-colors-boundary: var(--my-colors-neutral-700);
     --my-colors-boundary-trigger: #2e2e2e;

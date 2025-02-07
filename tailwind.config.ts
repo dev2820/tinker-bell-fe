@@ -80,6 +80,10 @@ export default {
         boundary: {
           DEFAULT: "var(--my-colors-boundary)",
         },
+        fg: {
+          placeholder: "var(--my-colors-fg-placeholder)",
+          input: "var(--my-colors-fg-input)",
+        },
       },
       borderRadius: {
         "2xl": "calc(var(--radius) + 4px)",
