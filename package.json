@@ -39,7 +39,7 @@
     "tailwind-merge": "^2.5.3",
     "tailwind-variants": "^0.2.1",
     "tailwindcss-animate": "^1.0.7",
-    "terra-design-system": "1.1.4",
+    "terra-design-system": "1.1.12",
     "zustand": "^5.0.1"
   },
   "devDependencies": {
