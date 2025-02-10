@@ -1,6 +1,6 @@
 import * as TodoAPI from "@/api/todo";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { makeDailyQueryKey } from "./query-key";
+import { makeDailyQueryKey, makeMonthlyQueryKey } from "./query-key";
 import { httpClient } from "@/utils/http-client";
 
 const createTodo = (payload: TodoAPI.CreateTodoPayload) =>
@@ -18,11 +18,13 @@ export function useCreateTodo(date: Date) {
     onSuccess: () => {
       // 대상 일자 업데이트
       queryClient.invalidateQueries({
-        queryKey: queryKey,
+        queryKey: makeDailyQueryKey(date),
+        refetchType: "all",
       });
       // 대상 월 업데이트
       queryClient.invalidateQueries({
-        queryKey: queryKey,
+        queryKey: makeMonthlyQueryKey(date),
+        refetchType: "all",
       });
     },
     onError: (error) => {
