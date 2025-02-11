@@ -34,10 +34,9 @@ import { sendModalCloseEvent, sendModalOpenEvent } from "@/utils/helper/app";
 import { MenuItem } from "../MenuItem";
 import { useDisclosure } from "@/hooks/use-disclosure";
 import { useCategories } from "@/hooks/category/use-categories";
-import { CategoryItem } from "../category/CategoryItem";
-import { CategoryList } from "../views/CategoryList";
 import { Category } from "@/types/category";
 import { getCategoryFgColor } from "@/utils/helper/category";
+import { CategoryDialog } from "../Dialog/CategoryDialog";
 
 export function TodoDetailDrawer() {
   const { currentTodo, changeCurrentTodo, onClose, isOpen } =
@@ -120,7 +119,7 @@ export function TodoDetailDrawer() {
     setShownDate(new Date(year, month));
   };
 
-  const handleChangeCategory = (id: Category["id"]) => {
+  const handleChangeCategory = (id: Category["id"] | null) => {
     const newCategory = categories.find((c) => c.id === id);
     if (newCategory) {
       changeCurrentTodo({
@@ -129,16 +128,14 @@ export function TodoDetailDrawer() {
       debouncedUpdateTodoById(currentTodo.id, {
         categoryIdList: [newCategory.id],
       });
+    } else {
+      changeCurrentTodo({
+        categoryIdList: [],
+      });
+      debouncedUpdateTodoById(currentTodo.id, {
+        categoryIdList: [],
+      });
     }
-    categoryModalHandler.onClose();
-  };
-  const handleClickDeleteCategory = () => {
-    changeCurrentTodo({
-      categoryIdList: [],
-    });
-    debouncedUpdateTodoById(currentTodo.id, {
-      categoryIdList: [],
-    });
     categoryModalHandler.onClose();
   };
 
@@ -209,35 +206,13 @@ export function TodoDetailDrawer() {
                   )}{" "}
                   <span></span>
                 </MenuItem>
-                <Dialog.Root
+                <CategoryDialog
                   open={categoryModalHandler.isOpen}
                   onInteractOutside={categoryModalHandler.onClose}
-                >
-                  <Dialog.Backdrop />
-                  <Dialog.Positioner>
-                    <Dialog.Content className="mx-4 w-full max-w-md p-4">
-                      <Dialog.Title>카테고리 선택</Dialog.Title>
-                      <CategoryList
-                        items={categories}
-                        onClickCategory={handleChangeCategory}
-                      />
-                      <button
-                        className="h-12 w-full px-4 hover:bg-layer-hover"
-                        type="button"
-                        onClick={handleClickDeleteCategory}
-                      >
-                        <CategoryItem
-                          category={{
-                            id: -1,
-                            name: "없음",
-                            color: "#ffffff",
-                          }}
-                          className="h-full w-full"
-                        ></CategoryItem>
-                      </button>
-                    </Dialog.Content>
-                  </Dialog.Positioner>
-                </Dialog.Root>
+                  trapFocus={false}
+                  categories={categories}
+                  onChangeCategory={handleChangeCategory}
+                />
               </div>
               <div className="border-b-2 border-boundary">
                 <Collapsible.Root>

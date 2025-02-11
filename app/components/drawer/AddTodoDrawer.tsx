@@ -1,15 +1,15 @@
-import { Button, Dialog, Drawer, Portal } from "terra-design-system/react";
+import { Button, Drawer, Portal } from "terra-design-system/react";
 import { useAddTodoDrawerStore } from "@/stores/add-todo-drawer";
 import { ChangeEvent, useState } from "react";
 import { useDailyTodos } from "@/hooks/use-daily-todos";
 import { useCurrentDateStore } from "@/stores/current-date";
 import { SendHorizonalIcon, TagIcon } from "lucide-react";
 import { MenuItem } from "../MenuItem";
-import { CategoryList } from "../views/CategoryList";
 import { useCategories } from "@/hooks/category/use-categories";
 import { Category } from "@/types/category";
 import { useDisclosure } from "@/hooks/use-disclosure";
 import { CategoryItem } from "../category/CategoryItem";
+import { CategoryDialog } from "../Dialog/CategoryDialog";
 
 export function AddTodoDrawer() {
   const addTodoDrawer = useAddTodoDrawerStore();
@@ -50,12 +50,12 @@ export function AddTodoDrawer() {
   const handleChangeDescription = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setDescription(e.currentTarget.value);
   };
-  const handleChangeCategory = (id: Category["id"]) => {
-    setCategoryId(id);
-    categoryModalHandler.onClose();
-  };
-  const handleClickDeleteCategory = () => {
-    setCategoryId(-1);
+  const handleChangeCategory = (id: Category["id"] | null) => {
+    if (id === null) {
+      setCategoryId(-1);
+    } else {
+      setCategoryId(id);
+    }
     categoryModalHandler.onClose();
   };
 
@@ -106,31 +106,13 @@ export function AddTodoDrawer() {
                     "카테고리 선택"
                   )}
                 </MenuItem>
-                <Dialog.Root
+                <CategoryDialog
                   open={categoryModalHandler.isOpen}
                   onInteractOutside={categoryModalHandler.onClose}
-                >
-                  <Dialog.Backdrop />
-                  <Dialog.Positioner>
-                    <Dialog.Content className="mx-4 w-full max-w-md p-4">
-                      <Dialog.Title>카테고리 선택</Dialog.Title>
-                      <CategoryList
-                        items={categories}
-                        onClickCategory={handleChangeCategory}
-                      />
-                      <button
-                        className="h-12 w-full px-4 hover:bg-layer-hover"
-                        type="button"
-                        onClick={handleClickDeleteCategory}
-                      >
-                        <CategoryItem
-                          category={{ id: -1, name: "없음", color: "#ffffff" }}
-                          className="h-full w-full"
-                        ></CategoryItem>
-                      </button>
-                    </Dialog.Content>
-                  </Dialog.Positioner>
-                </Dialog.Root>
+                  trapFocus={false}
+                  categories={categories}
+                  onChangeCategory={handleChangeCategory}
+                />
               </Drawer.Body>
               <Drawer.Footer>
                 <Button
