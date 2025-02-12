@@ -25,7 +25,7 @@ import { Button } from "terra-design-system/react";
 import { useModeStore } from "@/stores/mode";
 
 const CELL_HEIGHT = 56;
-const MIN_HEIGHT = CELL_HEIGHT * 1;
+const MIN_HEIGHT = CELL_HEIGHT * 1 + 20;
 const MAX_HEIGHT = CELL_HEIGHT * 6;
 
 type DateSelectorProps = ComponentProps<"div"> & {
@@ -95,9 +95,16 @@ export function DateSelector(props: DateSelectorProps) {
       }
 
       if (last) {
-        oh > MAX_HEIGHT * 0.9 || (vh > 0.15 && dh > 0)
-          ? close(vh)
-          : open({ canceled });
+        if (oh < 100 || (vh > 0.15 && dh < 0)) {
+          open({ canceled });
+        } else if (oh > MAX_HEIGHT * 0.9 || (vh > 0.15 && dh > 0)) {
+          close(vh);
+        } else {
+          oh > MAX_HEIGHT * 0.5 ? close(vh) : open({ canceled });
+        }
+        // oh > MAX_HEIGHT * 0.9 || (vh > 0.15 && dh > 0)
+        //   ? close(vh)
+        //   : open({ canceled });
         setIsDragging(false);
       } else {
         api.start({
@@ -225,6 +232,7 @@ export function DateSelector(props: DateSelectorProps) {
             ))}
           </Swiper>
         </animated.div>
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 bg-gray-400 h-1 w-8 rounded-full"></div>
       </animated.div>
       <animated.div
         className="w-full flex flex-col justify-center place-items-center overflow-y-hidden"
