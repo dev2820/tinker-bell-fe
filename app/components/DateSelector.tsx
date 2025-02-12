@@ -1,7 +1,14 @@
 import { useDrag } from "@use-gesture/react";
-import { useSpring, animated, config } from "@react-spring/web";
+import { useSpring, animated } from "@react-spring/web";
 import { clamp } from "@/utils/clamp";
-import { addMonths, addWeeks, isSameDay, isSaturday, isSunday } from "date-fns";
+import {
+  addMonths,
+  addWeeks,
+  formatDate,
+  isSameDay,
+  isSaturday,
+  isSunday,
+} from "date-fns";
 import { ComponentProps, useEffect, useState } from "react";
 import { Swiper, SwiperItem } from "@/components/ui/Swiper";
 import { DailyTodoList } from "./todo/DailyTodoList";
@@ -9,11 +16,16 @@ import { useCurrentDateStore } from "@/stores/current-date";
 import { useShallow } from "zustand/shallow";
 import { useMonthlyTodos } from "@/hooks/use-monthly-todos";
 import { cn } from "@/utils/cn";
-import { getCalendarDays, getWeekDays } from "@/utils/date-time";
+import {
+  formatKoreanDate,
+  getCalendarDays,
+  getWeekDays,
+} from "@/utils/date-time";
 import { Button } from "terra-design-system/react";
 import { useModeStore } from "@/stores/mode";
 
 const CELL_HEIGHT = 56;
+const MIN_HEIGHT = CELL_HEIGHT * 1;
 const MAX_HEIGHT = CELL_HEIGHT * 6;
 
 type DateSelectorProps = ComponentProps<"div"> & {
@@ -36,7 +48,7 @@ export function DateSelector(props: DateSelectorProps) {
   }));
   const todoListHeight = h.to((v) => Math.max(height - v, 0));
   const progress = h.to((v) =>
-    clamp((v - CELL_HEIGHT) / (MAX_HEIGHT - CELL_HEIGHT), 0, 1)
+    clamp((v - MIN_HEIGHT) / (MAX_HEIGHT - MIN_HEIGHT), 0, 1)
   );
   const transitionY = progress.to((v) => {
     const startY = -thisWeek * CELL_HEIGHT;
@@ -44,21 +56,27 @@ export function DateSelector(props: DateSelectorProps) {
     return y;
   });
   const preventEventInMotion = h.to((v) => {
-    if (v !== CELL_HEIGHT && v !== MAX_HEIGHT && isDragging) return "none";
+    if (v !== MIN_HEIGHT && v !== MAX_HEIGHT && isDragging) return "none";
     return "auto";
   });
   const open = ({ canceled }: { canceled: boolean }) => {
     api.start({
-      h: CELL_HEIGHT,
+      h: MIN_HEIGHT,
       immediate: false,
-      config: canceled ? config.wobbly : config.stiff,
+      config: canceled
+        ? {
+            tension: 100,
+            friction: 20,
+            clamp: true,
+          }
+        : { tension: 100, friction: 20, clamp: true },
     });
   };
   const close = (velocity = 0) => {
     api.start({
       h: MAX_HEIGHT,
       immediate: false,
-      config: { ...config.stiff, velocity },
+      config: { tension: 100, friction: 20, velocity, clamp: true },
     });
   };
 
@@ -83,7 +101,7 @@ export function DateSelector(props: DateSelectorProps) {
         setIsDragging(false);
       } else {
         api.start({
-          h: clamp(oh, CELL_HEIGHT, MAX_HEIGHT),
+          h: clamp(oh, MIN_HEIGHT, MAX_HEIGHT),
           immediate: true,
         });
         setIsDragging(true);
@@ -145,6 +163,12 @@ export function DateSelector(props: DateSelectorProps) {
       className={cn("", className)}
       style={{ height: `${height}px` }}
     >
+      <time
+        dateTime={formatDate(currentDate, "yyyy-MM")}
+        className="font-bold text-lg pl-8"
+      >
+        {formatKoreanDate(currentDate, "yyyy년 MM월")}
+      </time>
       <animated.div
         {...bind()}
         className={cn("relative px-4")}
@@ -203,10 +227,10 @@ export function DateSelector(props: DateSelectorProps) {
         </animated.div>
       </animated.div>
       <animated.div
-        className="pt-4 w-full flex flex-col justify-center place-items-center overflow-y-hidden"
+        className="w-full flex flex-col justify-center place-items-center overflow-y-hidden"
         style={{ height: todoListHeight }}
       >
-        <div className="w-full h-full">
+        <div className="pt-4 w-full h-full">
           <div className="h-8 flex flex-row-reverse px-4">
             {!isReorderMode && (
               <Button

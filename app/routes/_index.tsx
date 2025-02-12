@@ -8,8 +8,6 @@ import { AddTodoDrawer } from "@/components/drawer/AddTodoDrawer";
 import { TodoDetailDrawer } from "@/components/drawer/TodoDetailDrawer";
 import { toCookieStorage, toRawCookie } from "@/utils/cookie";
 import { AlertDialog } from "@/components/Dialog/AlertDialog";
-import { formatDate } from "date-fns";
-import { formatKoreanDate } from "@/utils/date-time";
 import { useCurrentDateStore } from "@/stores/current-date";
 import { CalendarAppHeader } from "@/components/CalendarAppHeader";
 import { PlusIcon } from "lucide-react";
@@ -128,14 +126,7 @@ function TodoPage() {
 
   return (
     <main className="flex flex-col w-full h-screen items-stretch overflow-hidden">
-      <CalendarAppHeader className="h-[64px]">
-        <time
-          dateTime={formatDate(currentDate, "yyyy-MM")}
-          className="font-bold text-lg"
-        >
-          {formatKoreanDate(currentDate, "yyyy년 MM월")}
-        </time>
-      </CalendarAppHeader>
+      <CalendarAppHeader className="h-[64px]"></CalendarAppHeader>
       <TodoDailyView className="h-[calc(100%_-_64px)]" />
       <CTAButton
         shape="round"
