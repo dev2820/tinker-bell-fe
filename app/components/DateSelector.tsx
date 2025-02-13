@@ -26,7 +26,7 @@ import { useModeStore } from "@/stores/mode";
 
 const CELL_HEIGHT = 56;
 const MIN_HEIGHT = CELL_HEIGHT * 1 + 20;
-const MAX_HEIGHT = CELL_HEIGHT * 6;
+const MAX_HEIGHT = CELL_HEIGHT * 6 + 20;
 
 type DateSelectorProps = ComponentProps<"div"> & {
   height: number;
@@ -43,7 +43,7 @@ export function DateSelector(props: DateSelectorProps) {
   const thisWeek = getWeek(daysInCalendar, currentDate);
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [{ h }, api] = useSpring(() => ({
-    h: CELL_HEIGHT,
+    h: MIN_HEIGHT,
     config: { tension: 10, friction: 26, mass: 0.3 },
   }));
   const todoListHeight = h.to((v) => Math.max(height - v, 0));
@@ -232,7 +232,7 @@ export function DateSelector(props: DateSelectorProps) {
             ))}
           </Swiper>
         </animated.div>
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 bg-gray-400 h-1 w-8 rounded-full"></div>
+        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 bg-gray-400 h-1 w-8 rounded-full cursor-pointer"></div>
       </animated.div>
       <animated.div
         className="w-full flex flex-col justify-center place-items-center overflow-y-hidden"
