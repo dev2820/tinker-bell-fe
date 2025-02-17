@@ -59,52 +59,41 @@ export function DateSelector(props: DateSelectorProps) {
     if (v !== MIN_HEIGHT && v !== MAX_HEIGHT && isDragging) return "none";
     return "auto";
   });
-  const open = ({ canceled }: { canceled: boolean }) => {
+  const close = () => {
     api.start({
       h: MIN_HEIGHT,
       immediate: false,
-      config: canceled
-        ? {
-            tension: 100,
-            friction: 20,
-            clamp: true,
-          }
-        : { tension: 100, friction: 20, clamp: true },
+      config: { tension: 100, friction: 20, clamp: true },
     });
   };
-  const close = (velocity = 0) => {
+  const open = () => {
     api.start({
       h: MAX_HEIGHT,
       immediate: false,
-      config: { tension: 100, friction: 20, velocity, clamp: true },
+      config: { tension: 100, friction: 20, clamp: true },
     });
   };
 
   const bind = useDrag(
-    ({
-      last,
-      velocity: [, vh],
-      direction: [, dh],
-      offset: [, oh],
-      cancel,
-      canceled,
-    }) => {
+    ({ last, velocity: [, vh], direction: [, dh], offset: [, oh], cancel }) => {
       if (oh < -70) {
         cancel();
         setIsDragging(false);
       }
 
       if (last) {
-        if (oh < 100 || (vh > 0.15 && dh < 0)) {
-          open({ canceled });
-        } else if (oh > MAX_HEIGHT * 0.9 || (vh > 0.15 && dh > 0)) {
-          close(vh);
+        if (oh < MIN_HEIGHT + 20 && dh <= 0) {
+          close();
+        } else if (oh > MAX_HEIGHT - 20 && dh >= 0) {
+          open();
+        } else if (vh > 0.1 && dh > 0) {
+          open();
+        } else if (vh > 0.1 && dh < 0) {
+          close();
         } else {
-          oh > MAX_HEIGHT * 0.5 ? close(vh) : open({ canceled });
+          oh > MAX_HEIGHT * 0.5 ? open() : close();
         }
-        // oh > MAX_HEIGHT * 0.9 || (vh > 0.15 && dh > 0)
-        //   ? close(vh)
-        //   : open({ canceled });
+
         setIsDragging(false);
       } else {
         api.start({
@@ -117,7 +106,7 @@ export function DateSelector(props: DateSelectorProps) {
     {
       from: () => [0, h.get()],
       filterTaps: true,
-      threshold: 20,
+      threshold: 10,
       bounds: { top: 0 },
       rubberband: true,
       axis: "lock",
