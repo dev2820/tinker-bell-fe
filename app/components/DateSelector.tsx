@@ -86,9 +86,9 @@ export function DateSelector(props: DateSelectorProps) {
           close();
         } else if (oh > MAX_HEIGHT - 20 && dh >= 0) {
           open();
-        } else if (vh > 0.1 && dh > 0) {
+        } else if (vh > 0.05 && dh > 0) {
           open();
-        } else if (vh > 0.1 && dh < 0) {
+        } else if (vh > 0.05 && dh < 0) {
           close();
         } else {
           oh > MAX_HEIGHT * 0.5 ? open() : close();
