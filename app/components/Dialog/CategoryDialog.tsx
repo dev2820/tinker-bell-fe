@@ -25,7 +25,7 @@ export function CategoryDialog(props: CategoryDialogProps) {
               category={{
                 id: -1,
                 name: "없음",
-                color: "#ffffff",
+                color: "transparent",
               }}
               className="h-full w-full"
             ></CategoryItem>

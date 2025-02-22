@@ -5,6 +5,7 @@ import { clearAppCookie } from "@/utils/helper/app";
 import { Form } from "@remix-run/react";
 import { XIcon, TagIcon, MoonIcon, LogOutIcon } from "lucide-react";
 import { Drawer, DrawerProps, IconButton } from "terra-design-system/react";
+import { CategoryManageDialog } from "../Dialog/CategoryManageDialog";
 
 type SettingDrawerProps = Omit<DrawerProps["Root"], "className">;
 export function SettingDrawer(props: SettingDrawerProps) {
@@ -49,13 +50,15 @@ export function SettingDrawer(props: SettingDrawerProps) {
           <Drawer.Body>
             <menu>
               <li>
-                <MenuItem
-                  onClick={handleClickCategoryMenu}
-                  className="rounded-md"
-                  icon={<TagIcon size={16} />}
-                >
-                  카테고리 관리
-                </MenuItem>
+                <CategoryManageDialog closeOnInteractOutside>
+                  <MenuItem
+                    onClick={handleClickCategoryMenu}
+                    className="rounded-md"
+                    icon={<TagIcon size={16} />}
+                  >
+                    카테고리 관리
+                  </MenuItem>
+                </CategoryManageDialog>
               </li>
               <li>
                 <MenuItem
