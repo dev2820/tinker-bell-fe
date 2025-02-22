@@ -141,7 +141,7 @@ export function CategoryManageDialog(props: CategoryManageDialogProps) {
               </Button>
             </Dialog.CloseTrigger>
           </div>
-          <Dialog.Root open={categoryDetailHandler.isOpen}>
+          <Dialog.Root open={categoryDetailHandler.isOpen} trapFocus={false}>
             <Dialog.Backdrop />
             <Dialog.Positioner>
               <Dialog.Content className="p-4 max-w-[300px] w-full">
@@ -183,7 +183,7 @@ export function CategoryManageDialog(props: CategoryManageDialogProps) {
               </Dialog.Content>
             </Dialog.Positioner>
           </Dialog.Root>
-          <Dialog.Root open={categoryCreateHandler.isOpen}>
+          <Dialog.Root open={categoryCreateHandler.isOpen} trapFocus={false}>
             <Dialog.Backdrop />
             <Dialog.Positioner>
               <Dialog.Content className="p-4 max-w-[300px] w-full">
