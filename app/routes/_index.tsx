@@ -1,5 +1,5 @@
 import { authAPI, isHTTPError } from "@/api";
-import type { MetaFunction } from "@remix-run/node";
+import type { ActionFunction, MetaFunction } from "@remix-run/node";
 import { LoaderFunction, redirect } from "@remix-run/node";
 import { json } from "@remix-run/react";
 import { ToastProvider } from "@/contexts/toast";
@@ -32,6 +32,30 @@ export const meta: MetaFunction = () => {
       content: "세상에서 제일 쉬운 Todo",
     },
   ];
+};
+
+export const action: ActionFunction = async ({ request }) => {
+  const rawCookie = request.headers.get("Cookie") ?? "";
+  const cookie = toCookieStorage(rawCookie);
+  const accessToken = cookie.get("accessToken");
+  try {
+    await authAPI.get("oauth/logout", {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+  } catch (err) {
+    // handle error
+  }
+
+  return redirect("/", {
+    headers: {
+      "Set-Cookie": [
+        "accessToken=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Secure; SameSite=Lax",
+        "refreshToken=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Secure; SameSite=Lax",
+      ].join(", "),
+    },
+  });
 };
 
 export const loader: LoaderFunction = async ({ request }) => {

@@ -203,8 +203,7 @@ export function TodoDetailDrawer() {
                     </div>
                   ) : (
                     "카테고리 선택"
-                  )}{" "}
-                  <span></span>
+                  )}
                 </MenuItem>
                 <CategoryDialog
                   open={categoryModalHandler.isOpen}
