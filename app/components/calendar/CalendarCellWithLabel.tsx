@@ -13,21 +13,11 @@ type CalendarCellProps = ComponentProps<"button"> & {
   year: number;
   month: number;
   day: number;
-  isOutOfMonth: boolean;
   labelText?: string;
 };
 
 export const CalendarCellWithLabel = (props: CalendarCellProps) => {
-  const {
-    year,
-    month,
-    day,
-    isOutOfMonth,
-    labelText,
-    onClick,
-    className,
-    ...rest
-  } = props;
+  const { year, month, day, labelText, onClick, className, ...rest } = props;
   const { onSelectDate, onChangeShownDate, shownDate, swiperRef } =
     useCalendar();
   const date = new Date(year, month, day);
@@ -58,7 +48,6 @@ export const CalendarCellWithLabel = (props: CalendarCellProps) => {
         "flex flex-col items-center justify-start rounded-md active:bg-layer-pressed transition-colors duration-300",
         isSunday(date) && "text-red-500",
         isSaturday(date) && "text-blue-500",
-        isOutOfMonth && "opacity-20",
         className
       )}
       onClick={handleClickDate}

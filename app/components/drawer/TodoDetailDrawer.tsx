@@ -288,14 +288,14 @@ export function TodoDetailDrawer() {
                                                 isSameDay(
                                                   new Date(year, month, day),
                                                   selectedDate
-                                                ) && "bg-layer-pressed"
+                                                ) && "bg-layer-pressed",
+                                                month !==
+                                                  shownDate.getMonth() &&
+                                                  "opacity-20"
                                               )}
                                               data-year={year}
                                               data-month={month}
                                               data-day={day}
-                                              isOutOfMonth={
-                                                month !== shownDate.getMonth()
-                                              }
                                             />
                                           ))}
                                         </>
