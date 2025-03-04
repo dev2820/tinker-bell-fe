@@ -8,6 +8,8 @@ import {
 } from "date-fns";
 import { ComponentProps, MouseEvent } from "react";
 import { useCalendar } from "./CalendarRoot";
+import { useMonthlyHolidays } from "@/hooks/use-monthly-holidays";
+import { isHoliday } from "@/utils/helper/holiday";
 
 type CalendarCellProps = ComponentProps<"button"> & {
   year: number;
@@ -18,6 +20,7 @@ type CalendarCellProps = ComponentProps<"button"> & {
 
 export const CalendarCellWithLabel = (props: CalendarCellProps) => {
   const { year, month, day, labelText, onClick, className, ...rest } = props;
+  const { data: holidays } = useMonthlyHolidays(year, month + 1);
   const { onSelectDate, onChangeShownDate, shownDate, swiperRef } =
     useCalendar();
   const date = new Date(year, month, day);
@@ -48,6 +51,7 @@ export const CalendarCellWithLabel = (props: CalendarCellProps) => {
         "flex flex-col items-center justify-start rounded-md active:bg-layer-pressed transition-colors duration-300",
         isSunday(date) && "text-red-500",
         isSaturday(date) && "text-blue-500",
+        isHoliday(holidays ?? [], date) && "text-red-500",
         className
       )}
       onClick={handleClickDate}
