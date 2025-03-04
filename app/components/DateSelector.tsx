@@ -23,6 +23,9 @@ import {
 } from "@/utils/date-time";
 import { Button } from "terra-design-system/react";
 import { useModeStore } from "@/stores/mode";
+import { useMonthlyHolidays } from "@/hooks/use-monthly-holidays";
+import { Holiday } from "@/types/holiday";
+import { isHoliday } from "@/utils/helper/holiday";
 
 const CELL_HEIGHT = 56;
 const MIN_HEIGHT = CELL_HEIGHT * 1 + 20;
@@ -36,6 +39,10 @@ export function DateSelector(props: DateSelectorProps) {
   const { className, width, height, ref } = props;
   const { currentDate, changeCurrentDate } = useCurrentDateStore(
     useShallow((state) => ({ ...state }))
+  );
+  const { data: holidays } = useMonthlyHolidays(
+    currentDate.getFullYear(),
+    currentDate.getMonth() + 1
   );
 
   const { isReorderMode, onReorderMode, offReorderMode } = useModeStore();
@@ -191,6 +198,7 @@ export function DateSelector(props: DateSelectorProps) {
                   index={idx}
                   currentDate={currentDate}
                   totalTodoMap={totalTodoMap}
+                  holidays={holidays ?? []}
                   onClickDate={handleClickDate}
                 />
               </SwiperItem>
@@ -215,6 +223,7 @@ export function DateSelector(props: DateSelectorProps) {
                   currentDate={currentDate}
                   index={idx}
                   totalTodoMap={totalTodoMap}
+                  holidays={holidays ?? []}
                   onClickDate={handleClickDate}
                 />
               </SwiperItem>
@@ -262,11 +271,13 @@ function Weeks({
   index,
   currentDate,
   totalTodoMap,
+  holidays,
   onClickDate,
 }: {
   currentDate: Date;
   index: number;
   totalTodoMap: Map<string, [number, number]>;
+  holidays: Holiday[];
   onClickDate: (date: Date) => void;
 }) {
   const weekDays = getWeekDays(addWeeks(currentDate, index));
@@ -284,6 +295,7 @@ function Weeks({
               "rounded-full h-8 w-8 text-center flex flex-row justify-center place-items-center transition-colors duration-300 bg-transparent",
               isSunday(date) && "text-red-500",
               isSaturday(date) && "text-blue-500",
+              isHoliday(holidays, date) && "text-red-500",
               isSameDay(date, currentDate)
                 ? "bg-primary text-primary-fg"
                 : "bg-transparent"
@@ -306,11 +318,13 @@ function Months({
   index,
   currentDate,
   totalTodoMap,
+  holidays,
   onClickDate,
 }: {
   currentDate: Date;
   index: number;
   totalTodoMap: Map<string, [number, number]>;
+  holidays: Holiday[];
   onClickDate: (date: Date) => void;
 }) {
   return (
@@ -331,6 +345,7 @@ function Months({
               "rounded-full h-8 w-8 text-center flex flex-row justify-center place-items-center",
               isSunday(date) && "text-red-500",
               isSaturday(date) && "text-blue-500",
+              isHoliday(holidays, date) && "text-red-500",
               isSameDay(date, currentDate)
                 ? "bg-primary text-primary-fg"
                 : "bg-transparent"
