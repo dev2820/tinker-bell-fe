@@ -10,7 +10,7 @@ import { CategoryManageDialog } from "../Dialog/CategoryManageDialog";
 type SettingDrawerProps = Omit<DrawerProps["Root"], "className">;
 export function SettingDrawer(props: SettingDrawerProps) {
   const { children, ...rest } = props;
-  const { theme, toggleTheme } = useThemeStore();
+  const { theme, changeTheme } = useThemeStore();
 
   const handleClickCategoryMenu = () => {
     /**
@@ -30,7 +30,7 @@ export function SettingDrawer(props: SettingDrawerProps) {
   };
 
   const handleToggleDarkmode = () => {
-    toggleTheme();
+    changeTheme();
   };
 
   return (
@@ -66,7 +66,7 @@ export function SettingDrawer(props: SettingDrawerProps) {
                   className="rounded-md"
                   icon={<MoonIcon size={16} />}
                 >
-                  다크모드 <b>{theme === "dark" ? "ON" : "OFF"}</b>
+                  테마 <b className="first-letter:uppercase">{theme}</b>
                 </MenuItem>
               </li>
               <li>

@@ -86,11 +86,12 @@ export default {
         },
       },
       borderRadius: {
-        "2xl": "calc(var(--radius) + 4px)",
-        xl: "calc(var(--radius) + 2px)",
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+        "2xl": "16px",
+        xl: "12px",
+        lg: "8px",
+        md: "6px",
+        sm: "4px",
+        xs: "2px",
       },
       keyframes: {
         "accordion-down": {

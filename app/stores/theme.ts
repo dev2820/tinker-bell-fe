@@ -2,24 +2,31 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 
 interface ThemeState {
-  theme: "dark" | "light";
+  theme: "dark" | "light" | "system";
 }
 
 interface ThemeAction {
-  toggleTheme: () => void;
+  changeTheme: () => void;
 }
 
 export const useThemeStore = create<ThemeState & ThemeAction>()(
   persist(
     (set, get) => ({
-      theme: "light",
-      toggleTheme: () => {
-        set({ theme: get().theme === "light" ? "dark" : "light" });
+      theme: "system",
+      changeTheme: () => {
+        const currentTheme = get().theme;
+        if (currentTheme === "light") {
+          set({ theme: "system" });
+        } else if (currentTheme === "dark") {
+          set({ theme: "light" });
+        } else {
+          set({ theme: "dark" });
+        }
       },
     }),
     {
-      name: "theme", // name of the item in the storage (must be unique)
-      storage: createJSONStorage(() => localStorage), // (optional) by default, 'localStorage' is used
+      name: "theme",
+      storage: createJSONStorage(() => localStorage),
     }
   )
 );

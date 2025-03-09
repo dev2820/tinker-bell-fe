@@ -73,12 +73,6 @@
     --my-colors-neutral-800: #262626;
     --my-colors-neutral-900: #171717;
 
-    --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
     --primary: var(--orange-500);
     --primary-subtle: var(--orange-200);
     --primary-strong: var(--orange-600);
@@ -90,24 +84,9 @@
 
     --warning: var(--yellow-500);
     --error: var(--red-500);
-    --secondary: 0 0% 96.1%;
-    --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%;
-    --accent: 0 0% 96.1%;
-    --accent-foreground: 0 0% 9%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
-    --ring: 0 0% 3.9%;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
-    --radius: 0.5rem;
-
+  }
+  :root,
+  :root[data-theme="light"] {
     /*
      * trds color system 
      */
@@ -118,19 +97,51 @@
     --my-colors-primary-strong: var(--primary-strong);
     --my-colors-primary-stronger: var(--primary-stronger);
     --my-colors-primary-boundary: var(--primary-boundary);
-    --my-colors-primary-alpha: #c4b5fd1f;
-    --my-colors-primary-alpha2: #c4b5fd3d;
+    --my-colors-primary-alpha: rgba(255, 127, 87, 0.16);
+    --my-colors-primary-alpha2: rgba(255, 127, 87, 0.24);
     --my-colors-layer-fill: #ffffff;
     --my-colors-layer-hover: var(--my-colors-neutral-100);
     --my-colors-layer-pressed: var(--my-colors-neutral-200);
+    --my-colors-neutral-fg: var(--my-colors-neutral-800);
+    --my-colors-neutral: var(--my-colors-neutral-100);
+    --my-colors-neutral-strong: var(--my-colors-neutral-200);
+    --my-colors-neutral-stronger: var(--my-colors-neutral-300);
 
     --my-colors-layer-input: #ffffff;
     --my-colors-fg-input: var(--my-colors-neutral-800);
     --my-colors-fg-placeholder: var(--my-colors-neutral-400);
 
     --my-colors-boundary: var(--my-colors-neutral-200);
+
+    --my-colors-layer: #ffffff;
+    --my-colors-layer-alpha: rgba(0, 0, 0, 0);
+    --my-colors-layer-alpha2: rgba(0, 0, 0, 0.08);
+    --my-colors-layer-fill: #f8f9fa;
+    --my-colors-layer-hover: #f0f0f0;
+    --my-colors-layer-pressed: #fafafa;
+    --my-colors-layer-popover: #f8f9fa;
+    --my-colors-layer-highlight: #f0f0f0;
+    --my-colors-layer-input: #f8f9fa;
+    --my-colors-layer-trigger: #f8f9fa;
+    --my-colors-layer-muted: #565656;
+    --my-colors-layer-modal: #f8f9fa;
+
+    --my-colors-fg: #333333;
+    --my-colors-fg-input: var(--my-colors-neutral-900);
+    --my-colors-fg-title: #212529;
+    --my-colors-fg-description: #444444;
+    --my-colors-fg-caption: var(--my-colors-neutral-400);
+    --my-colors-fg-trigger: var(--my-colors-neutral-800);
+    --my-colors-fg-placeholder: var(--my-colors-neutral-400);
+
+    --my-colors-boundary: var(--my-colors-neutral-200);
+    --my-colors-boundary-trigger: #f8f9fa;
+    --my-colors-boundary-popover: #f0f0f0;
   }
   :root[data-theme="dark"] {
+    /*
+     * trds dark color system 
+     */
     --my-colors-primary-subtlest: var(--my-colors-primary-900);
     --my-colors-primary-subtler: var(--my-colors-primary-800);
     --my-colors-primary-subtle: var(--my-colors-primary-700);
@@ -179,6 +190,111 @@
     --my-colors-primary-strong: var(--primary-strong);
     --my-colors-primary-stronger: var(--primary-stronger);
     --my-colors-primary-boundary: var(--primary-boundary); */
+  }
+  @media (prefers-color-scheme: dark) {
+    :root,
+    :root[data-theme="dark"] {
+      --my-colors-primary-subtlest: var(--my-colors-primary-900);
+      --my-colors-primary-subtler: var(--my-colors-primary-800);
+      --my-colors-primary-subtle: var(--my-colors-primary-700);
+      --my-colors-primary: var(--my-colors-primary-500);
+      --my-colors-primary-strong: var(--my-colors-primary-400);
+      --my-colors-primary-stronger: var(--my-colors-primary-300);
+      --my-colors-primary-alpha: rgba(255, 237, 213, 0.08);
+      --my-colors-primary-alpha2: rgba(255, 237, 213, 0.16);
+      --my-colors-neutral-subtler: var(--my-colors-neutral-800);
+      --my-colors-neutral-subtle: var(--my-colors-neutral-700);
+      --my-colors-neutral: #2e2e2e;
+      --my-colors-neutral-strong: #363636;
+      --my-colors-neutral-stronger: #484848;
+      --my-colors-neutral-strongest: #565656;
+      --my-colors-neutral-fg: #b3b3b3;
+
+      --my-colors-layer: #1f1f1f;
+      --my-colors-layer-alpha: rgba(255, 255, 255, 0);
+      --my-colors-layer-alpha2: rgba(0, 0, 0, 0.08);
+      --my-colors-layer-fill: #2e2e2e;
+      --my-colors-layer-hover: #363636;
+      --my-colors-layer-pressed: #484848;
+      --my-colors-layer-popover: #2e2e2e;
+      --my-colors-layer-highlight: #363636;
+      --my-colors-layer-input: #2e2e2e;
+      --my-colors-layer-trigger: #2e2e2e;
+      --my-colors-layer-muted: #565656;
+      --my-colors-layer-modal: #2e2e2e;
+
+      --my-colors-fg: #d8d8d8;
+      --my-colors-fg-input: var(--my-colors-neutral-100);
+      --my-colors-fg-title: #e0e0e0;
+      --my-colors-fg-description: #b3b3b3;
+      --my-colors-fg-caption: var(--my-colors-neutral-400);
+      --my-colors-fg-trigger: var(--my-colors-neutral-200);
+      --my-colors-fg-placeholder: var(--my-colors-neutral-400);
+
+      --my-colors-boundary: var(--my-colors-neutral-700);
+      --my-colors-boundary-trigger: #2e2e2e;
+      --my-colors-boundary-popover: #363636;
+
+      /* --my-colors-primary: var(--primary);
+      --my-colors-primary-500: var(--primary);
+      --my-colors-primary-fg: var(--primary-fg);
+      --my-colors-primary-inverse: var(--primary-inverse);
+      --my-colors-primary-strong: var(--primary-strong);
+      --my-colors-primary-stronger: var(--primary-stronger);
+      --my-colors-primary-boundary: var(--primary-boundary); */
+    }
+    :root[data-theme="light"] {
+      /*
+     * trds color system 
+     */
+      --my-colors-primary: var(--primary);
+      --my-colors-primary-500: var(--primary);
+      --my-colors-primary-fg: var(--primary-fg);
+      --my-colors-primary-inverse: var(--primary-inverse);
+      --my-colors-primary-strong: var(--primary-strong);
+      --my-colors-primary-stronger: var(--primary-stronger);
+      --my-colors-primary-boundary: var(--primary-boundary);
+      --my-colors-primary-alpha: rgba(255, 127, 87, 0.16);
+      --my-colors-primary-alpha2: rgba(255, 127, 87, 0.24);
+      --my-colors-layer-fill: #ffffff;
+      --my-colors-layer-hover: var(--my-colors-neutral-100);
+      --my-colors-layer-pressed: var(--my-colors-neutral-200);
+      --my-colors-neutral-fg: var(--my-colors-neutral-800);
+      --my-colors-neutral: var(--my-colors-neutral-100);
+      --my-colors-neutral-strong: var(--my-colors-neutral-200);
+      --my-colors-neutral-stronger: var(--my-colors-neutral-300);
+
+      --my-colors-layer-input: #ffffff;
+      --my-colors-fg-input: var(--my-colors-neutral-800);
+      --my-colors-fg-placeholder: var(--my-colors-neutral-400);
+
+      --my-colors-boundary: var(--my-colors-neutral-200);
+
+      --my-colors-layer: #ffffff;
+      --my-colors-layer-alpha: rgba(0, 0, 0, 0);
+      --my-colors-layer-alpha2: rgba(0, 0, 0, 0.08);
+      --my-colors-layer-fill: #f8f9fa;
+      --my-colors-layer-hover: #f0f0f0;
+      --my-colors-layer-pressed: #fafafa;
+      --my-colors-layer-popover: #f8f9fa;
+      --my-colors-layer-highlight: #f0f0f0;
+      --my-colors-layer-input: #f8f9fa;
+      --my-colors-layer-trigger: #f8f9fa;
+      --my-colors-layer-muted: #565656;
+      --my-colors-layer-modal: #f8f9fa;
+
+      --my-colors-fg: #333333;
+      --my-colors-fg-input: var(--my-colors-neutral-900);
+      --my-colors-fg-title: #212529;
+      --my-colors-fg-description: #444444;
+      --my-colors-fg-caption: var(--my-colors-neutral-400);
+      --my-colors-fg-trigger: var(--my-colors-neutral-800);
+      --my-colors-fg-placeholder: var(--my-colors-neutral-400);
+
+      --my-colors-boundary: var(--my-colors-neutral-200);
+      --my-colors-boundary-trigger: #f8f9fa;
+      --my-colors-boundary-popover: #f0f0f0;
+    }
   }
 }
 

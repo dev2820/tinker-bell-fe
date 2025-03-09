@@ -73,14 +73,14 @@ export function AddTodoDrawer() {
           <Drawer.Backdrop />
           <Drawer.Positioner>
             <Drawer.Content className="h-full min-h-96 rounded-t-lg pt-4">
-              <Drawer.Header className="h-full border-b">
+              <Drawer.Header className="h-full border-b border-boundary">
                 <h3 className="font-bold text-xl">할 일 추가</h3>
               </Drawer.Header>
               <Drawer.Body className="p-0">
                 <div className="relative">
                   <input
                     value={title}
-                    className="bg-transparent border-b h-12 px-4 py-2 focus:outline-none w-full"
+                    className="bg-transparent border-b border-boundary h-12 px-4 py-2 focus:outline-none w-full"
                     onChange={handleChangeTitle}
                     placeholder="할 일을 입력해주세요"
                     // enterKeyHint="done"
@@ -88,7 +88,7 @@ export function AddTodoDrawer() {
                 </div>
                 <textarea
                   value={description}
-                  className="bg-transparent border-b px-4 focus:outline-none py-2 h-28"
+                  className="bg-transparent border-b border-boundary px-4 focus:outline-none py-2 h-28"
                   placeholder="설명"
                   cols={5}
                   onChange={handleChangeDescription}
@@ -97,7 +97,7 @@ export function AddTodoDrawer() {
                 <MenuItem
                   icon={<TagIcon className="text-gray-400" size={16} />}
                   type="button"
-                  className="border-b"
+                  className="border-b border-boundary"
                   onClick={categoryModalHandler.onOpen}
                 >
                   {selectedCategory ? (
